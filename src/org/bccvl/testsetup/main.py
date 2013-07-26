@@ -79,6 +79,8 @@ def main(app):
     get_current_bioclim_data()
     add_enviro_data(app)
     add_occurence_data(app)
+    add_algorithm(app)
+
 
 def spoofRequest(app):
     """
@@ -107,6 +109,7 @@ def addFile(content, filename, file=None, mimetype='application/octet-stream'):
     return linkcontent
 
 
+
 def addItem(folder, title, subject=None, description=None, id=None):
     if id is not None and id in folder:
         return folder[id]
@@ -118,6 +121,22 @@ def addItem(folder, title, subject=None, description=None, id=None):
         LOG.info("Rename %s to %s", content.id, id)
         folder.manage_renameObject(content.id, id)
     return folder[content.id]
+
+
+def add_algorithm(app):
+    # TODO: this will probably end up being something different and not a RepositoryItem
+    portal = app.unrestrictedTraverse('bccvl')
+    # set plone site as current site to enable local utility lookup
+    with site(portal):
+        portal.setupCurrentSkin(app.REQUEST)
+        folder = portal.unrestrictedTraverse('{}/{}'.format(bccvldefaults.DATASETS_FOLDER_ID,
+                                                            bccvldefaults.FUNCTIONS_FOLDER_ID))
+        for funcid in ('bioclim', 'brt'):
+            content = addItem(folder,
+                              title=unicode(funcid),
+                              id=funcid)
+        transaction.commit()
+    app._p_jar.sync()
 
 
 def add_enviro_data(app):
@@ -145,7 +164,7 @@ def add_enviro_data(app):
         transaction.commit()
     app._p_jar.sync()
 
-    
+
 def add_occurence_data(app):
     portal = app.unrestrictedTraverse('bccvl')
     # set plone site as current site to enable local utility lookup
@@ -174,7 +193,7 @@ def add_occurence_data(app):
             transaction.commit()
     app._p_jar.sync()
 
-        
+
 
 
 def get_current_bioclim_data():

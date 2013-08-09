@@ -30,6 +30,7 @@ from zope.component import getUtility
 from gu.repository.content.interfaces import IRepositoryMetadata
 from gu.z3cform.rdf.interfaces import IORDF
 from rdflib import RDF
+from plone.namedfile.file import NamedBlobFile
 
 
 try:
@@ -123,14 +124,17 @@ def addFile(content, filename, file=None, mimetype='application/octet-stream'):
     if linkid in content:
         return content[linkid]
     if file is None:
-        file = urlopen(filename)
+        # can't handle url's in _setData of blob has to be a local file
+        file = open(filename)
     linkid = content.invokeFactory(type_name='File', id=linkid,
-                                   title=os.path.basename(filename),
-                                   file=file.read())
+                                   title=os.path.basename(filename))
+
     linkcontent = content[linkid]
     linkcontent.setFormat(mimetype)
-    linkcontent.setFilename(filename.encode('utf-8'))
-    linkcontent.processForm()
+    linkcontent.file = NamedBlobFile(contentType=mimetype, filename=filename.encode('utf-8'))
+    linkcontent.file.data =  file
+    #linkcontent.setFilename(filename.encode('utf-8'))
+    #linkcontent.processForm()
     return linkcontent
 
 
@@ -142,8 +146,8 @@ def addItem(folder, title, subject=None, description=None, id=None):
     if id is not None and id != content.id:
         # need to commit here, otherwise _p_jar is None and rename fails
         transaction.savepoint(optimistic=True)
-        LOG.info("Rename %s to %s", content.id, id)
-        folder.manage_renameObject(content.id, id)
+        LOG.info("Rename %s to %s", content.id, str(id))
+        folder.manage_renameObject(content.id, str(id))
     return folder[content.id]
 
 
@@ -158,8 +162,8 @@ def add_algorithm(app, data):
                                                             bccvldefaults.FUNCTIONS_FOLDER_ID))
         for algo in data:
             content = addItem(folder,
-                              title=data['title'],
-                              id=data['id'])
+                              title=algo['title'],
+                              id=algo['id'])
         transaction.commit()
     app._p_jar.sync()
 
@@ -178,7 +182,7 @@ def add_enviro_data(app, data):
             cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
                         BCCVOCAB['DataGenreE']))
             contentzip = addFile(content,
-                                 filename=u'file://' + os.path.join(Globals.data_dir, zipfile),
+                                 filename=os.path.join(Globals.data_dir, zipfile),
                                  mimetype='application/zip')
             # TODO: attach proper metadat to files (probably needs inspection of zip to find out layers and filenames)
             rdfhandler = getUtility(IORDF).getHandler()
@@ -205,16 +209,21 @@ def add_occurence_data(app):
                               id=dirname.encode('utf-8'))
             for data in resource_listdir('org.bccvl.testsetup', 'data/species/' +  dirname):
                 # TODO: files sholud get metadat as well
-                content = resource_stream('org.bccvl.testsetup', data)
+                resource = resource_stream('org.bccvl.testsetup', 'data/species' +  dirname + '/' + data)
                 contentfile = addFile(content,
-                                      filename=unicode(os.path.basename(data)),
-                                      file=data,
+                                      file=resource,
+                                      filename=unicode(data),
                                       mimetype='text/csv')
 
             cgraph = IRepositoryMetadata(content)
             # TODO: fixup data genre
             cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
                         BCCVOCAB['DataGenreSO']))
+            # TODO: should tag files properly
+            #      ... needs fixup in query for vocabularies
+            #      ... and fixup of data discovery in executor
+            cgraph.add((cgraph.identifier, BCCPROP['specieslayer'],
+                        BCCVOCAB['SpeciesLayerP']))
 
             rdfhandler = getUtility(IORDF).getHandler()
             cc = rdfhandler.context(user='Importer',
@@ -252,7 +261,7 @@ def get_current_bioclim_data(data):
         for ascfile in glob.glob(os.path.join(tmp_dir, '*', '*.asc')):
             tfile, _ = os.path.splitext(ascfile)
             tfile += '.tif'
-            cmd = ['gdal_translate', 'of=GTiff', ascfile,  tfile]
+            cmd = ['gdal_translate', '-of', 'GTiff', ascfile,  tfile]
             ret = subprocess.call(cmd)
             if ret != 0:
                 LOG.fatal('Conversion to GeoTiff for %s failed', ascfile)
@@ -263,7 +272,7 @@ def get_current_bioclim_data(data):
                 _, dirname = os.path.split(os.path.dirname(filename))
                 newzip.write(filename,
                              os.path.join(dirname, os.path.basename(filename)))
-    shutil.rmtree(tmp_dir)
+        shutil.rmtree(tmp_dir)
 
 
 

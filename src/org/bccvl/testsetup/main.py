@@ -66,6 +66,30 @@ logging.getLogger('ordf.handler.httpfourstore').setLevel(logging.WARN)
 # logging.getLogger('').setLevel(logging.WARN)
 
 
+BIOCLIM_DATA = [
+    {'title': u'Current climate layers for Australia, 2.5arcmin (~5km)',
+     #'model': u'CGCM3',
+     'url': u'http://wallaceinitiative.org/climate_2012/output/australia-5km/current.zip',
+     'filename': u'current.zip'
+
+    },
+    {'title': u'Climate Projection RCP3D based on CCCma-CGCGM3 ',
+     'agency': u'CCCma',
+     'model': u'CGCM3',
+     'url': u'http://wallaceinitiative.org/climate_2012/output/australia-5km/RCP3PD_cccma-cgcm31.zip'
+    }
+    ]
+
+
+ALGORITHM_DATA = [
+    {'title': u"BIOCLIM",
+     'id': 'bioclim'
+    },
+    {'title': u"Boosted Regression Trees",
+     'id': 'brt',
+    },
+    ]
+
 
 def main(app):
     """
@@ -73,13 +97,12 @@ def main(app):
     app ... Zope application server root
     sys.args ... any additional cli paramaters given
     """
-    #import ipdb; ipdb.set_trace()
     app = spoofRequest(app)
     newSecurityManager(None, system)
-    get_current_bioclim_data()
-    add_enviro_data(app)
+    get_current_bioclim_data(BIOCLIM_DATA)
+    add_enviro_data(app, BIOCLIM_DATA)
     add_occurence_data(app)
-    add_algorithm(app)
+    add_algorithm(app, ALGORITHM_DATA)
 
 
 def spoofRequest(app):
@@ -93,6 +116,7 @@ def spoofRequest(app):
     newSecurityManager(None, OmnipotentUser().__of__(app.acl_users))
     return makerequest(app)
 
+
 def addFile(content, filename, file=None, mimetype='application/octet-stream'):
     normalizer = getUtility(IFileNameNormalizer)
     linkid = normalizer.normalize(os.path.basename(filename))
@@ -100,14 +124,14 @@ def addFile(content, filename, file=None, mimetype='application/octet-stream'):
         return content[linkid]
     if file is None:
         file = urlopen(filename)
-    linkid = content.invokeFactory(type_name='File', id=linkid, title=os.path.basename(filename),
+    linkid = content.invokeFactory(type_name='File', id=linkid,
+                                   title=os.path.basename(filename),
                                    file=file.read())
     linkcontent = content[linkid]
     linkcontent.setFormat(mimetype)
     linkcontent.setFilename(filename.encode('utf-8'))
     linkcontent.processForm()
     return linkcontent
-
 
 
 def addItem(folder, title, subject=None, description=None, id=None):
@@ -123,45 +147,49 @@ def addItem(folder, title, subject=None, description=None, id=None):
     return folder[content.id]
 
 
-def add_algorithm(app):
-    # TODO: this will probably end up being something different and not a RepositoryItem
+def add_algorithm(app, data):
+    # TODO: this will probably end up being something different and not a
+    #       RepositoryItem
     portal = app.unrestrictedTraverse('bccvl')
     # set plone site as current site to enable local utility lookup
     with site(portal):
         portal.setupCurrentSkin(app.REQUEST)
         folder = portal.unrestrictedTraverse('{}/{}'.format(bccvldefaults.DATASETS_FOLDER_ID,
                                                             bccvldefaults.FUNCTIONS_FOLDER_ID))
-        for funcid in ('bioclim', 'brt'):
+        for algo in data:
             content = addItem(folder,
-                              title=unicode(funcid),
-                              id=funcid)
+                              title=data['title'],
+                              id=data['id'])
         transaction.commit()
     app._p_jar.sync()
 
 
-def add_enviro_data(app):
+def add_enviro_data(app, data):
     portal = app.unrestrictedTraverse('bccvl')
     # set plone site as current site to enable local utility lookup
     with site(portal):
         portal.setupCurrentSkin(app.REQUEST)
         folder = portal.unrestrictedTraverse('{}/{}'.format(bccvldefaults.DATASETS_FOLDER_ID, bccvldefaults.DATASETS_ENVIRONMENTAL_FOLDER_ID))
-        content = addItem(folder,
-                          title=u'Current climate layers for Australia, 2.5arcmin (~5km)',
-                          id='current')
-        cgraph = IRepositoryMetadata(content)
-        cgraph.add((cgraph.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreE']))
-        contentzip = addFile(content,
-                             filename=u'file://' + os.path.abspath(os.path.join(Globals.data_dir, 'current_asc.zip')),
-                             mimetype='application/zip')
+        for item in data:
+            zipfile =  os.path.basename(item['url'])
+            content = addItem(folder, title=item['title'],
+                              id=os.path.splitext(zipfile)[0])
+            cgraph = IRepositoryMetadata(content)
+            cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
+                        BCCVOCAB['DataGenreE']))
+            contentzip = addFile(content,
+                                 filename=u'file://' + os.path.join(Globals.data_dir, zipfile),
+                                 mimetype='application/zip')
+            # TODO: attach proper metadat to files (probably needs inspection of zip to find out layers and filenames)
+            rdfhandler = getUtility(IORDF).getHandler()
+            cc = rdfhandler.context(user='Importer',
+                                    reason="auto import content")
+            # store modified data
+            cc.add(cgraph)
+            # send changeset
+            cc.commit()
 
-        rdfhandler = getUtility(IORDF).getHandler()
-        cc = rdfhandler.context(user='Importer', reason="auto import content")
-        # store modified data
-        cc.add(cgraph)
-        # send changeset
-        cc.commit()
-
-        transaction.commit()
+            transaction.commit()
     app._p_jar.sync()
 
 
@@ -172,19 +200,25 @@ def add_occurence_data(app):
         portal.setupCurrentSkin(app.REQUEST)
         folder = portal.unrestrictedTraverse('{}/{}'.format(bccvldefaults.DATASETS_FOLDER_ID, bccvldefaults.DATASETS_SPECIES_FOLDER_ID))
         for dirname in resource_listdir('org.bccvl.testsetup', 'data/species'):
-            data = resource_stream('org.bccvl.testsetup', os.path.join('data/species', dirname, 'occur.csv'))
             content = addItem(folder,
                               title=u'Occurence Data for {}'.format(dirname),
                               id=dirname.encode('utf-8'))
+            for data in resource_listdir('org.bccvl.testsetup', 'data/species/' +  dirname):
+                # TODO: files sholud get metadat as well
+                content = resource_stream('org.bccvl.testsetup', data)
+                contentfile = addFile(content,
+                                      filename=unicode(os.path.basename(data)),
+                                      file=data,
+                                      mimetype='text/csv')
+
             cgraph = IRepositoryMetadata(content)
-            cgraph.add((cgraph.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSO']))
-            contentfile = addFile(content,
-                                  filename=u'occur.csv',
-                                  file=data,
-                                  mimetype='text/csv')
+            # TODO: fixup data genre
+            cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
+                        BCCVOCAB['DataGenreSO']))
 
             rdfhandler = getUtility(IORDF).getHandler()
-            cc = rdfhandler.context(user='Importer', reason="auto import content")
+            cc = rdfhandler.context(user='Importer',
+                                    reason="auto import content")
             # store modified data
             cc.add(cgraph)
             # send changeset
@@ -194,31 +228,41 @@ def add_occurence_data(app):
     app._p_jar.sync()
 
 
-
-
-def get_current_bioclim_data():
-    final = os.path.join(Globals.data_dir, 'current_asc.zip')
-    current = os.path.join(Globals.data_dir, 'current.zip') # aka CLIENT_HOME
-    if os.path.exists(final):
-        return
-    if not os.path.exists(current):
-        LOG.info('Download current climate layers to %s', current)
-        urllib.urlretrieve('http://wallaceinitiative.org/climate_2012/output/australia-5km/current.zip',
-                           current)
-    tmp_dir = mkdtemp(dir=Globals.data_dir)
-    curzip = ZipFile(current, 'r')
-    curzip.extractall(path=tmp_dir)
-    curzip.close()
-    cmd = ['gunzip']
-    cmd.extend(glob.glob(os.path.join(tmp_dir, '*', '*.gz')))
-    ret = subprocess.call(cmd)
-    if ret != 0:
-        LOG.fatal('Uncompressing asc files failed')
-        sys.exit(1)
-    with ZipFile(final, 'w', ZIP_DEFLATED) as newzip:
-        for ascname in sorted(os.listdir(os.path.join(tmp_dir, 'current.76to05'))):
-            newzip.write(os.path.join(tmp_dir, 'current.76to05', ascname),
-                         os.path.join('current.76to05', ascname))
+def get_current_bioclim_data(data):
+    for item in data:
+        filename = os.path.basename(item['url'])
+        filename = os.path.join(Globals.data_dir, filename)
+        if os.path.exists(filename):
+            continue
+        LOG.info("Download %s", item['title'])
+        urllib.urlretrieve(item['url'],  filename)
+        # the files from wallace_initiative are all gzipped asc files, so let's
+        # convert them here
+        tmp_dir = mkdtemp(dir=Globals.data_dir)
+        with ZipFile(filename, 'r') as curzip:
+            curzip.extractall(path=tmp_dir)
+        # unzip all .asc.gz files
+        cmd = ['gunzip']
+        cmd.extend(glob.glob(os.path.join(tmp_dir, '*', '*.gz')))
+        ret = subprocess.call(cmd)
+        if ret != 0:
+            LOG.fatal('Uncompressing asc files for %s failed', filename)
+            sys.exit(1)
+        # convert all files to geotiff
+        for ascfile in glob.glob(os.path.join(tmp_dir, '*', '*.asc')):
+            tfile, _ = os.path.splitext(ascfile)
+            tfile += '.tif'
+            cmd = ['gdal_translate', 'of=GTiff', ascfile,  tfile]
+            ret = subprocess.call(cmd)
+            if ret != 0:
+                LOG.fatal('Conversion to GeoTiff for %s failed', ascfile)
+                sys.exit(1)
+        # create a new zip file with same name as downloaded one
+        with ZipFile(filename, 'w', ZIP_DEFLATED) as newzip:
+            for filename in sorted(glob.glob(os.path.join(tmp_dir,  '*',  '*.tif'))):
+                _, dirname = os.path.split(os.path.dirname(filename))
+                newzip.write(filename,
+                             os.path.join(dirname, os.path.basename(filename)))
     shutil.rmtree(tmp_dir)
 
 

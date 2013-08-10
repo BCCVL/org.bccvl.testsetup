@@ -125,14 +125,15 @@ def addFile(content, filename, file=None, mimetype='application/octet-stream'):
         return content[linkid]
     if file is None:
         # can't handle url's in _setData of blob has to be a local file
+        # TODO: maybe create IStorage adapter for urllib.urlinfo class and use urlopen again
         file = open(filename)
     linkid = content.invokeFactory(type_name='File', id=linkid,
-                                   title=os.path.basename(filename))
+                                   title=unicode(linkid))
 
     linkcontent = content[linkid]
     linkcontent.setFormat(mimetype)
-    linkcontent.file = NamedBlobFile(contentType=mimetype, filename=filename.encode('utf-8'))
-    linkcontent.file.data =  file
+    linkcontent.file = NamedBlobFile(contentType=mimetype, filename=unicode(linkid))
+    linkcontent.file.data = file
     #linkcontent.setFilename(filename.encode('utf-8'))
     #linkcontent.processForm()
     return linkcontent
@@ -209,7 +210,7 @@ def add_occurence_data(app):
                               id=dirname.encode('utf-8'))
             for data in resource_listdir('org.bccvl.testsetup', 'data/species/' +  dirname):
                 # TODO: files sholud get metadat as well
-                resource = resource_stream('org.bccvl.testsetup', 'data/species' +  dirname + '/' + data)
+                resource = resource_stream('org.bccvl.testsetup', 'data/species/' +  dirname + '/' + data)
                 contentfile = addFile(content,
                                       file=resource,
                                       filename=unicode(data),

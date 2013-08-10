@@ -71,13 +71,14 @@ BIOCLIM_DATA = [
     {'title': u'Current climate layers for Australia, 2.5arcmin (~5km)',
      #'model': u'CGCM3',
      'url': u'http://wallaceinitiative.org/climate_2012/output/australia-5km/current.zip',
-     'filename': u'current.zip'
-
+     'filename': u'current.zip',
+     'genre':  BCCVOCAB['DataGenreE']
     },
     {'title': u'Climate Projection RCP3D based on CCCma-CGCGM3 ',
      'agency': u'CCCma',
      'model': u'CGCM3',
-     'url': u'http://wallaceinitiative.org/climate_2012/output/australia-5km/RCP3PD_cccma-cgcm31.zip'
+     'url': u'http://wallaceinitiative.org/climate_2012/output/australia-5km/RCP3PD_cccma-cgcm31.zip',
+     'genre':  BCCVOCAB['DataGenreFC']
     }
     ]
 
@@ -181,7 +182,7 @@ def add_enviro_data(app, data):
                               id=os.path.splitext(zipfile)[0])
             cgraph = IRepositoryMetadata(content)
             cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
-                        BCCVOCAB['DataGenreE']))
+                        item['genre']))
             contentzip = addFile(content,
                                  filename=os.path.join(Globals.data_dir, zipfile),
                                  mimetype='application/zip')

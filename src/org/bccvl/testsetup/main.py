@@ -31,6 +31,7 @@ from gu.repository.content.interfaces import IRepositoryMetadata
 from gu.z3cform.rdf.interfaces import IORDF
 from rdflib import RDF
 from plone.namedfile.file import NamedBlobFile
+# TODO: if item/file id already exists, then just updload/update metadata
 
 
 try:

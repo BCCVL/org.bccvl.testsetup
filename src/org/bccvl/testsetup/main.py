@@ -73,14 +73,24 @@ BIOCLIM_DATA = [
      #'model': u'CGCM3',
      'url': u'http://wallaceinitiative.org/climate_2012/output/australia-5km/current.zip',
      'filename': u'current.zip',
-     'genre':  BCCVOCAB['DataGenreE']
+     'genre': BCCVOCAB['DataGenreE'],
+     'type': 'file'
     },
-    {'title': u'Climate Projection RCP3D based on CCCma-CGCGM3 ',
+    {'title': u'Climate Projection RCP3D based on CCCma-CGCGM3, 2.5arcmin (~5km)',
      'agency': u'CCCma',
      'model': u'CGCM3',
      'url': u'http://wallaceinitiative.org/climate_2012/output/australia-5km/RCP3PD_cccma-cgcm31.zip',
-     'genre':  BCCVOCAB['DataGenreFC']
+     'genre': BCCVOCAB['DataGenreFC'],
+     'type': 'file'
+    },
+    {'title': u'Climate Projection RCP3D based on CCCma-CGCGM3, 0.5arcmin (~1km)',
+     'agency': u'CCCma',
+     'model': u'CGCM3',
+     'url': u'http://wallaceinitiative.org/climate_2012/output/australia-1km/RCP3PD_cccma-cgcm31.zip',
+     'genre': BCCVOCAB['DataGenreFC'],
+     'type': 'link'
     }
+
     ]
 
 
@@ -141,6 +151,18 @@ def addFile(content, filename, file=None, mimetype='application/octet-stream'):
     return linkcontent
 
 
+def addLink(content, url):
+    normalizer = getUtility(IFileNameNormalizer)
+    linkid, _ = os.path.splitext(os.path.basename(url))
+    linkid = normalizer.normalize(linkid)
+    if linkid in content:
+        return content[linkid]
+    linkid = content.invokeFactory(type_name='Link', id=linkid,
+                                   title=os.path.basename(url),
+                                   url=url)
+    return content[linkid]
+
+
 def addItem(folder, title, subject=None, description=None, id=None):
     if id is not None and id in folder:
         return folder[id]
@@ -184,9 +206,12 @@ def add_enviro_data(app, data):
             cgraph = IRepositoryMetadata(content)
             cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
                         item['genre']))
-            contentzip = addFile(content,
-                                 filename=os.path.join(Globals.data_dir, zipfile),
-                                 mimetype='application/zip')
+            if item['type'] == 'file':
+                contentzip = addFile(content,
+                                    filename=os.path.join(Globals.data_dir, zipfile),
+                                    mimetype='application/zip')
+            elif item['type'] == 'link':
+                contentzip = addLink(content, url)
             # TODO: attach proper metadat to files (probably needs inspection of zip to find out layers and filenames)
             rdfhandler = getUtility(IORDF).getHandler()
             cc = rdfhandler.context(user='Importer',
@@ -276,7 +301,6 @@ def get_current_bioclim_data(data):
                 newzip.write(filename,
                              os.path.join(dirname, os.path.basename(filename)))
         shutil.rmtree(tmp_dir)
-
 
 
 if 'app' in locals():

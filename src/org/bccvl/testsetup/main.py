@@ -211,7 +211,7 @@ def add_enviro_data(app, data):
                                     filename=os.path.join(Globals.data_dir, zipfile),
                                     mimetype='application/zip')
             elif item['type'] == 'link':
-                contentzip = addLink(content, url)
+                contentzip = addLink(content, item['url'])
             # TODO: attach proper metadat to files (probably needs inspection of zip to find out layers and filenames)
             rdfhandler = getUtility(IORDF).getHandler()
             cc = rdfhandler.context(user='Importer',

@@ -1,0 +1,23 @@
+<configure
+        xmlns="http://namespaces.zope.org/zope"
+        xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+        >
+
+    <includeDependencies package="."/>
+
+    <genericsetup:registerProfile
+        name="content"
+        title="BCCVL Test content"
+        directory="profiles/content"
+        description="Setup BCCVL Test content."
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+    />
+
+    <genericsetup:importStep
+        name="org.bccvl.testsetup"
+        title="BCCVL Test content setup handlers"
+        description="BCCVL Test content setup"
+        handler="org.bccvl.testsetup.setuphandlers.setupVarious"
+    />
+
+</configure>

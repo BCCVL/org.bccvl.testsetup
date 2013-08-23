@@ -200,16 +200,23 @@ def add_enviro_data(app, data):
         portal.setupCurrentSkin(app.REQUEST)
         folder = portal.unrestrictedTraverse('{}/{}'.format(bccvldefaults.DATASETS_FOLDER_ID, bccvldefaults.DATASETS_ENVIRONMENTAL_FOLDER_ID))
         for item in data:
-            zipfile =  os.path.basename(item['url'])
+            tmp_dir = mkdtemp(dir=Globals.data_dir)
+            zipfile = os.path.join(Globals.data_dir,
+                                   os.path.basename(item['url']))
+            zipname =  os.path.basename(item['url'])
             content = addItem(folder, title=item['title'],
-                              id=os.path.splitext(zipfile)[0])
+                              id=os.path.splitext(zipname)[0])
             cgraph = IRepositoryMetadata(content)
             cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
                         item['genre']))
             if item['type'] == 'file':
+                # create copy of file, otherwise it may be that ZODB.Blob consumeFile
+                # just moves the file (effectively deleting it at source location)
+                destzip = os.path.join(tmp_dir, zipname)
+                shutil.copyfile(zipfile,  destzip)
                 contentzip = addFile(content,
-                                    filename=os.path.join(Globals.data_dir, zipfile),
-                                    mimetype='application/zip')
+                                     filename=destzip,
+                                     mimetype='application/zip')
             elif item['type'] == 'link':
                 contentzip = addLink(content, item['url'])
             # TODO: attach proper metadat to files (probably needs inspection of zip to find out layers and filenames)
@@ -222,6 +229,7 @@ def add_enviro_data(app, data):
             cc.commit()
 
             transaction.commit()
+            shutil.rmtree(tmp_dir)
     app._p_jar.sync()
 
 
@@ -231,6 +239,7 @@ def add_occurence_data(app):
     with site(portal):
         portal.setupCurrentSkin(app.REQUEST)
         folder = portal.unrestrictedTraverse('{}/{}'.format(bccvldefaults.DATASETS_FOLDER_ID, bccvldefaults.DATASETS_SPECIES_FOLDER_ID))
+        tmp_dir = mkdtemp(dir=Globals.data_dir)
         for dirname in resource_listdir('org.bccvl.testsetup', 'data/species'):
             content = addItem(folder,
                               title=u'Occurence Data for {}'.format(dirname),
@@ -238,9 +247,14 @@ def add_occurence_data(app):
             for data in resource_listdir('org.bccvl.testsetup', 'data/species/' +  dirname):
                 # TODO: files sholud get metadat as well
                 resource = resource_stream('org.bccvl.testsetup', 'data/species/' +  dirname + '/' + data)
+                # create copy of file, otherwise it may be that ZODB.Blob consumeFile
+                # just moves the file (effectively deleting it at source location)
+                tmpfilename = os.path.join(tmp_dir, data)
+                tmpfile = open(tmpfilename, 'w')
+                shutil.copyfileobj(resource,  tmpfile)
+                tmpfile.close()
                 contentfile = addFile(content,
-                                      file=resource,
-                                      filename=unicode(data),
+                                      filename=tmpfilename,
                                       mimetype='text/csv')
 
             cgraph = IRepositoryMetadata(content)
@@ -262,6 +276,7 @@ def add_occurence_data(app):
             cc.commit()
 
             transaction.commit()
+        shutil.rmtree(tmp_dir)
     app._p_jar.sync()
 
 

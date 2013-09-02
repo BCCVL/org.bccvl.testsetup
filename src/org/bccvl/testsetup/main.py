@@ -184,7 +184,7 @@ def add_algorithm(app, data):
     with site(portal):
         portal.setupCurrentSkin(app.REQUEST)
         # TODO: are we acquiring functions folder here? it should be child of portal not datasets
-        folder = portal.unrestrictetedTraverse('{}/{}'.format(bccvldefaults.DATASETS_FOLDER_ID,
+        folder = portal.unrestrictedTraverse('{}/{}'.format(bccvldefaults.DATASETS_FOLDER_ID,
                                                             bccvldefaults.FUNCTIONS_FOLDER_ID))
         for algo in data:
             content = addItem(folder,

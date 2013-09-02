@@ -183,7 +183,8 @@ def add_algorithm(app, data):
     # set plone site as current site to enable local utility lookup
     with site(portal):
         portal.setupCurrentSkin(app.REQUEST)
-        folder = portal.unrestrictedTraverse('{}/{}'.format(bccvldefaults.DATASETS_FOLDER_ID,
+        # TODO: are we acquiring functions folder here? it should be child of portal not datasets
+        folder = portal.unrestrictetedTraverse('{}/{}'.format(bccvldefaults.DATASETS_FOLDER_ID,
                                                             bccvldefaults.FUNCTIONS_FOLDER_ID))
         for algo in data:
             content = addItem(folder,

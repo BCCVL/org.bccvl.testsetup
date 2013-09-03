@@ -2,7 +2,7 @@
 <metadata>
     <version>1001</version>
     <dependencies>
-        <dependency>profile-org.bccvl.site:default</dependency>
-        <dependency>profile-org.bccvl.site.content:content</dependency>
+        <!-- <dependency>profile-org.bccvl.site:default</dependency> -->
+        <!-- <dependency>profile-org.bccvl.site.content:content</dependency> -->
     </dependencies>
 </metadata>

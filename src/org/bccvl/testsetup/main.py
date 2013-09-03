@@ -95,7 +95,7 @@ BIOCLIM_DATA = [
 
 
 ALGORITHM_DATA = [
-    {'title': u"BIOCLIM",
+    {'title': u"Bioclim",
      'id': 'bioclim'
     },
     {'title': u"Boosted Regression Trees",
@@ -163,11 +163,12 @@ def addLink(content, url):
     return content[linkid]
 
 
-def addItem(folder, title, subject=None, description=None, id=None):
+def addItem(folder, title, subject=None, description=None, id=None,
+            type='gu.repository.content.RepositoryItem'):
     if id is not None and id in folder:
         return folder[id]
-    content = createContentInContainer(folder, 'gu.repository.content.RepositoryItem',
-                                       title=title, subjec=subject, id=id)
+    content = createContentInContainer(folder, type,
+                                       title=title, subject=subject, id=id)
     if id is not None and id != content.id:
         # need to commit here, otherwise _p_jar is None and rename fails
         transaction.savepoint(optimistic=True)
@@ -189,7 +190,8 @@ def add_algorithm(app, data):
         for algo in data:
             content = addItem(folder,
                               title=algo['title'],
-                              id=algo['id'])
+                              id=algo['id'],
+                              type='org.bccvl.content.function')
         transaction.commit()
     app._p_jar.sync()
 

@@ -165,12 +165,12 @@ def addLink(content, url):
     return content[linkid]
 
 
-def addItem(folder, title, subject=None, description=None, id=None,
-            type='gu.repository.content.RepositoryItem'):
+def addItem(folder, **kw):
+    if 'portal_type' not in kw:
+        kw['portal_type'] = 'gu.repository.content.RepositoryItem'
     if id is not None and id in folder:
         return folder[id]
-    content = createContentInContainer(folder, type,
-                                       title=title, subject=subject, id=id)
+    content = createContentInContainer(folder, **kw)
     if id is not None and id != content.id:
         # need to commit here, otherwise _p_jar is None and rename fails
         transaction.savepoint(optimistic=True)
@@ -191,9 +191,10 @@ def add_algorithm(app, data):
                                                             bccvldefaults.FUNCTIONS_FOLDER_ID))
         for algo in data:
             content = addItem(folder,
+                              port_type='org.bccvl.content.function',
                               title=algo['title'],
                               id=algo['id'],
-                              type='org.bccvl.content.function')
+                              method=algo['method'])
         transaction.commit()
     app._p_jar.sync()
 

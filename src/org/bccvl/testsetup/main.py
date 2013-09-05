@@ -191,9 +191,9 @@ def add_algorithm(app, data):
                                                             bccvldefaults.FUNCTIONS_FOLDER_ID))
         for algo in data:
             content = addItem(folder,
-                              port_type='org.bccvl.content.function',
                               title=algo['title'],
                               id=algo['id'],
+                              portal_type='org.bccvl.content.function',
                               method=algo['method'])
         transaction.commit()
     app._p_jar.sync()
@@ -211,7 +211,7 @@ def add_enviro_data(app, data):
                                    os.path.basename(item['url']))
             zipname =  os.path.basename(item['url'])
             content = addItem(folder, title=item['title'],
-                              id=os.path.splitext(zipname)[0])
+                              id=os.path.splitext(zipname)[0].encode('utf-8'))
             cgraph = IRepositoryMetadata(content)
             cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
                         item['genre']))

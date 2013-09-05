@@ -168,6 +168,7 @@ def addLink(content, url):
 def addItem(folder, **kw):
     if 'portal_type' not in kw:
         kw['portal_type'] = 'gu.repository.content.RepositoryItem'
+    id = kw.get('id', None)
     if id is not None and id in folder:
         return folder[id]
     content = createContentInContainer(folder, **kw)

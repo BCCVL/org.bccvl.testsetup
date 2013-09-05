@@ -96,10 +96,12 @@ BIOCLIM_DATA = [
 
 ALGORITHM_DATA = [
     {'title': u"Bioclim",
-     'id': 'bioclim'
+     'id': 'bioclim',
+     'method': 'org.bccvl.compute.bioclim.execute'
     },
     {'title': u"Boosted Regression Trees",
      'id': 'brt',
+     'method': 'org.bccvl.compute.brt.execute'
     },
     ]
 

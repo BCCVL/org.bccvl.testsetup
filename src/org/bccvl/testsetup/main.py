@@ -273,6 +273,10 @@ def add_occurence_data(app):
             #      ... and fixup of data discovery in executor
             cgraph.add((cgraph.identifier, BCCPROP['specieslayer'],
                         BCCVOCAB['SpeciesLayerP']))
+            cgraph.add((cgraph.identifier, BCCPROP['specieslayer'],
+                        BCCVOCAB['SpeciesLayerA']))
+            cgraph.add((cgraph.identifier, BCCPROP['specieslayer'],
+                        BCCVOCAB['SpeciesLayerX']))
 
             rdfhandler = getUtility(IORDF).getHandler()
             cc = rdfhandler.context(user='Importer',

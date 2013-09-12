@@ -27,8 +27,7 @@ from Products.CMFCore.tests.base.security import PermissiveSecurityPolicy, Omnip
 from plone.dexterity.utils import createContentInContainer
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from zope.component import getUtility
-from gu.repository.content.interfaces import IRepositoryMetadata
-from gu.z3cform.rdf.interfaces import IORDF
+from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from rdflib import RDF
 from plone.namedfile.file import NamedBlobFile
 # TODO: if item/file id already exists, then just updload/update metadata
@@ -213,7 +212,7 @@ def add_enviro_data(app, data):
             zipname =  os.path.basename(item['url'])
             content = addItem(folder, title=item['title'],
                               id=os.path.splitext(zipname)[0].encode('utf-8'))
-            cgraph = IRepositoryMetadata(content)
+            cgraph = IGraph(content)
             cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
                         item['genre']))
             if item['type'] == 'file':
@@ -264,7 +263,7 @@ def add_occurence_data(app):
                                       filename=tmpfilename,
                                       mimetype='text/csv')
 
-            cgraph = IRepositoryMetadata(content)
+            cgraph = IGraph(content)
             # TODO: fixup data genre
             cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
                         BCCVOCAB['DataGenreSO']))

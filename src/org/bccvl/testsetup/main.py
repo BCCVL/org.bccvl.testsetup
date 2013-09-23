@@ -141,14 +141,12 @@ def addDataset(content, filename, file=None, mimetype='application/octet-stream'
         # TODO: maybe create IStorage adapter for urllib.urlinfo class and use urlopen again
         file = open(filename)
     linkid = content.invokeFactory(type_name='org.bccvl.content.dataset', id=linkid,
-                                   title=unicode(linkid))
+                                   title=content.title)
 
     linkcontent = content[linkid]
     linkcontent.setFormat(mimetype)
     linkcontent.file = NamedBlobFile(contentType=mimetype, filename=unicode(linkid))
     linkcontent.file.data = file
-    #linkcontent.setFilename(filename.encode('utf-8'))
-    #linkcontent.processForm()
     return linkcontent
 
 
@@ -212,9 +210,6 @@ def add_enviro_data(app, data):
             zipname =  os.path.basename(item['url'])
             content = addItem(folder, title=item['title'],
                               id=os.path.splitext(zipname)[0].encode('utf-8'))
-            cgraph = IGraph(content)
-            cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
-                        item['genre']))
             if item['type'] == 'file':
                 # create copy of file, otherwise it may be that ZODB.Blob consumeFile
                 # just moves the file (effectively deleting it at source location)
@@ -225,6 +220,9 @@ def add_enviro_data(app, data):
                                         mimetype='application/zip')
             elif item['type'] == 'link':
                 contentzip = addLink(content, item['url'])
+            cgraph = IGraph(contentzip)
+            cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
+                        item['genre']))
             # TODO: attach proper metadat to files (probably needs inspection of zip to find out layers and filenames)
             rdfhandler = getUtility(IORDF).getHandler()
             cc = rdfhandler.context(user='Importer',
@@ -262,28 +260,22 @@ def add_occurence_data(app):
                 contentfile = addDataset(content,
                                          filename=tmpfilename,
                                          mimetype='text/csv')
-
-            cgraph = IGraph(content)
-            # TODO: fixup data genre
-            cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
-                        BCCVOCAB['DataGenreSO']))
-            # TODO: should tag files properly
-            #      ... needs fixup in query for vocabularies
-            #      ... and fixup of data discovery in executor
-            cgraph.add((cgraph.identifier, BCCPROP['specieslayer'],
-                        BCCVOCAB['SpeciesLayerP']))
-            cgraph.add((cgraph.identifier, BCCPROP['specieslayer'],
-                        BCCVOCAB['SpeciesLayerA']))
-            cgraph.add((cgraph.identifier, BCCPROP['specieslayer'],
-                        BCCVOCAB['SpeciesLayerX']))
-
-            rdfhandler = getUtility(IORDF).getHandler()
-            cc = rdfhandler.context(user='Importer',
-                                    reason="auto import content")
-            # store modified data
-            cc.add(cgraph)
-            # send changeset
-            cc.commit()
+                cgraph = IGraph(contentfile)
+                cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
+                            BCCVOCAB['DataGenreSO']))
+                if 'occurence' in data:
+                    cgraph.add((cgraph.identifier, BCCPROP['specieslayer'],
+                                BCCVOCAB['SpeciesLayerP']))
+                elif 'bkgd' in data:
+                    cgraph.add((cgraph.identifier, BCCPROP['specieslayer'],
+                                BCCVOCAB['SpeciesLayerX']))
+                rdfhandler = getUtility(IORDF).getHandler()
+                cc = rdfhandler.context(user='Importer',
+                                        reason="auto import content")
+                # store modified data
+                cc.add(cgraph)
+                # send changeset
+                cc.commit()
 
             transaction.commit()
         shutil.rmtree(tmp_dir)

@@ -131,7 +131,7 @@ def spoofRequest(app):
     return makerequest(app)
 
 
-def addFile(content, filename, file=None, mimetype='application/octet-stream'):
+def addDataset(content, filename, file=None, mimetype='application/octet-stream'):
     normalizer = getUtility(IFileNameNormalizer)
     linkid = normalizer.normalize(os.path.basename(filename))
     if linkid in content:
@@ -140,7 +140,7 @@ def addFile(content, filename, file=None, mimetype='application/octet-stream'):
         # can't handle url's in _setData of blob has to be a local file
         # TODO: maybe create IStorage adapter for urllib.urlinfo class and use urlopen again
         file = open(filename)
-    linkid = content.invokeFactory(type_name='File', id=linkid,
+    linkid = content.invokeFactory(type_name='org.bccvl.content.dataset', id=linkid,
                                    title=unicode(linkid))
 
     linkcontent = content[linkid]
@@ -220,9 +220,9 @@ def add_enviro_data(app, data):
                 # just moves the file (effectively deleting it at source location)
                 destzip = os.path.join(tmp_dir, zipname)
                 shutil.copyfile(zipfile,  destzip)
-                contentzip = addFile(content,
-                                     filename=destzip,
-                                     mimetype='application/zip')
+                contentzip = addDataset(content,
+                                        filename=destzip,
+                                        mimetype='application/zip')
             elif item['type'] == 'link':
                 contentzip = addLink(content, item['url'])
             # TODO: attach proper metadat to files (probably needs inspection of zip to find out layers and filenames)
@@ -259,9 +259,9 @@ def add_occurence_data(app):
                 tmpfile = open(tmpfilename, 'w')
                 shutil.copyfileobj(resource,  tmpfile)
                 tmpfile.close()
-                contentfile = addFile(content,
-                                      filename=tmpfilename,
-                                      mimetype='text/csv')
+                contentfile = addDataset(content,
+                                         filename=tmpfilename,
+                                         mimetype='text/csv')
 
             cgraph = IGraph(content)
             # TODO: fixup data genre

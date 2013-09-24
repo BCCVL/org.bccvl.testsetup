@@ -263,7 +263,7 @@ def add_occurence_data(app):
                 cgraph = IGraph(contentfile)
                 cgraph.add((cgraph.identifier, BCCPROP['datagenre'],
                             BCCVOCAB['DataGenreSO']))
-                if 'occurence' in data:
+                if 'occur' in data:
                     cgraph.add((cgraph.identifier, BCCPROP['specieslayer'],
                                 BCCVOCAB['SpeciesLayerP']))
                 elif 'bkgd' in data:

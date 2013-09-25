@@ -115,7 +115,7 @@ def main(app):
     newSecurityManager(None, system)
     get_current_bioclim_data(BIOCLIM_DATA)
     add_enviro_data(app, BIOCLIM_DATA)
-    add_occurence_data(app)
+    add_occurrence_data(app)
     add_algorithm(app, ALGORITHM_DATA)
 
 
@@ -237,7 +237,7 @@ def add_enviro_data(app, data):
     app._p_jar.sync()
 
 
-def add_occurence_data(app):
+def add_occurrence_data(app):
     portal = app.unrestrictedTraverse('bccvl')
     # set plone site as current site to enable local utility lookup
     with site(portal):
@@ -246,7 +246,7 @@ def add_occurence_data(app):
         tmp_dir = mkdtemp(dir=Globals.data_dir)
         for dirname in resource_listdir('org.bccvl.testsetup', 'data/species'):
             content = addItem(folder,
-                              title=u'Occurence Data for {}'.format(dirname),
+                              title=u'Occurrence Data for {}'.format(dirname),
                               id=dirname.encode('utf-8'))
             for data in resource_listdir('org.bccvl.testsetup', 'data/species/' +  dirname):
                 # TODO: files sholud get metadat as well

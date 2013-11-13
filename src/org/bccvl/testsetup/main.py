@@ -96,11 +96,11 @@ BIOCLIM_DATA = [
 ALGORITHM_DATA = [
     {'title': u"Bioclim",
      'id': 'bioclim',
-     'method': 'org.bccvl.compute.bioclim.execute'
+     'compute_function': 'org.bccvl.compute.bioclim'
     },
     {'title': u"Boosted Regression Trees",
      'id': 'brt',
-     'method': 'org.bccvl.compute.brt.execute'
+     'compute_function': 'org.bccvl.compute.brt'
     },
     ]
 
@@ -192,7 +192,7 @@ def add_algorithm(app, data):
                               title=algo['title'],
                               id=algo['id'],
                               portal_type='org.bccvl.content.function',
-                              method=algo['method'])
+                              compute_function=algo['compute_function'])
         transaction.commit()
     app._p_jar.sync()
 

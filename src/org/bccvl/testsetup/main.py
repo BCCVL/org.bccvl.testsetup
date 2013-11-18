@@ -93,6 +93,11 @@ BIOCLIM_DATA = [
     ]
 
 
+def _algorithm(id, title, compute_function):
+    return dict(
+        id=id, title=title, compute_function=compute_function,
+    )
+
 ALGORITHM_DATA = [
     {'title': u"Bioclim",
      'id': 'bioclim',
@@ -102,6 +107,9 @@ ALGORITHM_DATA = [
      'id': 'brt',
      'compute_function': 'org.bccvl.compute.brt'
     },
+    _algorithm('glm', u"Generalized Linear Model", 'org.bccvl.compute.glm'),
+    _algorithm('cta', u"Classification Tree", 'org.bccvl.compute.cta'),
+    _algorithm('ann', u"Artificial Neural Network", 'org.bccvl.compute.ann'),
     ]
 
 

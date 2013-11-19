@@ -1,0 +1,5 @@
+{
+  "_type": "org.bccvl.content.function",
+  "title": "Bioclim",
+  "compute_function": "org.bccvl.compute.bioclim"
+}

@@ -1,0 +1,12 @@
+{
+  "_type": "org.bccvl.content.dataset",
+  "title": "ABT occurrence data",
+  "file": {
+          "file": "occur.csv",
+          "contenttype": "text/csv",
+          "filename": "occur.csv"
+          },
+  "_rdf": {
+          "file": "occur.ttl",
+          "contenttype": "text/turtle"}
+}

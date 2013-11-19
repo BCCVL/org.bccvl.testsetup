@@ -1,0 +1,5 @@
+{
+  "_type": "org.bccvl.content.function",
+  "title": "Generalized Linear Model",
+  "compute_function": "org.bccvl.compute.glm"
+}

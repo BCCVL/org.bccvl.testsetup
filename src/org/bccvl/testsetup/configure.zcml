@@ -1,6 +1,7 @@
 <configure
         xmlns="http://namespaces.zope.org/zope"
         xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+        xmlns:transmogrifier="http://namespaces.plone.org/transmogrifier"
         >
 
     <includeDependencies package="."/>
@@ -19,5 +20,23 @@
         description="BCCVL Test content setup"
         handler="org.bccvl.testsetup.setuphandlers.setupVarious"
     />
+
+    <transmogrifier:registerConfig
+        name="org.bccvl.testsetup.dataimport"
+        title="Import real test data"
+        description="Import real test data for real world testing"
+        configuration="testdataimport.cfg"
+        />
+
+  <utility
+     component=".transmogrify.DownloadFile"
+     name="org.bccvl.testsetup.transmogrify.downloader"
+     />
+
+  <utility
+     component=".transmogrify.ArchiveItemRDF"
+     name="org.bccvl.testsetup.transmogrify.rdflayerdata"
+     />
+
 
 </configure>

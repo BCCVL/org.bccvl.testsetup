@@ -1,0 +1,12 @@
+{
+  "_type": "org.bccvl.content.dataset",
+  "title": "Climate Projection RCP3D based on CCCma-CGCGM3, 2.5arcmin (~5km)",
+  "file": {
+      "contenttype": "application/zip",
+      "url": "http://wallaceinitiative.org/climate_2012/output/australia-5km/RCP3PD_cccma-cgcm31.zip"
+  },
+  "_rdf": {
+      "file": "RCP3PD_cccma-cgcm31.ttl",
+      "contenttype": "text/turtle"
+  }
+}

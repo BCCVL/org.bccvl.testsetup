@@ -1,0 +1,12 @@
+{
+  "_type": "org.bccvl.content.dataset",
+  "title": "ABT absence data",
+  "file": {
+          "file": "bkgd.csv",
+          "contenttype": "text/csv",
+          "filename": "bkgd.csv"
+          },
+  "_rdf": {
+          "file": "bkgd.ttl",
+          "contenttype": "text/turtle"}
+}

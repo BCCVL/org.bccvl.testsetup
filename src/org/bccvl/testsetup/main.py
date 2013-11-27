@@ -50,21 +50,6 @@ except ImportError:
             setSite(old_site)
 
 LOG = logging.getLogger('org.bccvl.testsetup')
-root_logger = logging.getLogger()
-root_logger.setLevel(logging.INFO)
-
-handler = logging.StreamHandler(sys.stdout)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-root_logger.addHandler(handler)
-
-logging.getLogger('gu.plone.rdf.subscriber').setLevel(logging.WARN)
-logging.getLogger('gu.plone.rdf.repositorymetadata').setLevel(logging.WARN)
-logging.getLogger('gu.z3cform.rdf.ordfhandler').setLevel(logging.WARN)
-logging.getLogger('ZODB.Connection').setLevel(logging.WARN)
-logging.getLogger('ordf.handler.httpfourstore').setLevel(logging.WARN)
-# logging.getLogger('').setLevel(logging.WARN)
-# logging.getLogger('').setLevel(logging.WARN)
 
 
 def import_data(site):
@@ -88,6 +73,22 @@ def spoofRequest(app):
 
 
 def main(app):
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+
+    handler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    root_logger.addHandler(handler)
+
+    logging.getLogger('gu.plone.rdf.subscriber').setLevel(logging.WARN)
+    logging.getLogger('gu.plone.rdf.repositorymetadata').setLevel(logging.WARN)
+    logging.getLogger('gu.z3cform.rdf.ordfhandler').setLevel(logging.WARN)
+    logging.getLogger('ZODB.Connection').setLevel(logging.WARN)
+    logging.getLogger('ordf.handler.httpfourstore').setLevel(logging.WARN)
+    # logging.getLogger('').setLevel(logging.WARN)
+    # logging.getLogger('').setLevel(logging.WARN)
+
     app = spoofRequest(app)
     newSecurityManager(None, system)
     # TODO: works only if site id is bccvl

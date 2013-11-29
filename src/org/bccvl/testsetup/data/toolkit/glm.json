@@ -2,5 +2,5 @@
   "_type": "org.bccvl.content.function",
   "title": "Generalized Linear Model",
   "method": "org.bccvl.compute.glm.execute",
-  "schema": "org.bccvl.compute.glm.ParametersGlm"
+  "schema": "org.bccvl.compute.glm.IParametersGlm"
 }

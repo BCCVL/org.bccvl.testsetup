@@ -2,5 +2,5 @@
   "_type": "org.bccvl.content.function",
   "title": "Boosted Regression Tree",
   "method": "org.bccvl.compute.brt.execute",
-  "method": "org.bccvl.compute.brt.ParametersBRT"
+  "schema": "org.bccvl.compute.brt.IParametersBRT"
 }

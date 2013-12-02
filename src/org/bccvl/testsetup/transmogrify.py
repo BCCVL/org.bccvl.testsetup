@@ -95,6 +95,7 @@ class DownloadFile(object):
             urllib.urlretrieve(item['file']['url'], zipfile)
         # We have the file now, let's replace 'url' with 'file'
         del item['file']['url']
+        item['file']['filename'] = zipname
         item['file']['file'] = zipfile
 
     def convertToGTiff(self, item):

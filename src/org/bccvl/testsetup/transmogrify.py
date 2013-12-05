@@ -11,8 +11,8 @@ import re
 import logging
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from zope.component import getUtility
-from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
-from tempfile import mkstemp, mkdtemp
+from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, NFO, BIOCLIM
+from tempfile import mkdtemp
 from zipfile import ZipFile, ZIP_DEFLATED
 import subprocess
 from copy import deepcopy
@@ -20,8 +20,6 @@ from cStringIO import StringIO
 import Globals
 from rdflib import Namespace, Literal, Graph, RDF
 from ordf.namespace import DC
-NFO = Namespace(u'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#')
-BIOCLIM = Namespace(u'http://namespaces.bccvl.org.au/bioclim#')
 
 LOG = logging.getLogger(__name__)
 

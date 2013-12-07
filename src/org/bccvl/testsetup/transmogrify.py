@@ -18,7 +18,7 @@ import subprocess
 from copy import deepcopy
 from cStringIO import StringIO
 import Globals
-from rdflib import Namespace, Literal, Graph, RDF
+from rdflib import Literal, Graph, RDF
 from ordf.namespace import DC
 
 LOG = logging.getLogger(__name__)

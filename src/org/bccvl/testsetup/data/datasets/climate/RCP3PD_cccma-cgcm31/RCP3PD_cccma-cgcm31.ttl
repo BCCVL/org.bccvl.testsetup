@@ -9,7 +9,7 @@
 _:current a cvocab:Dataset, owl:Thing ;
     bccprop:datagenre bccvocab:DataGenreFC ;
     bccprop:resolution bccvocab:Resolution2_5m ;
-    bccprop:emmissionscenario be:RCP3D ;
+    bccprop:emissionscenario be:RCP3D ;
     bccprop:gcm bg:cccma-cgcm31 ;
 #    bccprop:hasArchiveItem ... ? -> nfo:ArchiveItem
     .

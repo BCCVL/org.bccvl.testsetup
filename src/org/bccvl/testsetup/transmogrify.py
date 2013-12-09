@@ -157,7 +157,8 @@ class DownloadFile(object):
         item['_path'] = os.path.dirname(item['_path']) + "/" + folder
         # update file data and contents
         #del item['file']['url']  # remove download location
-        item['file']['file'] = folder + '.zip'  # set new filename
+        item['file']['filename'] = folder + '.zip'  # set new filename
+        item['file']['file'] = folder + '.zip'  # set new file
         newfile = StringIO()
         item['_archiveitems'] = []
         # zip content and add to item['_files']

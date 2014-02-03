@@ -1,0 +1,6 @@
+{
+  "_type": "org.bccvl.content.function",
+  "title": "Domain",
+  "method": "org.bccvl.compute.domain.execute",
+  "schema": "org.bccvl.compute.domain.IParametersDomain"
+}

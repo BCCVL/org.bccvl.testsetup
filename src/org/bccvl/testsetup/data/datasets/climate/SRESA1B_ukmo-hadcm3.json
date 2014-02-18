@@ -1,0 +1,12 @@
+{
+  "_type": "org.bccvl.content.dataset",
+  "title": "Climate Projection SRESA1B based on UKMO-HadCM3, 2.5arcmin (~5km)",
+  "file": {
+      "contenttype": "application/zip",
+      "url": "http://wallaceinitiative.org/climate_2012/output/australia-5km/SRESA1B_ukmo-hadcm3.zip"
+  },
+  "_rdf": {
+      "file": "SRESA1B_ukmo-hadcm3.ttl",
+      "contenttype": "text/turtle"
+  }
+}

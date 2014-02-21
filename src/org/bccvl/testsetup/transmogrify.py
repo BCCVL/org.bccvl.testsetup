@@ -148,7 +148,7 @@ class DownloadFile(object):
             if rdffile:
                 graph = Graph()
                 graph.parse(data=item['_files'][rdffile]['data'], format='turtle')
-                graph.add((graph.identifier, DC['temporal'], Literal("start=%s; end=%s; scheme=W3C-DTF" % (year, year), datatype=DC['Period'])))
+                graph.add((graph.identifier, DC['temporal'], Literal("start=%s; end=%s; scheme=W3C-DTF;" % (year, year), datatype=DC['Period'])))
                 item['_files'][rdffile]['data'] = graph.serialize(format='turtle')
         # update item title as well
         if year:

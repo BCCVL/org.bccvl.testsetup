@@ -111,7 +111,8 @@ class DownloadFile(object):
             ret = subprocess.call(cmd)
             if ret != 0:
                 LOG.fatal('Uncompressing asc files for %s failed', zipfile)
-                raise Exception('Uncompressing asc files for %s failed', zipfile)
+                raise Exception('Uncompressing asc files for %s  failed',
+                                zipfile)
         # convert all files to geotiff
         for ascfile in glob.glob(os.path.join(tmpdir, '*', '*.asc')):
             tfile, _ = os.path.splitext(ascfile)
@@ -147,8 +148,11 @@ class DownloadFile(object):
             rdffile = item.get('_rdf', {}).get('file')
             if rdffile:
                 graph = Graph()
-                graph.parse(data=item['_files'][rdffile]['data'], format='turtle')
-                graph.add((graph.identifier, DC['temporal'], Literal("start=%s; end=%s; scheme=W3C-DTF;" % (year, year), datatype=DC['Period'])))
+                graph.parse(data=item['_files'][rdffile]['data'],
+                            format='turtle')
+                graph.add((graph.identifier, DC['temporal'],
+                           Literal("start=%s; end=%s; scheme=W3C-DTF;" % (year, year),
+                                   datatype=DC['Period'])))
                 item['_files'][rdffile]['data'] = graph.serialize(format='turtle')
         # update item title as well
         if year:
@@ -163,7 +167,7 @@ class DownloadFile(object):
         item['_archiveitems'] = []
         # zip content and add to item['_files']
         with ZipFile(newfile, 'w', ZIP_DEFLATED) as newzip:
-            for filename in sorted(glob.glob(os.path.join(tmpdir,  folder,  '*.tif'))):
+            for filename in sorted(glob.glob(os.path.join(tmpdir, folder, '*.tif'))):
                 _, dirname = os.path.split(os.path.dirname(filename))
                 zipfilename = os.path.join(dirname, os.path.basename(filename))
                 newzip.write(filename, zipfilename)
@@ -232,12 +236,17 @@ class ArchiveItemRDF(object):
                 #archiveinfo = getFileGraph(obj)
                 ordf = getUtility(IORDF)
                 agraph = Graph(identifier=ordf.generateURI())
-                agraph.add((agraph.identifier, NFO['fileName'], Literal(aitem['filename'])))
-                agraph.add((agraph.identifier, NFO['fileSize'], Literal(aitem['filesize'])))
-                agraph.add((agraph.identifier, RDF['type'], NFO['ArchiveItem']))
+                agraph.add((agraph.identifier, NFO['fileName'],
+                            Literal(aitem['filename'])))
+                agraph.add((agraph.identifier, NFO['fileSize'],
+                            Literal(aitem['filesize'])))
+                agraph.add((agraph.identifier, RDF['type'],
+                            NFO['ArchiveItem']))
                 if 'bioclim' in aitem:
-                    agraph.add((agraph.identifier, BIOCLIM['bioclimVariable'], aitem['bioclim']))
-                graph.add((graph.identifier, BCCPROP['hasArchiveItem'], agraph.identifier))
+                    agraph.add((agraph.identifier, BIOCLIM['bioclimVariable'],
+                                aitem['bioclim']))
+                graph.add((graph.identifier, BCCPROP['hasArchiveItem'],
+                           agraph.identifier))
                 ordf.getHandler().put(agraph)
             ordf.getHandler().put(graph)
             yield item

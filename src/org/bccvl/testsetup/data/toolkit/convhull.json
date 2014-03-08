@@ -3,4 +3,5 @@
   "title": "Convex Hull",
   "method": "org.bccvl.compute.convhull.execute",
   "schema": "org.bccvl.compute.convhull.IParametersConvhull"
+  "_transitions": "publish"
 }

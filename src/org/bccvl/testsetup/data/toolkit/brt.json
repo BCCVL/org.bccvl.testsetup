@@ -3,4 +3,5 @@
   "title": "Boosted Regression Tree",
   "method": "org.bccvl.compute.brt.execute",
   "schema": "org.bccvl.compute.brt.IParametersBRT"
+  "_transitions": "publish"
 }

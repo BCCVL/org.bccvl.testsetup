@@ -3,4 +3,5 @@
   "title": "Domain",
   "method": "org.bccvl.compute.domain.execute",
   "schema": "org.bccvl.compute.domain.IParametersDomain"
+  "_transitions": "publish"
 }

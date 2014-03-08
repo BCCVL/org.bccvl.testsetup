@@ -3,4 +3,5 @@
   "title": "Circles",
   "method": "org.bccvl.compute.circles.execute",
   "schema": "org.bccvl.compute.circles.IParametersCircles"
+  "_transitions": "publish"
 }

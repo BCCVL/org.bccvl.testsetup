@@ -3,4 +3,5 @@
   "title": "Classification Tree",
   "method": "org.bccvl.compute.cta.execute",
   "schema": "org.bccvl.compute.cta.IParametersCTA"
+  "_transitions": "publish"
 }

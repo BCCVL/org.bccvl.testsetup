@@ -6,6 +6,7 @@
           "contenttype": "text/csv",
           "filename": "bkgd.csv"
           },
+  "_transitions": "publish",
   "_rdf": {
           "file": "bkgd.ttl",
           "contenttype": "text/turtle"}

@@ -5,6 +5,7 @@
       "contenttype": "application/zip",
       "url": "http://wallaceinitiative.org/climate_2012/output/australia-5km/SRESA1B_ukmo-hadcm3.zip"
   },
+  "_transitions": "publish",
   "_rdf": {
       "file": "SRESA1B_ukmo-hadcm3.ttl",
       "contenttype": "text/turtle"

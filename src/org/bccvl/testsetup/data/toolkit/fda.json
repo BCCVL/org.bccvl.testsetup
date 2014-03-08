@@ -3,4 +3,5 @@
   "title": "Flexible Discriminant Analysis",
   "method": "org.bccvl.compute.fda.execute",
   "schema": "org.bccvl.compute.fda.IParametersFDA"
+  "_transitions": "publish"
 }

@@ -3,4 +3,5 @@
   "title": "Bioclim",
   "method": "org.bccvl.compute.bioclim.execute",
   "schema": "org.bccvl.compute.bioclim.IParametersBioclim"
+  "_transitions": "publish"
 }

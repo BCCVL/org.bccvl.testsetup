@@ -3,4 +3,5 @@
   "title": "Artificial Neural Network",
   "method": "org.bccvl.compute.ann.execute",
   "schema": "org.bccvl.compute.ann.IParametersANN"
+  "_transitions": "publish"
 }

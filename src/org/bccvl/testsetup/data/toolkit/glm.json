@@ -3,4 +3,5 @@
   "title": "Generalized Linear Model",
   "method": "org.bccvl.compute.glm.execute",
   "schema": "org.bccvl.compute.glm.IParametersGlm"
+  "_transitions": "publish"
 }

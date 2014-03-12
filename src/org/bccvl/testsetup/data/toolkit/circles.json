@@ -2,6 +2,10 @@
   "_type": "org.bccvl.content.function",
   "title": "Circles",
   "method": "org.bccvl.compute.circles.execute",
-  "schema": "org.bccvl.compute.circles.IParametersCircles"
+  "interface": "org.bccvl.compute.circles.IParametersCircles",
+  "intperpreter": "R",
+  "script": {"filename": "circles.R"},
+  "schema": {"filename": "circles.xml"},
+  "_fileattributes": ["script", "schema"],
   "_transitions": "publish"
 }

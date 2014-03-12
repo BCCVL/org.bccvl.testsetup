@@ -2,6 +2,10 @@
   "_type": "org.bccvl.content.function",
   "title": "Classification Tree",
   "method": "org.bccvl.compute.cta.execute",
-  "schema": "org.bccvl.compute.cta.IParametersCTA"
+  "interface": "org.bccvl.compute.cta.IParametersCTA",
+  "intperpreter": "R",
+  "script": {"filename": "cta.R"},
+  "schema": {"filename": "cta.xml"},
+  "_fileattributes": ["script", "schema"],
   "_transitions": "publish"
 }

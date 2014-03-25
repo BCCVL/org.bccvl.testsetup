@@ -1,6 +1,0 @@
-{
-  "_type": "org.bccvl.content.function",
-  "title": "Maximum Entropy Modeling",
-  "method": "org.bccvl.compute.maxent.execute",
-  "schema": "org.bccvl.compute.maxent.IParametersMaxent"
-}

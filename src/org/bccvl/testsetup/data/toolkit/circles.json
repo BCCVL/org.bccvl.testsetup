@@ -1,6 +1,0 @@
-{
-  "_type": "org.bccvl.content.function",
-  "title": "Circles",
-  "method": "org.bccvl.compute.circles.execute",
-  "schema": "org.bccvl.compute.circles.IParametersCircles"
-}

@@ -5,6 +5,7 @@
       "contenttype": "application/zip",
       "url": "http://wallaceinitiative.org/climate_2012/output/australia-5km/current.zip"
   },
+  "_transitions": "publish",
   "_rdf": {
       "file": "current_76to05_2.5.ttl",
       "contenttype": "text/turtle"

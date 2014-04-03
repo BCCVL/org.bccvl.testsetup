@@ -1,6 +1,0 @@
-{
-  "_type": "org.bccvl.content.function",
-  "title": "Artificial Neural Network",
-  "method": "org.bccvl.compute.ann.execute",
-  "schema": "org.bccvl.compute.ann.IParametersANN"
-}

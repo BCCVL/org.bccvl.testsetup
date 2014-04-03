@@ -5,6 +5,7 @@
       "contenttype": "application/zip",
       "url": "http://wallaceinitiative.org/climate_2012/output/australia-5km/RCP3PD_cccma-cgcm31.zip"
   },
+  "_transitions": "publish",
   "_rdf": {
       "file": "RCP3PD_cccma-cgcm31.ttl",
       "contenttype": "text/turtle"

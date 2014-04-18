@@ -3,37 +3,21 @@ from collective.transmogrifier.interfaces import ISectionBlueprint
 from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.utils import defaultMatcher
 import urllib
-import glob
 import os
 import os.path
-import shutil
 import re
 import logging
+import shutil
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from zope.component import getUtility
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, NFO, BIOCLIM
 from tempfile import mkdtemp
-from zipfile import ZipFile, ZIP_DEFLATED
-import subprocess
-from copy import deepcopy
+from zipfile import ZipFile
 from cStringIO import StringIO
-import Globals
 from rdflib import Literal, Graph, RDF
 from ordf.namespace import DC
 
 LOG = logging.getLogger(__name__)
-
-# def download_section(....):
-
-#     go through item['file']:
-#       if 'url':
-#            download file, convert to tif,
-#            rezip,  store in cache,
-#            set 'filename' and load contents int '_file'
-#       if download file contains more folders:
-#           and they have ..._20xx / bioclim_...asc pattern
-#           then yield more than one item frome here
-#           update year in metadata
 
 
 @provider(ISectionBlueprint)
@@ -51,6 +35,26 @@ class DownloadFile(object):
         # keys for sections further down the chain
         self.pathkey = options.get('path-key', '_path').strip()
         self.fileskey = options.get('files-key', '_files').strip()
+        # get filters from configuration
+        self.gcm = set(options.get('gcm', "").split())
+        self.emsc = set(options.get('emsc', "").split())
+        self.year = set(options.get('year', "").split())
+        # A temporary directory to store downloaded files
+        self.tmpdir = None
+
+    def skip_item(self, item):
+        if not 'url' in item['file']:
+            # filter only downloadable content
+            return False
+        # TODO: use path-key
+        itemid = item['_path'].split('/')[-1]
+        if self.gcm and not any((gcm in itemid for gcm in self.gcm)):
+            return True
+        if self.emsc and not any((emsc in itemid for emsc in self.emsc)):
+            return True
+        if self.year and not any((year in itemid for year in self.year)):
+            return True
+        return False
 
     def __iter__(self):
         for item in self.previous:
@@ -59,122 +63,81 @@ class DownloadFile(object):
             if 'file' not in item:
                 yield item
                 continue
+            # only skip items in climate layer
+            if '/climate/' in item['_path'] and self.skip_item(item):
+                # we are only filtering items with file
+                LOG.info("Skip item %s", item['_path'])
+                continue
             if item['file'].get('contenttype') != 'application/zip':
                 yield item
                 continue
             # do we have a 'url' to fetch?
             if 'url' in item['file']:
                 self.downloadData(item)
-            # TODO: check if this is really a zip before we proceed
-            # extract zip
-            # create a zip for each folder and yield the item
-            tmpdir = self.convertToGTiff(item)
-            for folder in os.listdir(tmpdir):
-                if not os.path.isdir(os.path.join(tmpdir, folder)):
-                    # should not happen with current data
-                    continue
-                newitem = deepcopy(item)
-                # Update Item data
-                self.updateItemData(newitem, tmpdir, folder)
-                LOG.info("Yield new item %s", newitem['_path'])
-                yield newitem
-            shutil.rmtree(tmpdir)
+            # TODO: check if update works
+            self.updateItemData(item)
+            yield item
+            # clean up downloaded file
+            if self.tmpdir and os.path.exists(self.tmpdir):
+                LOG.info('Remove temp folder %s', self.tmpdir)
+                shutil.rmtree(self.tmpdir)
+                self.tmpdir = None
 
     def downloadData(self, item):
-        #tmp_dir = mkdtemp(dir=Globals.data_dir)
-        zipdir = os.path.join(Globals.data_dir, 'testsetup')
-        if not os.path.isdir(zipdir):
-            os.mkdir(zipdir)
+        self.tmpdir = mkdtemp('testsetup')
+        # use basename from download url as filename
         zipname = os.path.basename(item['file']['url'])
-        zipfile = os.path.join(Globals.data_dir,
-                               'testsetup',
-                               zipname)
+        # covert to absolute path
+        zipfile = os.path.join(self.tmpdir, zipname)
+        # check if file exists (shouldn't)
         if not os.path.exists(zipfile):
+            LOG.info('Download %s to %s', item['file']['url'], zipfile)
+            # TODO: 3rd argument could be report hook, which is a method that
+            #       need to accet 3 params: numblocks, bytes per block, total size(-1)
             urllib.urlretrieve(item['file']['url'], zipfile)
         # We have the file now, let's replace 'url' with 'file'
         del item['file']['url']
         item['file']['filename'] = zipname
         item['file']['file'] = zipfile
 
-    def convertToGTiff(self, item):
-        tmpdir = mkdtemp(dir=Globals.data_dir)
-        zipfile = item['file']['file']
-        if zipfile in item['_files']:
-            zipfile = StringIO(item['_files'][zipfile]['data'])
-        with ZipFile(zipfile, 'r') as zip:
-            zip.extractall(path=tmpdir)
-        # gunzip all .asc.gz files
-        gzglob = glob.glob(os.path.join(tmpdir, '*', '*.gz'))
-        if gzglob:
-            cmd = ['gunzip']
-            cmd.extend(gzglob)
-            ret = subprocess.call(cmd)
-            if ret != 0:
-                LOG.fatal('Uncompressing asc files for %s failed', zipfile)
-                raise Exception('Uncompressing asc files for %s  failed',
-                                zipfile)
-        # convert all files to geotiff
-        for ascfile in glob.glob(os.path.join(tmpdir, '*', '*.asc')):
-            tfile, _ = os.path.splitext(ascfile)
-            tfile += '.tif'
-            cmd = ['gdal_translate', '-of', 'GTiff', ascfile,  tfile]
-            ret = subprocess.call(cmd)
-            if ret != 0:
-                LOG.fatal('Conversion to GeoTiff for %s failed', ascfile)
-                raise Exception('Conversion to GeoTiff for %s failed', ascfile)
-        return tmpdir
-
-    def getArchiveItem(self, filename, zipfilename):
+    def getArchiveItem(self, zipinfo):
         item = {
-            'filename': zipfilename,
-            'filesize': str(os.path.getsize(filename))
+            'filename': zipinfo.filename,
+            'filesize': zipinfo.file_size,
             }
-        match = re.match(r'.*bioclim_(\d\d).tif', zipfilename)
+        match = re.match(r'.*bioclim_(\d\d).tif', zipinfo.filename)
         if match:
             bid = match.group(1)
             item['bioclim'] = BIOCLIM['B' + bid]
         return item
 
-    def updateItemData(self, item, tmpdir, folder):
+    def updateItemData(self, item):
         '''
         item: current metadata
         folder: folder name of to zip data
         '''
-        # extract year
-        year = None
-        match = re.match(r'.*(\d\d\d\d)$', folder)
-        if match:
-            year = match.group(1)
-            rdffile = item.get('_rdf', {}).get('file')
-            if rdffile:
-                graph = Graph()
-                graph.parse(data=item['_files'][rdffile]['data'],
-                            format='turtle')
-                graph.add((graph.identifier, DC['temporal'],
-                           Literal("start=%s; end=%s; scheme=W3C-DTF;" % (year, year),
-                                   datatype=DC['Period'])))
-                item['_files'][rdffile]['data'] = graph.serialize(format='turtle')
-        # update item title as well
-        if year:
-            item['title'] = ' - '.join((item['title'], year))
-        # update item path
-        item['_path'] = os.path.dirname(item['_path']) + "/" + folder
         # update file data and contents
-        #del item['file']['url']  # remove download location
-        item['file']['filename'] = folder + '.zip'  # set new filename
-        item['file']['file'] = folder + '.zip'  # set new file
-        newfile = StringIO()
         item['_archiveitems'] = []
-        # zip content and add to item['_files']
-        with ZipFile(newfile, 'w', ZIP_DEFLATED) as newzip:
-            for filename in sorted(glob.glob(os.path.join(tmpdir, folder, '*.tif'))):
-                _, dirname = os.path.split(os.path.dirname(filename))
-                zipfilename = os.path.join(dirname, os.path.basename(filename))
-                newzip.write(filename, zipfilename)
-                # add _archiveitems metadata for ArchiveItemRDF blueprint
-                item['_archiveitems'].append(self.getArchiveItem(filename, zipfilename))
-        item['_files'][folder + '.zip'] = {
-            'data': newfile.getvalue()
+        # check if we have the file already or have to read it
+        filename = item['file']['file']
+        if filename in item['_files']:
+            filedict = item['_files'][filename]
+            zipfile = StringIO(filedict['data'])
+        else:
+            zipfile = filename
+        # read zip contents and generate archiveitems metadat
+        zipfile = ZipFile(zipfile, 'r')
+        for zipinfo in zipfile.infolist():
+            if zipinfo.filename.endswith('/'):
+                # skip directories
+                continue
+            # add _archiveitems metadata for ArchiveItemRDF blueprint
+            item['_archiveitems'].append(self.getArchiveItem(zipinfo))
+        # in case we haven't read file into item data
+        if filename not in item['_files']:
+            # TODO: there has to be a better way than reading the whole file in
+            item['_files'][filename] = {
+                'data': open(filename).read()
             }
 
 
@@ -197,6 +160,7 @@ class ArchiveItemRDF(object):
     def __iter__(self):
         for item in self.previous:
             LOG.info("Check for archiveitem %s", item['_path'])
+
             pathkey = self.pathkey(*item.keys())[0]
             if not pathkey:
                 yield item
@@ -228,6 +192,9 @@ class ArchiveItemRDF(object):
             # TODO: check if file is already in list?
             if (graph.value(graph.identifier, BCCPROP['hasArchiveItem'])):
                 # We have already archiveitems.
+                # Don't ovverride information in it.
+                # TODO: maybe try to match existing graphs with to be created?
+                # TODO: or update existing graphs, or delete all archiveitems and create new ones'
                 yield item
                 continue
             # extract year

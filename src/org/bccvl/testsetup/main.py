@@ -52,12 +52,16 @@ except ImportError:
 LOG = logging.getLogger('org.bccvl.testsetup')
 
 
-def import_data(site):
+def import_data(site, params):
     transmogrifier = Transmogrifier(site)
+    options = {}
+    for opt in ('gcm', 'emsc', 'year'):
+        if opt in params:
+            options[opt] = '\n'.join(params[opt])
     transmogrifier(u'org.bccvl.testsetup.dataimport',
-                   source={'path': 'org.bccvl.testsetup:data'})
+                   source={'path': 'org.bccvl.testsetup:data'},
+                   downloader=options)
     transaction.commit()
-
 
 
 def spoofRequest(app):
@@ -72,7 +76,7 @@ def spoofRequest(app):
     return makerequest(app)
 
 
-def main(app):
+def main(app, params):
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
 
@@ -95,24 +99,67 @@ def main(app):
     portal = app.unrestrictedTraverse('bccvl')
     # we didn't traverse, so we have to set the proper site
     with site(portal):
-        import_data(portal)
+        import_data(portal, params)
 
 
+def parse_args(args):
+    arglist = {'--gcm': 'gcm',
+               '--emsc': 'emsc',
+               '--year': 'year'}
+    result = {}
+    for i in xrange(0, len(args), 2):
+        try:
+            name = args[i].strip()
+            i += 1
+            value = args[i].strip()
+            if name in arglist:
+                # TODO: validate value based on possible values for name
+                key = arglist[name]
+                if key not in result:
+                    result[key] = set()
+                result[key].add(value)
+                # break out here... everything below is error handling
+                continue
+        except Exception as e:
+            print "Error:", e
+        # if we reach this then there was an error
+        result['help'] = set()
+        break
+    return result
 
 
-BIOCLIM_DATA = [
-    {'title': u'Climate Projection RCP3D based on CCCma-CGCGM3, 0.5arcmin (~1km)',
-     'agency': u'CCCma',
-     'model': u'CGCM3',
-     'url': u'http://wallaceinitiative.org/climate_2012/output/australia-1km/RCP3PD_cccma-cgcm31.zip',
-     'genre': BCCVOCAB['DataGenreFC'],
-     'type': 'link'
-    }
+def zopectl(app, args):
+    """ zopectl entry point
+    app ... the Zope root Application
+    args ... list of command line args passed (very similar to sys.argv)
+             args[0] ... name of script but is always '-c'
+             args[1] ... name of entry point
+             args[2:] ... all additional commandline args
+    """
+    # get rid of '-c'
+    if args[0] == '-c':
+        args.pop(0)
+    # now args looks pretty much like sys.argv
+    if len(args) <= 1:
+        # we don't have some cli args, let's print usage and exit
+        usage()
+        exit(1)
+    params = parse_args(args[1:])
+    if 'help' in params:
+        # user requested help
+        usage()
+        exit(0)
+    # ok let's do some import'
+    main(app, params)
 
-    ]
 
-
-
+def usage():
+    print " accepted arguments: "
+    print "   all arguments can be given multiple times"
+    print " --gcm <GCM>"
+    print " --emsc <EMSC>"
+    print " --year <yyyy>"
+    # TODO: print supported list of gcm, emsc, and years as well
 
 
 if 'app' in locals():

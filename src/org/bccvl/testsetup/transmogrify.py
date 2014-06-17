@@ -13,7 +13,7 @@ from zope.component import getUtility
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, NFO, BIOCLIM
 from tempfile import mkdtemp
 from zipfile import ZipFile
-from cStringIO import StringIO
+from io import BytesIO
 from rdflib import Literal, Graph, RDF
 from ordf.namespace import DC
 
@@ -122,7 +122,7 @@ class DownloadFile(object):
         filename = item['file']['file']
         if filename in item['_files']:
             filedict = item['_files'][filename]
-            zipfile = StringIO(filedict['data'])
+            zipfile = BytesIO(filedict['data'])
         else:
             zipfile = filename
         # read zip contents and generate archiveitems metadat

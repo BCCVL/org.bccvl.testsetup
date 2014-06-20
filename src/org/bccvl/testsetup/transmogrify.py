@@ -42,25 +42,27 @@ class DownloadFile(object):
         # A temporary directory to store downloaded files
         self.tmpdir = None
 
+    # FIXME: move filter stage out
     def skip_item(self, item):
-        if not 'url' in item['file']:
-            # filter only downloadable content
-            return False
         # TODO: use path-key
         itemid = item['_path'].split('/')[-1]
         if self.gcm and not any((gcm in itemid for gcm in self.gcm)):
+            LOG.info('Skipped %s no gcm mach %s', itemid, str(object=self.gcm))
             return True
         if self.emsc and not any((emsc in itemid for emsc in self.emsc)):
+            LOG.info('Skipped %s no emsc mach %s', itemid, str(object=self.emsc))
             return True
         if self.year and not any((year in itemid for year in self.year)):
+            LOG.info('Skipped %s no year mach %s', itemid, str(object=self.year))
             return True
         return False
 
     def __iter__(self):
         for item in self.previous:
+
             # check if current item has 'file'
             LOG.info("Check for downloads %s", item['_path'])
-            if 'file' not in item:
+            if 'file' not in item and 'remoteUrl' not in item:
                 yield item
                 continue
             # only skip items in climate layer
@@ -68,15 +70,12 @@ class DownloadFile(object):
                 # we are only filtering items with file
                 LOG.info("Skip item %s", item['_path'])
                 continue
-            if item['file'].get('contenttype') != 'application/zip':
-                yield item
-                continue
             # do we have a 'url' to fetch?
-            if 'url' in item['file']:
+            if 'url' in item.get('file', {}) or 'remoteUrl' in item:
                 self.downloadData(item)
-            # TODO: check if update works
-            self.updateItemData(item)
+            # self.updateItemData(item)
             yield item
+            # TODO: what happens to tmp file if there is an exception while yielded?
             # clean up downloaded file
             if self.tmpdir and os.path.exists(self.tmpdir):
                 LOG.info('Remove temp folder %s', self.tmpdir)
@@ -84,63 +83,53 @@ class DownloadFile(object):
                 self.tmpdir = None
 
     def downloadData(self, item):
+        """assumes ther is either 'file' or 'remoteUrl' in item dictionary.
+        but not both"""
         self.tmpdir = mkdtemp('testsetup')
+        fileitem = item.get('file', {})
+        url = item.get('remoteUrl') or fileitem.get('url')
+        name = fileitem.get('filename')
+        contenttype = fileitem.get('contenttype')
         # use basename from download url as filename
-        zipname = os.path.basename(item['file']['url'])
+        zipname = os.path.basename(url)
         # covert to absolute path
         zipfile = os.path.join(self.tmpdir, zipname)
         # check if file exists (shouldn't)
         if not os.path.exists(zipfile):
-            LOG.info('Download %s to %s', item['file']['url'], zipfile)
+            LOG.info('Download %s to %s', url, zipfile)
             # TODO: 3rd argument could be report hook, which is a method that
-            #       need to accet 3 params: numblocks, bytes per block, total size(-1)
-            urllib.urlretrieve(item['file']['url'], zipfile)
+            #       accepts 3 params: numblocks, bytes per block, total size(-1)
+            (_, resp) = urllib.urlretrieve(url, zipfile)
+            #name = name or resp.info().headers # content-disposition?
+            # TODO: other interesting headers:
+            #       contentlength
+            #       last-modified / date
+            contenttype = contenttype or resp.get('content-type')
+            # FIXME: get http response headers from resp.info().headers
+            #    mix filename: item.file.filename, response, basename(url)
+            #  same for content-type / mime-type
         # We have the file now, let's replace 'url' with 'file'
-        del item['file']['url']
-        item['file']['filename'] = zipname
-        item['file']['file'] = zipfile
-
-    def getArchiveItem(self, zipinfo):
-        item = {
-            'filename': zipinfo.filename,
-            'filesize': zipinfo.file_size,
+        if 'file' in item:
+            item['file']['filename'] = name or zipname
+            item['file']['file'] = zipfile
+            item['file']['contenttype'] = contenttype
+            item['_files'][zipfile] = {
+                'filename': zipfile,
+                'path': zipfile,
+                # dexterity schemaupdater needs data here or it will break the pipeline
+                'data': open(zipfile, mode='r')
             }
-        match = re.match(r'.*bioclim_(\d\d).tif', zipinfo.filename)
-        if match:
-            bid = match.group(1)
-            item['bioclim'] = BIOCLIM['B' + bid]
-        return item
-
-    def updateItemData(self, item):
-        '''
-        item: current metadata
-        folder: folder name of to zip data
-        '''
-        # update file data and contents
-        item['_archiveitems'] = []
-        # check if we have the file already or have to read it
-        filename = item['file']['file']
-        if filename in item['_files']:
-            filedict = item['_files'][filename]
-            zipfile = BytesIO(filedict['data'])
         else:
-            zipfile = filename
-        # read zip contents and generate archiveitems metadat
-        zipfile = ZipFile(zipfile, 'r')
-        for zipinfo in zipfile.infolist():
-            if zipinfo.filename.endswith('/'):
-                # skip directories
-                continue
-            # add _archiveitems metadata for ArchiveItemRDF blueprint
-            item['_archiveitems'].append(self.getArchiveItem(zipinfo))
-        # in case we haven't read file into item data
-        if filename not in item['_files']:
-            # TODO: there has to be a better way than reading the whole file in
-            item['_files'][filename] = {
-                'data': open(filename).read()
+            # FIXME: need to store for remoteUrl as well
+            item['_files'][url] = {
+                'filename': name or zipname,
+                'contenttype': contenttype,
+                'path': zipfile
+                # data not needed here as schemaupdater won't check this file
             }
 
 
+# FIXME: workon _filemetadata ... combine with filemdtordf
 @provider(ISectionBlueprint)
 @implementer(ISection)
 class ArchiveItemRDF(object):

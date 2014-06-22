@@ -8,13 +8,12 @@ import os.path
 import re
 import logging
 import shutil
-from gu.z3cform.rdf.interfaces import IORDF, IGraph
-from zope.component import getUtility
-from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, NFO, BIOCLIM
+from org.bccvl.site.namespace import (
+    BCCPROP, BCCVOCAB, BCCEMSC, BCCGCM)
+from gu.plone.rdf.namespace import CVOCAB
 from tempfile import mkdtemp
-from zipfile import ZipFile
-from io import BytesIO
-from rdflib import Literal, Graph, RDF
+from rdflib import Literal, Graph, RDF, OWL
+from rdflib.resource import Resource
 from ordf.namespace import DC
 
 LOG = logging.getLogger(__name__)
@@ -35,27 +34,8 @@ class DownloadFile(object):
         # keys for sections further down the chain
         self.pathkey = options.get('path-key', '_path').strip()
         self.fileskey = options.get('files-key', '_files').strip()
-        # get filters from configuration
-        self.gcm = set(options.get('gcm', "").split())
-        self.emsc = set(options.get('emsc', "").split())
-        self.year = set(options.get('year', "").split())
         # A temporary directory to store downloaded files
         self.tmpdir = None
-
-    # FIXME: move filter stage out
-    def skip_item(self, item):
-        # TODO: use path-key
-        itemid = item['_path'].split('/')[-1]
-        if self.gcm and not any((gcm in itemid for gcm in self.gcm)):
-            LOG.info('Skipped %s no gcm mach %s', itemid, str(object=self.gcm))
-            return True
-        if self.emsc and not any((emsc in itemid for emsc in self.emsc)):
-            LOG.info('Skipped %s no emsc mach %s', itemid, str(object=self.emsc))
-            return True
-        if self.year and not any((year in itemid for year in self.year)):
-            LOG.info('Skipped %s no year mach %s', itemid, str(object=self.year))
-            return True
-        return False
 
     def __iter__(self):
         for item in self.previous:
@@ -65,11 +45,8 @@ class DownloadFile(object):
             if 'file' not in item and 'remoteUrl' not in item:
                 yield item
                 continue
-            # only skip items in climate layer
-            if '/climate/' in item['_path'] and self.skip_item(item):
-                # we are only filtering items with file
-                LOG.info("Skip item %s", item['_path'])
-                continue
+            # TODO: add check for _type == some dataset type
+
             # do we have a 'url' to fetch?
             if 'url' in item.get('file', {}) or 'remoteUrl' in item:
                 self.downloadData(item)
@@ -127,3 +104,85 @@ class DownloadFile(object):
                 'path': zipfile
                 # data not needed here as schemaupdater won't check this file
             }
+
+
+#### Below are custom sources, to inject additional items
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class FutureClimateLayer5k(object):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+        self.gcm = set(options.get('gcm', "").split())
+        self.emsc = set(options.get('emsc', "").split())
+        self.year = set(options.get('year', "").split())
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # Generate new items based on source
+        # One way of doing it is having a hardcoded list here
+        gcms = ['RCP3PD', 'RCP45', 'RCP6', 'SRESA1B']
+        emscs = ['cccma-cgcm31', 'ccsr-micro32med', 'gfdl-cm20',
+                 'ukmo-hadcm3']
+        years = ['2015', '2025', '2035', '2045', '2055',
+                 '2065', '2075', '2085']
+        for gcm in gcms:
+            if self.gcm and gcm not in self.gcm:
+                # Skip this gcm
+                continue
+            for emsc in emscs:
+                if self.emsc and emsc not in self.emsc:
+                    # skip this emsc
+                    continue
+                for year in years:
+                    if self.year and year not in self.year:
+                        # skip this year
+                        continue
+                    # don't skip, yield a new item
+                    yield self.createItem(gcm, emsc, year)
+                    # create item
+
+    def createItem(self, gcm, emsc, year):
+        g = Graph()
+        r = Resource(g, g.identifier)
+        r.add(RDF['type'], CVOCAB['Dataset'])
+        r.add(RDF['type'], OWL['Thing'])
+        r.add(BCCPROP['resolution'], BCCVOCAB['Resolution2_5m'])
+        r.add(BCCPROP['emissionscenario'], BCCEMSC[emsc])
+        r.add(BCCPROP['gcm'], BCCGCM[gcm])
+        r.add(DC['temporal'], Literal("start={0}; end={0}; scheme=W3C-DTF;".format(year),
+                                      datatype=DC['Period']))
+        url = "https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f960ae5677/australia_5km/{0}_{1}_{2}.zip".format(
+                             gcm, emsc, year)
+        filename = os.path.basename(url)
+        item = {
+            "_path": 'datasets/climate/{}'.format(filename),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}".format(
+                     gcm, emsc, year),
+            "remoteUrl": url,
+            "_transitions": "publish",
+            "_rdf": {
+                "file": "_rdf.ttl",
+                "contenttype": "text/turtle"
+            },
+            "_files": {
+                "_rdf.ttl": {
+                    "data": g.serialize(format='turtle')
+                }
+            }
+        }
+        return item

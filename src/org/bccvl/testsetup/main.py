@@ -3,33 +3,14 @@
 
     make sure ./bin/instance is down while doing this
 """
-import Globals
-import urllib
-import os
-import os.path
-from tempfile import mkdtemp
-from zipfile import ZipFile, ZIP_DEFLATED
-import subprocess
 import sys
-import shutil
-import glob
 import logging
-from urllib import urlopen
-from pkg_resources import resource_listdir, resource_stream
-from org.bccvl.site import defaults as bccvldefaults
-from org.bccvl.site.namespace import BCCVOCAB, BCCPROP
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SpecialUsers import system
 from Testing.makerequest import makerequest
 import transaction
 from AccessControl.SecurityManager import setSecurityPolicy
 from Products.CMFCore.tests.base.security import PermissiveSecurityPolicy, OmnipotentUser
-from plone.dexterity.utils import createContentInContainer
-from plone.i18n.normalizer.interfaces import IFileNameNormalizer
-from zope.component import getUtility
-from gu.z3cform.rdf.interfaces import IORDF, IGraph
-from rdflib import RDF
-from plone.namedfile.file import NamedBlobFile
 from collective.transmogrifier.transmogrifier import Transmogrifier
 # TODO: if item/file id already exists, then just updload/update metadata
 
@@ -53,14 +34,25 @@ LOG = logging.getLogger('org.bccvl.testsetup')
 
 
 def import_data(site, params):
+    source_options = {}
+    if 'test' in params:
+        # run test imports only
+        source_options['a5ksource'] = {
+            'gcm': 'RCP3PD',
+            'emsc': 'cccma-cgcm31',
+            'year': '2015 2025',
+            'enabled': "True"
+        }
+    elif 'all' in params:
+        # import all knoown datasources:
+        source_options = {
+            'a5ksource': {'enabled': "True"},
+        }
+
     transmogrifier = Transmogrifier(site)
-    options = {}
-    for opt in ('gcm', 'emsc', 'year'):
-        if opt in params:
-            options[opt] = '\n'.join(params[opt])
     transmogrifier(u'org.bccvl.testsetup.dataimport',
                    source={'path': 'org.bccvl.testsetup:data'},
-                   downloader=options)
+                   **source_options)
     transaction.commit()
 
 
@@ -103,26 +95,17 @@ def main(app, params):
 
 
 def parse_args(args):
-    arglist = {'--gcm': 'gcm',
-               '--emsc': 'emsc',
-               '--year': 'year'}
+    arglist = {'--test': 'test',
+               '--all': 'all'}
     result = {}
-    for i in xrange(0, len(args), 2):
+    for name in args:
         try:
-            name = args[i].strip()
-            i += 1
-            value = args[i].strip()
             if name in arglist:
-                # TODO: validate value based on possible values for name
-                key = arglist[name]
-                if key not in result:
-                    result[key] = set()
-                result[key].add(value)
-                # break out here... everything below is error handling
+                result[arglist[name]] = True
                 continue
         except Exception as e:
             print "Error:", e
-        # if we reach this then there was an error
+        # if we end up here there is a problem
         result['help'] = set()
         break
     return result
@@ -155,10 +138,8 @@ def zopectl(app, args):
 
 def usage():
     print " accepted arguments: "
-    print "   all arguments can be given multiple times"
-    print " --gcm <GCM>"
-    print " --emsc <EMSC>"
-    print " --year <yyyy>"
+    print " --test  ... install minimal set of test datasets"
+    print " --all   ... import everything we know of"
     # TODO: print supported list of gcm, emsc, and years as well
 
 

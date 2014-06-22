@@ -33,4 +33,9 @@
      name="org.bccvl.testsetup.transmogrify.downloader"
      />
 
+    <utility
+        component=".transmogrify.FutureClimateLayer5k"
+        name="org.bccvl.testsetup.transmogrify.a5ksource"
+        />
+
 </configure>

@@ -33,10 +33,4 @@
      name="org.bccvl.testsetup.transmogrify.downloader"
      />
 
-  <utility
-     component=".transmogrify.ArchiveItemRDF"
-     name="org.bccvl.testsetup.transmogrify.rdflayerdata"
-     />
-
-
 </configure>

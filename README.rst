@@ -16,12 +16,8 @@ Enable python27::
 
 Install::
 
-  # ./bin/instance-debug testsetup --gcm RCP3PD --emsc cccma-cgcm31 --year 2015
+  # ./bin/instance-debug testsetup [--test|--all]
 
-Each command line parameter can be specified 0 or more times and the
-command will only install matching future climate layers.
-
-E.g. the following command will only install datasets with GCM RCP3PD
-or RCP6 and emissionscenario cccma-cgcm31 for all available years::
-
-  # ./bin/instance-debug testsetup --gcm RCP3PD --gcm RCP6 --emsc cccma-cgcm31
+no params ... install datasets enbedded in this package
+--test ... install a few remote datasets for testing
+--all  ... install all known datasets

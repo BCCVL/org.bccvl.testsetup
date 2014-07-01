@@ -38,4 +38,9 @@
         name="org.bccvl.testsetup.transmogrify.a5ksource"
         />
 
+    <utility
+        component=".transmogrify.NationalSoilgridLayers"
+        name="org.bccvl.testsetup.transmogrify.nsgsource"
+        />
+
 </configure>

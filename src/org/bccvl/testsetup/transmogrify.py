@@ -17,6 +17,8 @@ from rdflib.resource import Resource
 from ordf.namespace import DC
 
 LOG = logging.getLogger(__name__)
+# TODO: make this configurable somewhere
+SWIFTROOT = 'https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f960ae5677'
 
 
 @provider(ISectionBlueprint)
@@ -90,7 +92,8 @@ class DownloadFile(object):
             item['file']['filename'] = name or zipname
             item['file']['file'] = zipfile
             item['file']['contenttype'] = contenttype
-            item['_files'][zipfile] = {
+            files = item.setdefault(self.fileskey, {})
+            files[zipfile] = {
                 'filename': zipfile,
                 'path': zipfile,
                 # dexterity schemaupdater needs data here or it will break the pipeline
@@ -98,7 +101,8 @@ class DownloadFile(object):
             }
         else:
             # FIXME: need to store for remoteUrl as well
-            item['_files'][url] = {
+            files = item.setdefault(self.fileskey, {})
+            files[url] = {
                 'filename': name or zipname,
                 'contenttype': contenttype,
                 'path': zipfile
@@ -165,8 +169,8 @@ class FutureClimateLayer5k(object):
         r.add(BCCPROP['gcm'], BCCGCM[gcm])
         r.add(DC['temporal'], Literal("start={0}; end={0}; scheme=W3C-DTF;".format(year),
                                       datatype=DC['Period']))
-        url = "https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f960ae5677/australia_5km/{0}_{1}_{2}.zip".format(
-                             gcm, emsc, year)
+        url = "{0}/australia_5km/{1}_{2}_{3}.zip".format(
+            SWIFTROOT, gcm, emsc, year)
         filename = os.path.basename(url)
         item = {
             "_path": 'datasets/climate/{}'.format(filename),
@@ -186,3 +190,42 @@ class FutureClimateLayer5k(object):
             }
         }
         return item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class NationalSoilgridLayers(object):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+        # TODO: maybe put some info in here? to access in a later stage...
+        #       bccvlmetadata.json may be an option here
+        opt = {
+            'id': 'nsg-2011-250m.zip',
+            'url': '{0}/national_soil_grids/nsg-2011-250m.zip'.format(SWIFTROOT)
+        }
+        item = {
+            "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": "National Soil Grids",
+            "remoteUrl": opt['url'],
+            "_transitions": "publish",
+        }
+        yield item
+
+

@@ -43,10 +43,14 @@ def import_data(site, params):
             'year': '2015 2025',
             'enabled': "True"
         }
+        source_options['nsgsource'] = {
+            'enabled': 'True',
+        }
     elif 'all' in params:
         # import all knoown datasources:
         source_options = {
             'a5ksource': {'enabled': "True"},
+            'nsgsource': {'enabled': "True"}
         }
 
     transmogrifier = Transmogrifier(site)

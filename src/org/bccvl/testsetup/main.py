@@ -100,18 +100,16 @@ def main(app, params):
 
 def parse_args(args):
     arglist = {'--test': 'test',
-               '--all': 'all'}
+               '--all': 'all',
+               '--help': 'help'}
     result = {}
     for name in args:
         try:
             if name in arglist:
                 result[arglist[name]] = True
-                continue
         except Exception as e:
             print "Error:", e
-        # if we end up here there is a problem
-        result['help'] = set()
-        break
+            result['help'] = True
     return result
 
 
@@ -127,15 +125,11 @@ def zopectl(app, args):
     if args[0] == '-c':
         args.pop(0)
     # now args looks pretty much like sys.argv
-    if len(args) <= 1:
-        # we don't have some cli args, let's print usage and exit
-        usage()
-        exit(1)
     params = parse_args(args[1:])
     if 'help' in params:
         # user requested help
         usage()
-        exit(0)
+        exit(1)
     # ok let's do some import'
     main(app, params)
 

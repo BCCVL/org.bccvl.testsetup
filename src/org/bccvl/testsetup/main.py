@@ -38,8 +38,8 @@ def import_data(site, params):
     if 'test' in params:
         # run test imports only
         source_options['a5ksource'] = {
-            'gcm': 'RCP3PD',
-            'emsc': 'cccma-cgcm31',
+            'emsc': 'RCP3PD',
+            'gcm': 'cccma-cgcm31',
             'year': '2015 2025',
             'enabled': "True"
         }

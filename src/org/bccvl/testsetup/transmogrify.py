@@ -124,8 +124,8 @@ class FutureClimateLayer5k(object):
 
         # get filters from configuration
         self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
-        self.gcm = set(options.get('gcm', "").split())
         self.emsc = set(options.get('emsc', "").split())
+        self.gcm = set(options.get('gcm', "").split())
         self.year = set(options.get('year', "").split())
 
     def __iter__(self):
@@ -138,45 +138,46 @@ class FutureClimateLayer5k(object):
 
         # Generate new items based on source
         # One way of doing it is having a hardcoded list here
-        gcms = ['RCP3PD', 'RCP45', 'RCP6', 'SRESA1B']
-        emscs = ['cccma-cgcm31', 'ccsr-micro32med', 'gfdl-cm20',
-                 'ukmo-hadcm3']
+        emscs = ['RCP3PD', 'RCP45', 'RCP6', 'SRESA1B']
+        gcms = ['cccma-cgcm31', 'ccsr-micro32med', 'gfdl-cm20',
+                'ukmo-hadcm3']
         years = ['2015', '2025', '2035', '2045', '2055',
                  '2065', '2075', '2085']
-        for gcm in gcms:
-            if self.gcm and gcm not in self.gcm:
-                # Skip this gcm
+        for emsc in emscs:
+            if self.emsc and emsc not in self.emsc:
+                # Skip this emsc
                 continue
-            for emsc in emscs:
-                if self.emsc and emsc not in self.emsc:
-                    # skip this emsc
+            for gcm in gcms:
+                if self.gcm and gcm not in self.gcm:
+                    # skip this gcm
                     continue
                 for year in years:
                     if self.year and year not in self.year:
                         # skip this year
                         continue
                     # don't skip, yield a new item
-                    yield self.createItem(gcm, emsc, year)
+                    yield self.createItem(emsc, gcm, year)
                     # create item
 
-    def createItem(self, gcm, emsc, year):
+    def createItem(self, emsc, gcm, year):
         g = Graph()
         r = Resource(g, g.identifier)
         r.add(RDF['type'], CVOCAB['Dataset'])
         r.add(RDF['type'], OWL['Thing'])
+        r.add(BCCPROP['datagenre'], BCCVOCAB['DataGenreFC'])
         r.add(BCCPROP['resolution'], BCCVOCAB['Resolution2_5m'])
         r.add(BCCPROP['emissionscenario'], BCCEMSC[emsc])
         r.add(BCCPROP['gcm'], BCCGCM[gcm])
         r.add(DC['temporal'], Literal("start={0}; end={0}; scheme=W3C-DTF;".format(year),
                                       datatype=DC['Period']))
         url = "{0}/australia_5km/{1}_{2}_{3}.zip".format(
-            SWIFTROOT, gcm, emsc, year)
+            SWIFTROOT, emsc, gcm, year)
         filename = os.path.basename(url)
         item = {
             "_path": 'datasets/climate/{}'.format(filename),
             "_type": "org.bccvl.content.remotedataset",
             "title": "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}".format(
-                     gcm, emsc, year),
+                     emsc, gcm, year),
             "remoteUrl": url,
             "_transitions": "publish",
             "_rdf": {

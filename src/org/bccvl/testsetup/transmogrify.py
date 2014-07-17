@@ -230,3 +230,40 @@ class NationalSoilgridLayers(object):
         yield item
 
 
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class VegetationAssetsStatesTransitionsLayers(object):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # TODO: maybe put some info in here? to access in a later stage...
+        #       bccvlmetadata.json may be an option here
+        opt = {
+            'id': 'vast.zip',
+            'url': '{0}/vast/vast.zip'.format(SWIFTROOT),
+        }
+        item = {
+            "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": "National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008",
+            "remoteUrl": opt['url'],
+            "_transitions": "publish",
+        }
+        yield item
+

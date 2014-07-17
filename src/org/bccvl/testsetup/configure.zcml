@@ -43,4 +43,9 @@
         name="org.bccvl.testsetup.transmogrify.nsgsource"
         />
 
+    <utility
+        component=".transmogrify.VegetationAssetsStatesTransitionsLayers"
+        name="org.bccvl.testsetup.transmogrify.vastsource"
+        />
+
 </configure>

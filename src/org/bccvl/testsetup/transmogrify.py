@@ -267,3 +267,78 @@ class VegetationAssetsStatesTransitionsLayers(object):
         }
         yield item
 
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class MultiResolutionRidgeTopFlatnessLayers(object):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # TODO: maybe put some info in here? to access in a later stage...
+        #       bccvlmetadata.json may be an option here
+        opt = {
+            'id': 'multi_res_ridge_top_flat.zip',
+            'url': '{0}/multi_res_ridge_top_flat/multi_res_ridge_top_flat.zip'.format(SWIFTROOT),
+        }
+        item = {
+            "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": "Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution)",
+            "remoteUrl": opt['url'],
+            "_transitions": "publish",
+        }
+        yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class MultiResolutionValleyBottomFlatnessLayers(object):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # TODO: maybe put some info in here? to access in a later stage...
+        #       bccvlmetadata.json may be an option here
+        opt = {
+            'id': 'multi_res_valley_bottom_flat.zip',
+            'url': '{0}/multi_res_valley_bottom_flat/multi_res_valley_bottom_flat.zip'.format(SWIFTROOT),
+        }
+        item = {
+            "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": "Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)",
+            "remoteUrl": opt['url'],
+            "_transitions": "publish",
+        }
+        yield item

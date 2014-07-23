@@ -48,4 +48,14 @@
         name="org.bccvl.testsetup.transmogrify.vastsource"
         />
 
+    <utility
+        component=".transmogrify.MultiResolutionRidgeTopFlatnessLayers"
+        name="org.bccvl.testsetup.transmogrify.mrrtfsource"
+        />
+
+    <utility
+        component=".transmogrify.MultiResolutionValleyBottomFlatnessLayers"
+        name="org.bccvl.testsetup.transmogrify.mrvbfsource"
+        />
+
 </configure>

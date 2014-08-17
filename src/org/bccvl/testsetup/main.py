@@ -12,6 +12,7 @@ import transaction
 from AccessControl.SecurityManager import setSecurityPolicy
 from Products.CMFCore.tests.base.security import PermissiveSecurityPolicy, OmnipotentUser
 from collective.transmogrifier.transmogrifier import Transmogrifier
+import argparse
 # TODO: if item/file id already exists, then just updload/update metadata
 
 try:
@@ -35,27 +36,27 @@ LOG = logging.getLogger('org.bccvl.testsetup')
 
 def import_data(site, params):
     source_options = {}
-    if 'test' in params:
+    if params.get('test', False):
         # run test imports only
         source_options['a5ksource'] = {
-            'emsc': 'RCP3PD',
-            'gcm': 'cccma-cgcm31',
-            'year': '2015 2025',
+            'emsc': ['RCP3PD'],
+            'gcm': ['cccma-cgcm31'],
+            'year': ['2015', '2025'],
             'enabled': "True"
         }
         source_options['nsgsource'] = {
             'enabled': 'True',
         }
         source_options['vastsource'] = {
-            'enabled': 'True',        
+            'enabled': 'True',
         }
         source_options['mrrtfsource'] = {
-            'enabled': 'False',        
+            'enabled': 'False',
         }
         source_options['mrvbfsource'] = {
-            'enabled': 'False',        
+            'enabled': 'False',
         }
-    elif 'all' in params:
+    elif params.get('all', False):
         # import all knoown datasources:
         source_options = {
             'a5ksource': {'enabled': "True"},
@@ -64,6 +65,17 @@ def import_data(site, params):
             'mrrtfsource': {'enabled': "True"},
             'mrvbfsource': {'enabled': "True"}
         }
+    else:
+        if params.get('a5ksource', False):
+            source_options['a5ksource'] = {'enabled': True}
+            for p in ['emsc', 'gcm', 'year']:
+                if params.get(p, None):
+                    source_options['a5ksource'][p] = \
+                        params.get(p, '').split(',')
+        for source in ['nsgsource', 'vastsource',
+                       'mrrtfsource', 'mrvbfsource']:
+            if params.get(source, False):
+                source_options[source] = {'enabled': True}
 
     transmogrifier = Transmogrifier(site)
     transmogrifier(u'org.bccvl.testsetup.dataimport',
@@ -111,18 +123,19 @@ def main(app, params):
 
 
 def parse_args(args):
-    arglist = {'--test': 'test',
-               '--all': 'all',
-               '--help': 'help'}
-    result = {}
-    for name in args:
-        try:
-            if name in arglist:
-                result[arglist[name]] = True
-        except Exception as e:
-            print "Error:", e
-            result['help'] = True
-    return result
+    parser = argparse.ArgumentParser(description='Import datasets.')
+    parser.add_argument('--test', action='store_true')
+    parser.add_argument('--all', action='store_true')
+    parser.add_argument('--a5ksource', action='store_true')
+    parser.add_argument('--gcm')
+    parser.add_argument('--emsc')
+    parser.add_argument('--year')
+    parser.add_argument('--nsgsource', action='store_true')
+    parser.add_argument('--vastsource', action='store_true')
+    parser.add_argument('--mrrtfsource', action='store_true')
+    parser.add_argument('--mrvbfsource', action='store_true')
+    pargs = parser.parse_args(args)
+    return vars(pargs)
 
 
 def zopectl(app, args):
@@ -138,19 +151,8 @@ def zopectl(app, args):
         args.pop(0)
     # now args looks pretty much like sys.argv
     params = parse_args(args[1:])
-    if 'help' in params:
-        # user requested help
-        usage()
-        exit(1)
     # ok let's do some import'
     main(app, params)
-
-
-def usage():
-    print " accepted arguments: "
-    print " --test  ... install minimal set of test datasets"
-    print " --all   ... import everything we know of"
-    # TODO: print supported list of gcm, emsc, and years as well
 
 
 if 'app' in locals():

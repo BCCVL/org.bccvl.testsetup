@@ -2,6 +2,7 @@ from zope.interface import implementer, provider
 from collective.transmogrifier.interfaces import ISectionBlueprint
 from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.utils import defaultMatcher
+from itertools import product
 import urllib
 import os
 import os.path
@@ -138,26 +139,28 @@ class FutureClimateLayer5k(object):
 
         # Generate new items based on source
         # One way of doing it is having a hardcoded list here
-        emscs = ['RCP3PD', 'RCP45', 'RCP6', 'SRESA1B']
-        gcms = ['cccma-cgcm31', 'ccsr-micro32med', 'gfdl-cm20',
-                'ukmo-hadcm3']
+        emscs = ['RCP3PD', 'RCP45', 'RCP6', 'RCP85',
+                 'SRESA1B', 'SRESA1FI', 'SRESA2', 'SRESB1', 'SRESB2']
+        gcms = ['cccma-cgcm31', 'ccsr-miroc32hi', 'ccsr-micro32med',
+                'cnrm-cm3', 'csiro-mk30', 'gfdl-cm20', 'gfdl-cm21',
+                'giss-modeleh', 'giss-modeler', 'iap-fgoals10g', 'inm-cm30',
+                'ipsl-cm4', 'mpi-echam5', 'mri-cgcm232a', 'ncar-ccsm30',
+                'ncar-pcm1', 'ukmo-hadcm3', 'ukmo-hadgem1']
         years = ['2015', '2025', '2035', '2045', '2055',
                  '2065', '2075', '2085']
-        for emsc in emscs:
+        for emsc, gcm, year in product(emscs, gcms, years):
             if self.emsc and emsc not in self.emsc:
                 # Skip this emsc
                 continue
-            for gcm in gcms:
-                if self.gcm and gcm not in self.gcm:
-                    # skip this gcm
-                    continue
-                for year in years:
-                    if self.year and year not in self.year:
-                        # skip this year
-                        continue
-                    # don't skip, yield a new item
-                    yield self.createItem(emsc, gcm, year)
-                    # create item
+            if self.gcm and gcm not in self.gcm:
+                # skip this gcm
+                continue
+            if self.year and year not in self.year:
+                # skip this year
+                continue
+            # don't skip, yield a new item
+            yield self.createItem(emsc, gcm, year)
+            # create item
 
     def createItem(self, emsc, gcm, year):
         g = Graph()

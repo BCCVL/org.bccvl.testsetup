@@ -71,7 +71,7 @@ def import_data(site, params):
             for p in ['emsc', 'gcm', 'year']:
                 if params.get(p, None):
                     source_options['a5ksource'][p] = \
-                        params.get(p, '').split(',')
+                        params.get(p, '')
         for source in ['nsgsource', 'vastsource',
                        'mrrtfsource', 'mrvbfsource']:
             if params.get(source, False):

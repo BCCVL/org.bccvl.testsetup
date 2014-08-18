@@ -30,7 +30,7 @@ no params ... install datasets enbedded in this package
              RCP3PD, RCP45, RCP6, RCP85,
              SRESA1B, SRESA1FI, SRESA2, SRESB1, SRESB2
   --gcm ... comma separated list of circulation models:
-            cccma-cgcm31, ccsr-miroc32hi, ccsr-micro32med,
+            cccma-cgcm31, ccsr-miroc32hi, ccsr-miroc32med,
             cnrm-cm3, csiro-mk30, gfdl-cm20, gfdl-cm21,
             giss-modeleh, giss-modeler, iap-fgoals10g, inm-cm30,
             ipsl-cm4, mpi-echam5, mri-cgcm232a, ncar-ccsm30,

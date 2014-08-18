@@ -36,7 +36,7 @@ LOG = logging.getLogger('org.bccvl.testsetup')
 
 def import_data(site, params):
     source_options = {}
-    if params.get('test', False):
+    if params.get('test', 'False'):
         # run test imports only
         source_options['a5ksource'] = {
             'emsc': ['RCP3PD'],
@@ -56,7 +56,7 @@ def import_data(site, params):
         source_options['mrvbfsource'] = {
             'enabled': 'False',
         }
-    elif params.get('all', False):
+    elif params.get('all', 'False'):
         # import all knoown datasources:
         source_options = {
             'a5ksource': {'enabled': "True"},
@@ -67,7 +67,7 @@ def import_data(site, params):
         }
     else:
         if params.get('a5ksource', False):
-            source_options['a5ksource'] = {'enabled': True}
+            source_options['a5ksource'] = {'enabled': 'True'}
             for p in ['emsc', 'gcm', 'year']:
                 if params.get(p, None):
                     source_options['a5ksource'][p] = \
@@ -75,7 +75,7 @@ def import_data(site, params):
         for source in ['nsgsource', 'vastsource',
                        'mrrtfsource', 'mrvbfsource']:
             if params.get(source, False):
-                source_options[source] = {'enabled': True}
+                source_options[source] = {'enabled': 'True'}
 
     transmogrifier = Transmogrifier(site)
     transmogrifier(u'org.bccvl.testsetup.dataimport',

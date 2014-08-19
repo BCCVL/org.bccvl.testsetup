@@ -345,3 +345,88 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
             "_transitions": "publish",
         }
         yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class AWAPLayers(object):
+    """Australian Water availability project
+
+    """
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # datasets for years 1900 to 2011
+        for year in range(1900, 2012):
+
+            # TODO: maybe put some info in here? to access in a later stage...
+            #       bccvlmetadata.json may be an option here
+            opt = {
+                'id': 'awap_ann_{0}1231.zip'.format(year),
+                'url': '{0}/awap/awap_ann_{1}1231.zip'.format(SWIFTROOT, year),
+            }
+            item = {
+                "_path": 'datasets/environmental/{0}'.format(opt['id']),
+                "_type": "org.bccvl.content.remotedataset",
+                "title": "Local Discharge (Runoff+Drainage) {0}".format(year),
+                "remoteUrl": opt['url'],
+                "_transitions": "publish",
+            }
+            yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class GlobPETAridLayers(object):
+    """Global PET and Aridity
+
+    """
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # TODO: maybe put some info in here? to access in a later stage...
+        #       bccvlmetadata.json may be an option here
+            opt = {
+                'id': 'global-pet-and-aridity.zip',
+                'url': '{0}/glob_pet_and_aridity/global-pet-and-aridity.zip',
+            }
+            item = {
+                "_path": 'datasets/environmental/{0}'.format(opt['id']),
+                "_type": "org.bccvl.content.remotedataset",
+                "title": "Global PET and Aridity",
+                "remoteUrl": opt['url'],
+                "_transitions": "publish",
+            }
+            yield item

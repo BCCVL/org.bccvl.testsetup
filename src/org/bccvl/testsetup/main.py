@@ -38,23 +38,31 @@ def import_data(site, params):
     source_options = {}
     if params.get('test', 'False'):
         # run test imports only
-        source_options['a5ksource'] = {
-            'emsc': ['RCP3PD'],
-            'gcm': ['cccma-cgcm31'],
-            'year': ['2015', '2025'],
-            'enabled': "True"
-        }
-        source_options['nsgsource'] = {
-            'enabled': 'True',
-        }
-        source_options['vastsource'] = {
-            'enabled': 'True',
-        }
-        source_options['mrrtfsource'] = {
-            'enabled': 'False',
-        }
-        source_options['mrvbfsource'] = {
-            'enabled': 'False',
+        source_options = {
+            'a5ksource': {
+                'emsc': ['RCP3PD'],
+                'gcm': ['cccma-cgcm31'],
+                'year': ['2015', '2025'],
+                'enabled': "True"
+            },
+            'nsgsource': {
+                'enabled': 'True',
+            },
+            'vastsource': {
+                'enabled': 'True',
+            },
+            'mrrtfsource':  {
+                'enabled': 'False',
+            },
+            'mrvbfsource':  {
+                'enabled': 'False',
+            },
+            'awapsource':  {
+                'enabled': 'False',
+            },
+            'petsource':  {
+                'enabled': 'False',
+            },
         }
     elif params.get('all', 'False'):
         # import all knoown datasources:
@@ -63,7 +71,10 @@ def import_data(site, params):
             'nsgsource': {'enabled': "True"},
             'vastsource': {'enabled': "True"},
             'mrrtfsource': {'enabled': "True"},
-            'mrvbfsource': {'enabled': "True"}
+            'mrvbfsource': {'enabled': "True"},
+            # TODO: maybe re-deseign this one to handle years differently
+            'awapsource':  {'enabled': "False"},
+            'petsource':  {'enabled': "False"}
         }
     else:
         if params.get('a5ksource', False):
@@ -73,7 +84,8 @@ def import_data(site, params):
                     source_options['a5ksource'][p] = \
                         params.get(p, '')
         for source in ['nsgsource', 'vastsource',
-                       'mrrtfsource', 'mrvbfsource']:
+                       'mrrtfsource', 'mrvbfsource',
+                       'awapsource', 'petsource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
 
@@ -134,6 +146,8 @@ def parse_args(args):
     parser.add_argument('--vastsource', action='store_true')
     parser.add_argument('--mrrtfsource', action='store_true')
     parser.add_argument('--mrvbfsource', action='store_true')
+    parser.add_argument('--awapsource', action='store_true')
+    parser.add_argument('--petsource', action='store_true')
     pargs = parser.parse_args(args)
     return vars(pargs)
 

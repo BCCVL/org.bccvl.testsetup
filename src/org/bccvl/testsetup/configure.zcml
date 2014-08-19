@@ -28,10 +28,10 @@
         configuration="testdataimport.cfg"
         />
 
-  <utility
-     component=".transmogrify.DownloadFile"
-     name="org.bccvl.testsetup.transmogrify.downloader"
-     />
+    <utility
+        component=".transmogrify.DownloadFile"
+        name="org.bccvl.testsetup.transmogrify.downloader"
+        />
 
     <utility
         component=".transmogrify.FutureClimateLayer5k"
@@ -57,5 +57,13 @@
         component=".transmogrify.MultiResolutionValleyBottomFlatnessLayers"
         name="org.bccvl.testsetup.transmogrify.mrvbfsource"
         />
+
+    <utility
+        component=".transmogrify.AWAPLayers"
+        name="org.bccvl.testsetup.transmogrify.awapsource" />
+
+    <utility
+        component=".transmogrify.GlobPETAridLayers"
+        name="org.bccvl.testsetup.transmogrify.petsource" />
 
 </configure>

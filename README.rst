@@ -42,3 +42,5 @@ no params ... install datasets enbedded in this package
 --vastsource ... enable vast dataset
 --mrrtfsource ... enable multi res. rich top flatness dataset
 --mrvbfsource ... enable multi res. valley bottom flatness dataset
+--awapsource ... enable australian water availability dataset
+--petsource ... enable global pet and aridity dataset

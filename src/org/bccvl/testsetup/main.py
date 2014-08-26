@@ -63,6 +63,9 @@ def import_data(site, params):
             'petsource':  {
                 'enabled': 'False',
             },
+            'ndlcsource':  {
+                'enabled': False,
+            },
         }
     elif params.get('all', 'False'):
         # import all knoown datasources:
@@ -75,6 +78,7 @@ def import_data(site, params):
             # TODO: maybe re-deseign this one to handle years differently
             'awapsource': {'enabled': "False"},
             'petsource': {'enabled': "False"},
+            'ndlcsource': {'enabled': "False"},
         }
     else:
         if params.get('a5ksource', False):
@@ -85,7 +89,8 @@ def import_data(site, params):
                         params.get(p, '')
         for source in ['nsgsource', 'vastsource',
                        'mrrtfsource', 'mrvbfsource',
-                       'awapsource', 'petsource']:
+                       'awapsource', 'petsource',
+                       'ndlcsource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
 
@@ -148,6 +153,7 @@ def parse_args(args):
     parser.add_argument('--mrvbfsource', action='store_true')
     parser.add_argument('--awapsource', action='store_true')
     parser.add_argument('--petsource', action='store_true')
+    parser.add_argument('--ndlcsource', action='store_true')
     pargs = parser.parse_args(args)
     return vars(pargs)
 

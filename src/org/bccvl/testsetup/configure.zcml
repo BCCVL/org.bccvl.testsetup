@@ -66,4 +66,8 @@
         component=".transmogrify.GlobPETAridLayers"
         name="org.bccvl.testsetup.transmogrify.petsource" />
 
+    <utility
+        component=".transmogrify.NDLCLayers"
+        name="org.bccvl.testsetup.transmogrify.ndlcsource" />
+
 </configure>

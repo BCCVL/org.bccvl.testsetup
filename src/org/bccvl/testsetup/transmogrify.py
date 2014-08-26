@@ -431,14 +431,44 @@ class GlobPETAridLayers(object):
         }
         yield item
 
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class NDLCLayers(object):
+    """National Dynamic Land Cover datasets
+
+    """
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        for filename in ('ndlc_DLCDv1_Class.zip', 'ndlc_trend_evi_min.zip',
+                         'ndlc_trend_evi_mean', 'ndlc_trend_evi_max.zip'):
+
+            # TODO: maybe put some info in here? to access in a later stage...
+            #       bccvlmetadata.json may be an option here
             opt = {
-                'id': 'global-pet-and-aridity.zip',
-                'url': '{0}/glob_pet_and_aridity/global-pet-and-aridity.zip',
+                'id': filename,
+                'url': '{0}/national-dynamic-land-cover/{1}'.format(SWIFTROOT, filename),
             }
             item = {
                 "_path": 'datasets/environmental/{0}'.format(opt['id']),
                 "_type": "org.bccvl.content.remotedataset",
-                "title": "Global PET and Aridity",
                 "remoteUrl": opt['url'],
                 "_transitions": "publish",
             }

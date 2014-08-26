@@ -73,8 +73,8 @@ def import_data(site, params):
             'mrrtfsource': {'enabled': "True"},
             'mrvbfsource': {'enabled': "True"},
             # TODO: maybe re-deseign this one to handle years differently
-            'awapsource':  {'enabled': "False"},
-            'petsource':  {'enabled': "False"}
+            'awapsource': {'enabled': "False"},
+            'petsource': {'enabled': "False"},
         }
     else:
         if params.get('a5ksource', False):

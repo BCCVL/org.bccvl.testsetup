@@ -418,6 +418,19 @@ class GlobPETAridLayers(object):
 
         # TODO: maybe put some info in here? to access in a later stage...
         #       bccvlmetadata.json may be an option here
+        opt = {
+            'id': 'global-pet-and-aridity.zip',
+            'url': '{0}/glob_pet_and_aridity/global-pet-and-aridity.zip'.format(SWIFTROOT),
+        }
+        item = {
+            "_path": 'datasets/environmental/{0}'.format(opt['id']),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": "Global PET and Aridity",
+            "remoteUrl": opt['url'],
+            "_transitions": "publish",
+        }
+        yield item
+
             opt = {
                 'id': 'global-pet-and-aridity.zip',
                 'url': '{0}/glob_pet_and_aridity/global-pet-and-aridity.zip',

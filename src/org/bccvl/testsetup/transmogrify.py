@@ -457,8 +457,15 @@ class NDLCLayers(object):
         if not self.enabled:
             return
 
-        for filename in ('ndlc_DLCDv1_Class.zip', 'ndlc_trend_evi_min.zip',
-                         'ndlc_trend_evi_mean.zip', 'ndlc_trend_evi_max.zip'):
+        for filename, title in (
+                ('ndlc_DLCDv1_Class.zip',
+                 'Dynamic Land Cover Dataset (DLCD) v1'),
+                ('ndlc_trend_evi_min.zip',
+                 'Trend in the annual minimum of the Enhanced Vegetation Index'),
+                ('ndlc_trend_evi_mean.zip',
+                 'Trend in the annual mean of the Enhanced Vegetation Index'),
+                ('ndlc_trend_evi_max.zip',
+                 'Trend in the annual maximum of the Enhanced Vegetation Index')):
 
             # TODO: maybe put some info in here? to access in a later stage...
             #       bccvlmetadata.json may be an option here
@@ -469,6 +476,7 @@ class NDLCLayers(object):
             item = {
                 "_path": 'datasets/environmental/{0}'.format(opt['id']),
                 "_type": "org.bccvl.content.remotedataset",
+                "title": title,
                 "remoteUrl": opt['url'],
                 "_transitions": "publish",
             }

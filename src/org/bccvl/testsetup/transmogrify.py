@@ -167,11 +167,11 @@ class FutureClimateLayer5k(object):
         r = Resource(g, g.identifier)
         r.add(RDF['type'], CVOCAB['Dataset'])
         r.add(RDF['type'], OWL['Thing'])
-        r.add(BCCPROP['datagenre'], BCCVOCAB['DataGenreFC'])
-        r.add(BCCPROP['resolution'], BCCVOCAB['Resolution2_5m'])
-        r.add(BCCPROP['emissionscenario'], BCCEMSC[emsc])
-        r.add(BCCPROP['gcm'], BCCGCM[gcm])
-        r.add(DC['temporal'], Literal("start={0}; end={0}; scheme=W3C-DTF;".format(year),
+        r.set(BCCPROP['datagenre'], BCCVOCAB['DataGenreFC'])
+        r.set(BCCPROP['resolution'], BCCVOCAB['Resolution2_5m'])
+        r.set(BCCPROP['emissionscenario'], BCCEMSC[emsc])
+        r.set(BCCPROP['gcm'], BCCGCM[gcm])
+        r.set(DC['temporal'], Literal("start={0}; end={0}; scheme=W3C-DTF;".format(year),
                                       datatype=DC['Period']))
         url = "{0}/australia_5km/{1}_{2}_{3}.zip".format(
             SWIFTROOT, emsc, gcm, year)

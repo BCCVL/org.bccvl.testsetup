@@ -458,7 +458,7 @@ class NDLCLayers(object):
             return
 
         for filename in ('ndlc_DLCDv1_Class.zip', 'ndlc_trend_evi_min.zip',
-                         'ndlc_trend_evi_mean', 'ndlc_trend_evi_max.zip'):
+                         'ndlc_trend_evi_mean.zip', 'ndlc_trend_evi_max.zip'):
 
             # TODO: maybe put some info in here? to access in a later stage...
             #       bccvlmetadata.json may be an option here

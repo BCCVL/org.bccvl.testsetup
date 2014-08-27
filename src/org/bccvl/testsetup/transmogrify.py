@@ -180,7 +180,7 @@ class FutureClimateLayer5k(object):
             "_path": 'datasets/climate/{}'.format(filename),
             "_type": "org.bccvl.content.remotedataset",
             "title": "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}".format(
-                     emsc, gcm, year),
+                     emsc, gcm.upper(), year),
             "remoteUrl": url,
             "_transitions": "publish",
             "_rdf": {

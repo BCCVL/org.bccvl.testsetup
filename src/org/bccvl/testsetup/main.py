@@ -36,7 +36,12 @@ LOG = logging.getLogger('org.bccvl.testsetup')
 
 def import_data(site, params):
     source_options = {}
-    if params.get('test', 'False'):
+    if params.get('dev', 'False'):
+        source_options = {
+            'devsource': {
+                'enabled': "True"}
+            }
+    elif params.get('test', 'False'):
         # run test imports only
         source_options = {
             'a5ksource': {
@@ -96,7 +101,6 @@ def import_data(site, params):
 
     transmogrifier = Transmogrifier(site)
     transmogrifier(u'org.bccvl.testsetup.dataimport',
-                   source={'path': 'org.bccvl.testsetup:data'},
                    **source_options)
     transaction.commit()
 
@@ -141,6 +145,7 @@ def main(app, params):
 
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Import datasets.')
+    parser.add_argument('--dev', action='store_true')
     parser.add_argument('--test', action='store_true')
     parser.add_argument('--all', action='store_true')
     parser.add_argument('--a5ksource', action='store_true')

@@ -178,10 +178,12 @@ class FutureClimateLayer5k(object):
         filename = os.path.basename(url)
         item = {
             "_path": 'datasets/climate/{}'.format(filename),
+            "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}".format(
                      emsc, gcm.upper(), year),
             "remoteUrl": url,
+            "creators": 'BCCVL',
             "_transitions": "publish",
             "_rdf": {
                 "file": "_rdf.ttl",
@@ -225,9 +227,11 @@ class NationalSoilgridLayers(object):
         }
         item = {
             "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "National Soil Grids",
             "remoteUrl": opt['url'],
+            "creators": 'BCCVL',
             "_transitions": "publish",
         }
         yield item
@@ -263,9 +267,11 @@ class VegetationAssetsStatesTransitionsLayers(object):
         }
         item = {
             "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008",
             "remoteUrl": opt['url'],
+            "creators": 'BCCVL',
             "_transitions": "publish",
         }
         yield item
@@ -301,9 +307,11 @@ class MultiResolutionRidgeTopFlatnessLayers(object):
         }
         item = {
             "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution)",
             "remoteUrl": opt['url'],
+            "creators": 'BCCVL',
             "_transitions": "publish",
         }
         yield item
@@ -339,9 +347,11 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
         }
         item = {
             "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)",
             "remoteUrl": opt['url'],
+            "creators": 'BCCVL',
             "_transitions": "publish",
         }
         yield item
@@ -383,9 +393,11 @@ class AWAPLayers(object):
             }
             item = {
                 "_path": 'datasets/environmental/{0}'.format(opt['id']),
+                "_owner":  (1,  'admin'),
                 "_type": "org.bccvl.content.remotedataset",
                 "title": "Local Discharge (Runoff+Drainage) {0}".format(year),
                 "remoteUrl": opt['url'],
+                "creators": 'BCCVL',
                 "_transitions": "publish",
             }
             yield item
@@ -424,9 +436,11 @@ class GlobPETAridLayers(object):
         }
         item = {
             "_path": 'datasets/environmental/{0}'.format(opt['id']),
+            "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "Global PET and Aridity",
             "remoteUrl": opt['url'],
+            "creators": 'BCCVL',
             "_transitions": "publish",
         }
         yield item
@@ -475,9 +489,11 @@ class NDLCLayers(object):
             }
             item = {
                 "_path": 'datasets/environmental/{0}'.format(opt['id']),
+                "_owner":  (1,  'admin'),
                 "_type": "org.bccvl.content.remotedataset",
                 "title": title,
                 "remoteUrl": opt['url'],
+                "creators": 'BCCVL',
                 "_transitions": "publish",
             }
             yield item

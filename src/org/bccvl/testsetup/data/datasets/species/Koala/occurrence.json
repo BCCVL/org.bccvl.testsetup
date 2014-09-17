@@ -6,6 +6,7 @@
           "contenttype": "text/csv",
           "filename": "occurrence.csv"
           },
+  "creators": "BCCVL",
   "_transitions": "publish",
   "_rdf": {
           "file": "occurrence.ttl",

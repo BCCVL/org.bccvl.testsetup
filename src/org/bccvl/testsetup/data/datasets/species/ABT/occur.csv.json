@@ -6,6 +6,7 @@
           "contenttype": "text/csv",
           "filename": "occur.csv"
           },
+  "creators": "BCCVL",
   "_transitions": "publish",
   "_rdf": {
           "file": "occur.ttl",

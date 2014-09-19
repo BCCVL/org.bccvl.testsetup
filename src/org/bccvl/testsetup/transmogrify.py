@@ -116,6 +116,10 @@ class DownloadFile(object):
 @implementer(ISection)
 class FutureClimateLayer5k(object):
 
+    resolution = BCCVOCAB['Resolution2_5m']
+    folder = 'australia_5km'
+    titletempl = "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}"
+
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
         self.context = transmogrifier.context
@@ -168,20 +172,20 @@ class FutureClimateLayer5k(object):
         r.add(RDF['type'], CVOCAB['Dataset'])
         r.add(RDF['type'], OWL['Thing'])
         r.set(BCCPROP['datagenre'], BCCVOCAB['DataGenreFC'])
-        r.set(BCCPROP['resolution'], BCCVOCAB['Resolution2_5m'])
+        r.set(BCCPROP['resolution'], self.resolution)
         r.set(BCCPROP['emissionscenario'], BCCEMSC[emsc])
         r.set(BCCPROP['gcm'], BCCGCM[gcm])
         r.set(DC['temporal'], Literal("start={0}; end={0}; scheme=W3C-DTF;".format(year),
                                       datatype=DC['Period']))
-        url = "{0}/australia_5km/{1}_{2}_{3}.zip".format(
-            SWIFTROOT, emsc, gcm, year)
+        url = "{0}/{1}/{2}_{3}_{4}.zip".format(
+            SWIFTROOT, self.folder, emsc, gcm, year)
         filename = os.path.basename(url)
         item = {
             "_path": 'datasets/climate/{}'.format(filename),
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
-            "title": "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}".format(
-                     emsc, gcm.upper(), year),
+            "title": self.titletempl.format(
+                emsc, gcm.upper(), year),
             "remoteUrl": url,
             "creators": 'BCCVL',
             "_transitions": "publish",
@@ -196,6 +200,15 @@ class FutureClimateLayer5k(object):
             }
         }
         return item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class FutureClimateLayer1k(FutureClimateLayer5k):
+
+    resolution = BCCVOCAB['Resolution30s']
+    folder = 'australia_1km'
+    titletempl = "Climate Projection {0} based on {1}, 30arcsec (~1km) - {2}"
 
 
 @provider(ISectionBlueprint)
@@ -383,7 +396,7 @@ class AWAPLayers(object):
             return
 
         # datasets for years 1900 to 2011
-        for year in range(1900, 2012):
+        for year in range(1900, 1905):
 
             # TODO: maybe put some info in here? to access in a later stage...
             #       bccvlmetadata.json may be an option here

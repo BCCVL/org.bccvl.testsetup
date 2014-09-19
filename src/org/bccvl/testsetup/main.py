@@ -56,26 +56,12 @@ def import_data(site, params):
             'vastsource': {
                 'enabled': 'True',
             },
-            'mrrtfsource':  {
-                'enabled': 'False',
-            },
-            'mrvbfsource':  {
-                'enabled': 'False',
-            },
-            'awapsource':  {
-                'enabled': 'False',
-            },
-            'petsource':  {
-                'enabled': 'False',
-            },
-            'ndlcsource':  {
-                'enabled': False,
-            },
         }
     elif params.get('all', 'False'):
         # import all knoown datasources:
         source_options = {
             'a5ksource': {'enabled': "True"},
+            'a1ksource': {'enabled': "True"},
             'nsgsource': {'enabled': "True"},
             'vastsource': {'enabled': "True"},
             'mrrtfsource': {'enabled': "True"},
@@ -86,12 +72,13 @@ def import_data(site, params):
             'ndlcsource': {'enabled': "False"},
         }
     else:
-        if params.get('a5ksource', False):
-            source_options['a5ksource'] = {'enabled': 'True'}
-            for p in ['emsc', 'gcm', 'year']:
-                if params.get(p, None):
-                    source_options['a5ksource'][p] = \
-                        params.get(p, '')
+        for fcsource in ('a5ksource', 'a1ksource'):
+            if params.get(fcsource, False):
+                source_options[fcsource] = {'enabled': 'True'}
+                for p in ['emsc', 'gcm', 'year']:
+                    if params.get(p, None):
+                        source_options[fcsource][p] = \
+                            params.get(p, '')
         for source in ['nsgsource', 'vastsource',
                        'mrrtfsource', 'mrvbfsource',
                        'awapsource', 'petsource',
@@ -149,6 +136,7 @@ def parse_args(args):
     parser.add_argument('--test', action='store_true')
     parser.add_argument('--all', action='store_true')
     parser.add_argument('--a5ksource', action='store_true')
+    parser.add_argument('--a1ksource', action='store_true')
     parser.add_argument('--gcm')
     parser.add_argument('--emsc')
     parser.add_argument('--year')

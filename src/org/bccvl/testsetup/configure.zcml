@@ -39,6 +39,11 @@
         />
 
     <utility
+        component=".transmogrify.FutureClimateLayer1k"
+        name="org.bccvl.testsetup.transmogrify.a1ksource"
+        />
+
+    <utility
         component=".transmogrify.NationalSoilgridLayers"
         name="org.bccvl.testsetup.transmogrify.nsgsource"
         />

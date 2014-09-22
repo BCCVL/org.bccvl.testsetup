@@ -4,7 +4,7 @@
 @prefix cvocab:   <http://namespaces.griffith.edu.au/collection_vocab#> .
 
 _:current a cvocab:Dataset, owl:Thing ;
-    bccprop:datagenre bccvocab:DataGenreE ;
+    bccprop:datagenre bccvocab:DataGenreCC ;
     bccprop:resolution bccvocab:Resolution30s ;
 #    bccprop:hasArchiveItem ... ? -> nfo:ArchiveItem
     .

@@ -432,7 +432,7 @@ class AWAPLayers(object):
             return
 
         # datasets for years 1900 to 2011
-        for year in range(1900, 1905):
+        for year in range(1900, 2011):
 
             # TODO: maybe put some info in here? to access in a later stage...
             #       bccvlmetadata.json may be an option here

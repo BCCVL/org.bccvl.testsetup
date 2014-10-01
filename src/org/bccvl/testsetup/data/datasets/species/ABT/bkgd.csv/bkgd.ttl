@@ -6,7 +6,6 @@
 
 _:absence_csv a cvocab:Dataset, owl:Thing ;
     bccprop:datagenre bccvocab:DataGenreSpeciesAbsence ;
-    bccprop:specieslayer bccvocab:SpeciesLayerX ;
     dwcterms:scientificName "Alectura lathami" ;
     dwcterms:vernacularName "Australian Brush-turkey" ;
     dwcterms:taxonID <urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986> ;

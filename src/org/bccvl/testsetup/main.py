@@ -113,11 +113,7 @@ def main(app, params):
     handler.setFormatter(formatter)
     root_logger.addHandler(handler)
 
-    logging.getLogger('gu.plone.rdf.subscriber').setLevel(logging.WARN)
-    logging.getLogger('gu.plone.rdf.repositorymetadata').setLevel(logging.WARN)
-    logging.getLogger('gu.z3cform.rdf.ordfhandler').setLevel(logging.WARN)
     logging.getLogger('ZODB.Connection').setLevel(logging.WARN)
-    logging.getLogger('ordf.handler.httpfourstore').setLevel(logging.WARN)
     # logging.getLogger('').setLevel(logging.WARN)
     # logging.getLogger('').setLevel(logging.WARN)
 

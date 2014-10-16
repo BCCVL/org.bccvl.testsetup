@@ -9,13 +9,7 @@ import os.path
 import re
 import logging
 import shutil
-from org.bccvl.site.namespace import (
-    BCCPROP, BCCVOCAB, BCCEMSC, BCCGCM)
-from gu.plone.rdf.namespace import CVOCAB
 from tempfile import mkdtemp
-from rdflib import Literal, Graph, RDF, OWL
-from rdflib.resource import Resource
-from ordf.namespace import DC
 
 LOG = logging.getLogger(__name__)
 # TODO: make this configurable somewhere
@@ -116,7 +110,7 @@ class DownloadFile(object):
 @implementer(ISection)
 class FutureClimateLayer5k(object):
 
-    resolution = BCCVOCAB['Resolution2_5m']
+    resolution = 'Resolution2_5m'
     folder = 'australia_5km'
     titletempl = "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}"
     current_title = "Current Climate 1976 to 2005, 2.5arcmin (~5km)"
@@ -172,14 +166,6 @@ class FutureClimateLayer5k(object):
             yield self.createCurrentItem()
 
     def createCurrentItem(self):
-        g = Graph()
-        r = Resource(g, g.identifier)
-        r.add(RDF['type'], CVOCAB['Dataset'])
-        r.add(RDF['type'], OWL['Thing'])
-        r.set(BCCPROP['datagenre'], BCCVOCAB['DataGenreCC'])
-        r.set(BCCPROP['resolution'], self.resolution)
-        r.set(DC['temporal'], Literal("start=1976; end=2005; scheme=W3C-DTF;",
-                                      datatype=DC['Period']))
         item = {
             "_path": "datasets/climate/{0}/{1}".format(self.folder, self.current_file),
             "_owner": (1, 'admin'),
@@ -188,29 +174,15 @@ class FutureClimateLayer5k(object):
             "remoteUrl": "{0}/{1}/{2}".format(SWIFTROOT, self.folder, self.current_file),
             "creators": "BCCVL",
             "_transitions": "publish",
-            "_rdf":  {
-                "file": "_rdf.ttl",
-                "contenttype": "text/turtle"
+            "_bccvlmetadata": {
+                "genre": "DataGenreCC",
+                "resolution": self.resolution,
+                "temporal": "start=1976; end=2005; scheme=W3C-DTF;"
             },
-            "_files": {
-                "_rdf.ttl": {
-                    "data": g.serialize(format='turtle')
-                }
-            }
         }
         return item
 
     def createItem(self, emsc, gcm, year):
-        g = Graph()
-        r = Resource(g, g.identifier)
-        r.add(RDF['type'], CVOCAB['Dataset'])
-        r.add(RDF['type'], OWL['Thing'])
-        r.set(BCCPROP['datagenre'], BCCVOCAB['DataGenreFC'])
-        r.set(BCCPROP['resolution'], self.resolution)
-        r.set(BCCPROP['emissionscenario'], BCCEMSC[emsc])
-        r.set(BCCPROP['gcm'], BCCGCM[gcm])
-        r.set(DC['temporal'], Literal("start={0}; end={0}; scheme=W3C-DTF;".format(year),
-                                      datatype=DC['Period']))
         url = "{0}/{1}/{2}_{3}_{4}.zip".format(
             SWIFTROOT, self.folder, emsc, gcm, year)
         filename = os.path.basename(url)
@@ -223,14 +195,12 @@ class FutureClimateLayer5k(object):
             "remoteUrl": url,
             "creators": 'BCCVL',
             "_transitions": "publish",
-            "_rdf": {
-                "file": "_rdf.ttl",
-                "contenttype": "text/turtle"
-            },
-            "_files": {
-                "_rdf.ttl": {
-                    "data": g.serialize(format='turtle')
-                }
+            "_bccvlmetadata": {
+                "genre": "DataGenreFC",
+                "resolution": self.resolution,
+                "emsc": emsc,
+                "gcm": gcm,
+                "temporal": "start={0}; end={0}; scheme=W3C-DTF;".format(year),
             }
         }
         return item
@@ -240,7 +210,7 @@ class FutureClimateLayer5k(object):
 @implementer(ISection)
 class FutureClimateLayer1k(FutureClimateLayer5k):
 
-    resolution = BCCVOCAB['Resolution30s']
+    resolution = 'Resolution30s'
     folder = 'australia_1km'
     titletempl = "Climate Projection {0} based on {1}, 30arcsec (~1km) - {2}"
     current_title = "Current Climate 1976 to 2005, 30arcsec (~1km)"

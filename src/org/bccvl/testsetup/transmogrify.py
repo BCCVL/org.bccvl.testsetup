@@ -181,7 +181,7 @@ class FutureClimateLayer5k(object):
         r.set(DC['temporal'], Literal("start=1976; end=2005; scheme=W3C-DTF;",
                                       datatype=DC['Period']))
         item = {
-            "_path": "datasets/climate/{0}".format(self.current_file),
+            "_path": "datasets/climate/{0}/{1}".format(self.folder, self.current_file),
             "_owner": (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": self.current_title,
@@ -215,7 +215,7 @@ class FutureClimateLayer5k(object):
             SWIFTROOT, self.folder, emsc, gcm, year)
         filename = os.path.basename(url)
         item = {
-            "_path": 'datasets/climate/{}'.format(filename),
+            "_path": 'datasets/climate/{0}/{1}'.format(self.folder, filename),
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": self.titletempl.format(

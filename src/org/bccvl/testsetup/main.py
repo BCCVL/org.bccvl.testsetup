@@ -45,9 +45,9 @@ def import_data(site, params):
         # run test imports only
         source_options = {
             'a5ksource': {
-                'emsc': ['RCP3PD'],
-                'gcm': ['cccma-cgcm31'],
-                'year': ['2015', '2025'],
+                'emsc': 'RCP3PD',
+                'gcm': 'cccma-cgcm31',
+                'year': '2015, 2025',
                 'enabled': "True"
             },
             'nsgsource': {

@@ -36,7 +36,7 @@ no params ... install datasets enbedded in this package
             ipsl-cm4, mpi-echam5, mri-cgcm232a, ncar-ccsm30,
             ncar-pcm1, ukmo-hadcm3, ukmo-hadgem1
   --years ... comma separated list of years
-              2015, 2025, 2035, 2045, 2055, 2065, 207', 2085
+              2015, 2025, 2035, 2045, 2055, 2065, 2075, 2085
 
 --nsgsource ... enable national soil grid dataset
 --vastsource ... enable vast dataset

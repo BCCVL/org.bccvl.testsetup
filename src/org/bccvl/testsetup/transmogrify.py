@@ -125,9 +125,9 @@ class FutureClimateLayer5k(object):
 
         # get filters from configuration
         self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
-        self.emsc = set(x for x in options.get('emsc', "").split(',') if x)
-        self.gcm = set(x for x in options.get('gcm', "").split(',') if x)
-        self.year = set(x for x in options.get('year', "").split(',') if x)
+        self.emsc = set(x.strip() for x in options.get('emsc', "").split(',') if x)
+        self.gcm = set(x.strip() for x in options.get('gcm', "").split(',') if x)
+        self.year = set(x.strip() for x in options.get('year', "").split(',') if x)
 
     def __iter__(self):
         # exhaust previous

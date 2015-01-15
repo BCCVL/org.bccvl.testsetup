@@ -12,4 +12,4 @@ def setupVarious(context):
 
     # get Zope root
     app = context.getSite().restrictedTraverse('/')
-    main(app)
+    main(app, {'dev': True})

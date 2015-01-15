@@ -8,7 +8,7 @@
   },
   "creators": "BCCVL",
   "_transitions": "publish",
-  "_bccvlmetadata": {
+  "bccvlmetadata": {
     "genre": "DataGenreCC",
     "resolution": "Resolution30s"
   }

@@ -8,7 +8,7 @@
           },
   "creators": "BCCVL",
   "_transitions": "publish",
-  "_bccvlmetadata": {
+  "bccvlmetadata": {
     "genre": "DataGenreSpeciesOccurrence",
     "species": {
       "scientificName": "Phascolarctus cinereus",

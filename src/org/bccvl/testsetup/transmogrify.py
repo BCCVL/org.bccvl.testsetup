@@ -174,7 +174,7 @@ class FutureClimateLayer5k(object):
             "remoteUrl": "{0}/{1}/{2}".format(SWIFTROOT, self.folder, self.current_file),
             "creators": "BCCVL",
             "_transitions": "publish",
-            "_bccvlmetadata": {
+            "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": self.resolution,
                 "temporal": "start=1976; end=2005; scheme=W3C-DTF;"
@@ -195,7 +195,7 @@ class FutureClimateLayer5k(object):
             "remoteUrl": url,
             "creators": 'BCCVL',
             "_transitions": "publish",
-            "_bccvlmetadata": {
+            "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": self.resolution,
                 "emsc": emsc,

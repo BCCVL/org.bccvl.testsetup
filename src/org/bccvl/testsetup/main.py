@@ -72,7 +72,7 @@ def import_data(site, params):
             'ndlcsource': {'enabled': "False"},
         }
     else:
-        for fcsource in ('a5ksource', 'a1ksource'):
+        for fcsource in ('a5ksource', 'a1ksource', 'awapsource'):
             if params.get(fcsource, False):
                 source_options[fcsource] = {'enabled': 'True'}
                 for p in ['emsc', 'gcm', 'year']:
@@ -81,8 +81,7 @@ def import_data(site, params):
                             params.get(p, '')
         for source in ['nsgsource', 'vastsource',
                        'mrrtfsource', 'mrvbfsource',
-                       'awapsource', 'petsource',
-                       'ndlcsource']:
+                       'petsource', 'ndlcsource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
 

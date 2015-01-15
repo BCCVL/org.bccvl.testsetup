@@ -392,6 +392,7 @@ class AWAPLayers(object):
 
         # get filters from configuration
         self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+        self.year = set(x.strip() for x in options.get('year', "").split(',') if x)
 
     def __iter__(self):
         # exhaust previous
@@ -403,6 +404,9 @@ class AWAPLayers(object):
 
         # datasets for years 1900 to 2011
         for year in range(1900, 2011):
+            if self.year and str(year) not in self.year:
+                # skip item if not selected
+                continue
 
             # TODO: maybe put some info in here? to access in a later stage...
             #       bccvlmetadata.json may be an option here

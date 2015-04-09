@@ -57,7 +57,7 @@ class DownloadFile(object):
                 self.tmpdir = None
 
     def downloadData(self, item):
-        """assumes ther is either 'file' or 'remoteUrl' in item dictionary.
+        """assumes there is either 'file' or 'remoteUrl' in item dictionary.
         but not both"""
         self.tmpdir = mkdtemp('testsetup')
         fileitem = item.get('file', {})

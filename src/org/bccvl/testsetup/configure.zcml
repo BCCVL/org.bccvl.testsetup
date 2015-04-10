@@ -65,14 +65,26 @@
 
     <utility
         component=".transmogrify.AWAPLayers"
-        name="org.bccvl.testsetup.transmogrify.awapsource" />
+        name="org.bccvl.testsetup.transmogrify.awapsource" 
+        />
 
     <utility
         component=".transmogrify.GlobPETAridLayers"
-        name="org.bccvl.testsetup.transmogrify.petsource" />
+        name="org.bccvl.testsetup.transmogrify.petsource" 
+        />
 
     <utility
-        component=".transmogrify.NDLCLayers"
-        name="org.bccvl.testsetup.transmogrify.ndlcsource" />
-
+          component=".transmogrify.NDLCLayers"
+          name="org.bccvl.testsetup.transmogrify.ndlcsource" 
+        />
+    
+    <utility
+        component=".transmogrify.WorldClimCurrentLayers"
+        name="org.bccvl.testsetup.transmogrify.wccsource" 
+        />
+    
+    <utility
+        component=".transmogrify.WorldClimFutureLayers"
+        name="org.bccvl.testsetup.transmogrify.wcfsource"
+        />
 </configure>

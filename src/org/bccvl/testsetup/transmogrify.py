@@ -520,3 +520,110 @@ class NDLCLayers(object):
                 "_transitions": "publish",
             }
             yield item
+
+#
+
+class WorldClimLayer(object):
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class WorldClimFutureLayers(WorldClimLayer):
+    def datasets(self):
+        GCMS = [
+            'ACCESS1-0', 'BCC-CSM1-1', 'CCSM4', 'CESM1-CAM5-1-FV2', 
+            'CNRM-CM5', 'GFDL-CM3', 'GFDL-ESM2G', 'GISS-E2-R', 
+            'HadGEM2-A0', 'HadGEM2-CC', 'HadGEM2-ES', 'INMCM4', 
+            'IPSL-CM5A-LR', 'MIROC-ESM-CHEM', 'MIROC-ESM', 'MIROC5', 
+            'MPI-ESM-LR', 'MRI-CGCM3', 'NorESM1-M'
+        ]
+        EMSCS = [ 'RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5' ]
+        YEARS = [ '2050', '2070' ]
+        RESOS = [
+            '5m', '10m', '2.5m', # '30s' # TODO: 30s are 12+GB, need to resolve
+        ]
+
+        for gcm, emsc, year, res in product(GCMS, EMSCS, YEARS, RESOS):
+            filename = '{gmc}_{emsc}_{year}_{res}'.format(**locals())
+            title = u'WorldClim Future Projection using {gcm} {rcp} at {res} ({year})'.format(**locals())
+            if emsc == 'ccsm4': emsc = 'ncar-ccsm40'
+            yield filename, title, res, gcm.lower(), emsc.replace('.','')
+        
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        for filename, title, res, year in self.datasets():
+            opt = {
+                'id': filename,
+                'url': '{0}/worldclim-future/{1}'.format(SWIFTROOT, filename),
+            }
+            item = {
+                '_path': 'datasets/climate/worldclim/{}/{}'.format(res, opt['id']),
+                "_owner":  (1,  'admin'),
+                "_type": "org.bccvl.content.remotedataset",
+                "title": title,
+                "remoteUrl": opt['url'],
+                "creators": 'BCCVL',
+                "_transitions": "publish",
+                "bccvlmetadata": {
+                    "genre": "DataGenreFC",
+                    "resolution": 'Resolution{}'.format(res),
+                    "temporal": "start={year}; end={year}; scheme=W3C-DTF;".format(year=year)
+                },
+            }
+            yield item
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class WorldClimCurrentLayers(WorldClimLayer):
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        RESOLUTION_MAP = {
+            '30s': '30 arcsec',
+            '2-5m': '2.5 arcmin',
+            '5m': '5 arcmin',
+            '10m': '10 arcmin',
+        }
+        
+        for scale in ['2-5m', '5m', '10m', '30s']:
+            filename = 'worldclim_{}.zip'.format(scale)
+            res = scale.replace('-', '_')
+            title = u'WorldClim Current Conditions (1950-2000) at {}'.format(RESOLUTION_MAP[res])
+            opt = {
+                'id': filename,
+                'url': '{0}/worldclim-current/{1}'.format(SWIFTROOT, filename),
+            }
+            item = {
+                '_path': 'datasets/climate/worldclim/{}/{}'.format(res, opt['id']),
+                "_owner":  (1,  'admin'),
+                "_type": "org.bccvl.content.remotedataset",
+                "title": title,
+                "remoteUrl": opt['url'],
+                "creators": 'BCCVL',
+                "_transitions": "publish",
+                "bccvlmetadata": {
+                    "genre": "DataGenreCC",
+                    "resolution": 'Resolution{}'.format(res),
+                    "temporal": "start=1950; end=2000; scheme=W3C-DTF;",
+                },
+            }
+            yield item

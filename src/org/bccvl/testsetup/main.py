@@ -58,7 +58,7 @@ def import_data(site, params):
             },
         }
     elif params.get('all', 'False'):
-        # import all knoown datasources:
+        # import all known datasources:
         source_options = {
             'a5ksource': {'enabled': "True"},
             'a1ksource': {'enabled': "True"},
@@ -66,10 +66,12 @@ def import_data(site, params):
             'vastsource': {'enabled': "True"},
             'mrrtfsource': {'enabled': "True"},
             'mrvbfsource': {'enabled': "True"},
-            # TODO: maybe re-deseign this one to handle years differently
+            # TODO: maybe re-design this one to handle years differently
             'awapsource': {'enabled': "False"},
             'petsource': {'enabled': "False"},
             'ndlcsource': {'enabled': "False"},
+            'wccsource': {'enabled': "False"},
+            'wcfsource': {'enabled': "False"},
         }
     else:
         for fcsource in ('a5ksource', 'a1ksource', 'awapsource'):
@@ -81,7 +83,8 @@ def import_data(site, params):
                             params.get(p, '')
         for source in ['nsgsource', 'vastsource',
                        'mrrtfsource', 'mrvbfsource',
-                       'petsource', 'ndlcsource']:
+                       'petsource', 'ndlcsource',
+                       'wccsource', 'wcfsource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
 
@@ -142,6 +145,8 @@ def parse_args(args):
     parser.add_argument('--awapsource', action='store_true')
     parser.add_argument('--petsource', action='store_true')
     parser.add_argument('--ndlcsource', action='store_true')
+    parser.add_argument('--wccsource', action='store_true')
+    parser.add_argument('--wcfsource', action='store_true')
     pargs = parser.parse_args(args)
     return vars(pargs)
 

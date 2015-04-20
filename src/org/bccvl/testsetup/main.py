@@ -62,6 +62,7 @@ def import_data(site, params):
         source_options = {
             'a5ksource': {'enabled': "True"},
             'a1ksource': {'enabled': "True"},
+            'a250source': {'enabled': "True"},
             'nsgsource': {'enabled': "True"},
             'vastsource': {'enabled': "True"},
             'mrrtfsource': {'enabled': "True"},
@@ -74,7 +75,7 @@ def import_data(site, params):
             'wcfsource': {'enabled': "False"},
         }
     else:
-        for fcsource in ('a5ksource', 'a1ksource', 'awapsource'):
+        for fcsource in ('a5ksource', 'a1ksource', 'a250source', 'awapsource'):
             if params.get(fcsource, False):
                 source_options[fcsource] = {'enabled': 'True'}
                 for p in ['emsc', 'gcm', 'year']:
@@ -135,6 +136,7 @@ def parse_args(args):
     parser.add_argument('--all', action='store_true')
     parser.add_argument('--a5ksource', action='store_true')
     parser.add_argument('--a1ksource', action='store_true')
+    parser.add_argument('--a250source', action='store_true')    
     parser.add_argument('--gcm')
     parser.add_argument('--emsc')
     parser.add_argument('--year')

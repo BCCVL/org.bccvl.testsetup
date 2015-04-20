@@ -162,7 +162,7 @@ class FutureClimateLayer5k(object):
             yield self.createItem(emsc, gcm, year)
             # create item
         # yield current as well
-        if not self.year or 'current' in self.year:
+        if self.current_file and (not self.year or 'current' in self.year):
             yield self.createCurrentItem()
 
     def createCurrentItem(self):
@@ -216,6 +216,17 @@ class FutureClimateLayer1k(FutureClimateLayer5k):
     current_title = "Current Climate 1976 to 2005, 30arcsec (~1km)"
     current_file = "current.76to05.zip"
 
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class FutureClimateLayer250m(FutureClimateLayer5k):
+
+    resolution = 'Resolution9s'
+    folder = 'australia_250m'
+    titletempl = "Climate Projection {0} based on {1}, 9arcsec (~250m) - {2}"
+    current_title = "Current Climate 1976 to 2005, 9arcsec (~250m)"
+    current_file = None
+    
 
 @provider(ISectionBlueprint)
 @implementer(ISection)

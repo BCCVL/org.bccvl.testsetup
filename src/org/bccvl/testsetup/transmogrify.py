@@ -620,7 +620,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
 
         for scale in RESOLUTION_MAP.keys():
             filename = 'worldclim_{}.zip'.format(scale)
-            title = u'WorldClim Current Conditions (1950-2000) at {}'.format(RESOLUTION_MAP[res])
+            title = u'WorldClim Current Conditions (1950-2000) at {}'.format(RESOLUTION_MAP[scale])
             res = scale.replace('-', '_')
             opt = {
                 'id': filename,

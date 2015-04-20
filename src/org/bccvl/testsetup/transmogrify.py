@@ -569,6 +569,7 @@ class WorldClimFutureLayers(WorldClimLayer):
             filename = '{gcm}_{emsc}_{year}_{res}'.format(**locals())
             title = u'WorldClim Future Projection using {gcm} {emsc} at {res} ({year})'.format(**locals())
             if emsc == 'ccsm4': emsc = 'ncar-ccsm40'
+            res = res.replace('.', '_')
             yield filename, title, res, year, gcm.lower(), emsc.replace('.','')
         
     def __iter__(self):

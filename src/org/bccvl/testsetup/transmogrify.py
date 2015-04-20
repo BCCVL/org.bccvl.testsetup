@@ -568,7 +568,7 @@ class WorldClimFutureLayers(WorldClimLayer):
             'IPSL-CM5A-LR': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
             'MIROC-ESM-CHEM': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
             'MIROC-ESM': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
-            'MIROC5',: ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'MIROC5': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
             'MPI-ESM-LR': ['RCP3PD', 'RCP4.5', 'RCP8.5'],
             'MRI-CGCM3': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
             'NorESM1-M': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],

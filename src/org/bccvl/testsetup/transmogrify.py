@@ -572,7 +572,7 @@ class WorldClimFutureLayers(WorldClimLayer):
             'MPI-ESM-LR': ['RCP3PD', 'RCP4.5', 'RCP8.5'],
             'MRI-CGCM3': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
             'NorESM1-M': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
-        ]
+        }
         YEARS = [ '2050', '2070' ]
         RESOS = [
             '5m', '10m', '2.5m', # '30s' # TODO: 30s are 12+GB, need to resolve

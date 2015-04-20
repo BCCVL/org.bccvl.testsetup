@@ -612,16 +612,16 @@ class WorldClimCurrentLayers(WorldClimLayer):
             return
 
         RESOLUTION_MAP = {
-            '30s': '30 arcsec',
+            #'30s': '30 arcsec',
             '2-5m': '2.5 arcmin',
             '5m': '5 arcmin',
             '10m': '10 arcmin',
         }
-        
-        for scale in ['2-5m', '5m', '10m', '30s']:
+
+        for scale in RESOLUTION_MAP.keys():
             filename = 'worldclim_{}.zip'.format(scale)
-            res = scale.replace('-', '_')
             title = u'WorldClim Current Conditions (1950-2000) at {}'.format(RESOLUTION_MAP[res])
+            res = scale.replace('-', '_')
             opt = {
                 'id': filename,
                 'url': '{0}/worldclim-current/{1}'.format(SWIFTROOT, filename),

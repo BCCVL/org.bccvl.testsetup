@@ -535,6 +535,7 @@ class NDLCLayers(object):
 #
 
 class WorldClimLayer(object):
+
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
         self.context = transmogrifier.context
@@ -545,9 +546,11 @@ class WorldClimLayer(object):
         # get filters from configuration
         self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
+        
 @provider(ISectionBlueprint)
 @implementer(ISection)
 class WorldClimFutureLayers(WorldClimLayer):
+
     def datasets(self):
         GCMS = [
             'ACCESS1-0', 'BCC-CSM1-1', 'CCSM4', 'CESM1-CAM5-1-FV2', 

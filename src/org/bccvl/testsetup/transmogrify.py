@@ -582,7 +582,7 @@ class WorldClimFutureLayers(WorldClimLayer):
         for filename, title, res, year in self.datasets():
             opt = {
                 'id': filename,
-                'url': '{0}/worldclim-future/{1}'.format(SWIFTROOT, filename),
+                'url': '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
             }
             item = {
                 '_path': 'datasets/climate/worldclim/{}/{}'.format(res, opt['id']),
@@ -624,7 +624,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
             res = scale.replace('-', '_')
             opt = {
                 'id': filename,
-                'url': '{0}/worldclim-current/{1}'.format(SWIFTROOT, filename),
+                'url': '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
             }
             item = {
                 '_path': 'datasets/climate/worldclim/{}/{}'.format(res, opt['id']),

@@ -566,10 +566,10 @@ class WorldClimFutureLayers(WorldClimLayer):
         ]
 
         for gcm, emsc, year, res in product(GCMS, EMSCS, YEARS, RESOS):
-            filename = '{gmc}_{emsc}_{year}_{res}'.format(**locals())
+            filename = '{gcm}_{emsc}_{year}_{res}'.format(**locals())
             title = u'WorldClim Future Projection using {gcm} {rcp} at {res} ({year})'.format(**locals())
             if emsc == 'ccsm4': emsc = 'ncar-ccsm40'
-            yield filename, title, res, gcm.lower(), emsc.replace('.','')
+            yield filename, title, res, year, gcm.lower(), emsc.replace('.','')
         
     def __iter__(self):
         # exhaust previous
@@ -579,7 +579,7 @@ class WorldClimFutureLayers(WorldClimLayer):
         if not self.enabled:
             return
 
-        for filename, title, res, year in self.datasets():
+        for filename, title, res, year, gcm, emsc  in self.datasets():
             opt = {
                 'id': filename,
                 'url': '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
@@ -595,6 +595,8 @@ class WorldClimFutureLayers(WorldClimLayer):
                 "bccvlmetadata": {
                     "genre": "DataGenreFC",
                     "resolution": 'Resolution{}'.format(res),
+                    "emsc": emsc,
+                    "gcm": gcm,
                     "temporal": "start={year}; end={year}; scheme=W3C-DTF;".format(year=year)
                 },
             }

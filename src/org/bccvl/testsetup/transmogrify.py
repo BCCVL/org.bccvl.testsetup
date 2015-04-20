@@ -566,11 +566,10 @@ class WorldClimFutureLayers(WorldClimLayer):
         ]
 
         for gcm, emsc, year, res in product(GCMS, EMSCS, YEARS, RESOS):
-            filename = '{gcm}_{emsc}_{year}_{res}'.format(**locals())
+            filename = '{gcm}_{emsc}_{year}_{res}.zip'.format(**locals())
             title = u'WorldClim Future Projection using {gcm} {emsc} at {res} ({year})'.format(**locals())
             if emsc == 'ccsm4': emsc = 'ncar-ccsm40'
-            res = res.replace('.', '_')
-            yield filename, title, res, year, gcm.lower(), emsc.replace('.','')
+            yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.','')
         
     def __iter__(self):
         # exhaust previous

@@ -552,24 +552,39 @@ class WorldClimLayer(object):
 class WorldClimFutureLayers(WorldClimLayer):
 
     def datasets(self):
-        GCMS = [
-            'ACCESS1-0', 'BCC-CSM1-1', 'CCSM4', 'CESM1-CAM5-1-FV2', 
-            'CNRM-CM5', 'GFDL-CM3', 'GFDL-ESM2G', 'GISS-E2-R', 
-            'HadGEM2-A0', 'HadGEM2-CC', 'HadGEM2-ES', 'INMCM4', 
-            'IPSL-CM5A-LR', 'MIROC-ESM-CHEM', 'MIROC-ESM', 'MIROC5', 
-            'MPI-ESM-LR', 'MRI-CGCM3', 'NorESM1-M'
+        MODELS = {
+            'ACCESS1-0': ['RCP4.5', 'RCP8.5'],
+            'BCC-CSM1-1': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'CCSM4': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'CESM1-CAM5-1-FV2': ['RCP4.5'],
+            'CNRM-CM5': ['RCP3PD', 'RCP4.5', 'RCP8.5'],
+            'GFDL-CM3': ['RCP3PD', 'RCP4.5', 'RCP8.5'],
+            'GFDL-ESM2G': ['RCP3PD', 'RCP4.5', 'RCP6'],
+            'GISS-E2-R': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'HadGEM2-A0': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'HadGEM2-CC': ['RCP4.5', 'RCP8.5'],
+            'HadGEM2-ES': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'INMCM4': ['RCP4.5', 'RCP8.5'],
+            'IPSL-CM5A-LR': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'MIROC-ESM-CHEM': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'MIROC-ESM': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'MIROC5',: ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'MPI-ESM-LR': ['RCP3PD', 'RCP4.5', 'RCP8.5'],
+            'MRI-CGCM3': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
+            'NorESM1-M': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
         ]
-        EMSCS = [ 'RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5' ]
         YEARS = [ '2050', '2070' ]
         RESOS = [
             '5m', '10m', '2.5m', # '30s' # TODO: 30s are 12+GB, need to resolve
         ]
 
-        for gcm, emsc, year, res in product(GCMS, EMSCS, YEARS, RESOS):
-            filename = '{gcm}_{emsc}_{year}_{res}.zip'.format(**locals())
-            title = u'WorldClim Future Projection using {gcm} {emsc} at {res} ({year})'.format(**locals())
-            if emsc == 'ccsm4': emsc = 'ncar-ccsm40'
-            yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.','')
+        for gcm, year, res in product(MODELS, YEARS, RESOS):
+            for emsc in MODELS[gcm]:
+                filename = '{gcm}_{emsc}_{year}_{res}.zip'.format(**locals())
+                title = u'WorldClim Future Projection using {gcm} {emsc} at {res} ({year})'.format(**locals())
+                if emsc == 'ccsm4':
+                    emsc = 'ncar-ccsm40'
+                yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.','')
         
     def __iter__(self):
         # exhaust previous

@@ -658,3 +658,47 @@ class WorldClimCurrentLayers(WorldClimLayer):
                 },
             }
             yield item
+
+#
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class GPPLayers(object):
+    """Gross Primary Productivity
+    """
+
+    datasets = [
+        ('gpp_maxmin_2000_2007.zip', "Gross Primary Productivity for 2000-2007 (min, max & mean)"),
+        ('gpp_year_means2000_2007.zip', "Gross Primary Productivity for 2000-2007 (annual means)"),
+    ]
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        for dfile, dtitle in self.datasets:
+            _url = '{0}/.../{1}'.format(SWIFTROOT, dfile)
+            item = {
+                "_path": 'datasets/environmental/{0}'.format(dfile),
+                "_owner":  (1,  'admin'),
+                "_type": "org.bccvl.content.remotedataset",
+                "title": dtitle,
+                "remoteUrl": _url,
+                "creators": 'BCCVL',
+                "_transitions": "publish",
+            }
+            yield item

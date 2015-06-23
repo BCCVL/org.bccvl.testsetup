@@ -669,7 +669,13 @@ class GPPLayers(object):
 
     datasets = [
         ('gpp_maxmin_2000_2007.zip', "Gross Primary Productivity for 2000-2007 (min, max & mean)"),
-        ('gpp_year_means2000_2007.zip', "Gross Primary Productivity for 2000-2007 (annual means)"),
+        ('gppyr_2000_01_molco2m2yr_m.zip', "Gross Primary Productivity for 2000 (annual mean)"),
+        ('gppyr_2001_02_molco2m2yr_m.zip', "Gross Primary Productivity for 2001 (annual mean)"),
+        ('gppyr_2002_03_molco2m2yr_m.zip', "Gross Primary Productivity for 2002 (annual mean)"),
+        ('gppyr_2003_04_molco2m2yr_m.zip', "Gross Primary Productivity for 2003 (annual mean)"),
+        ('gppyr_2004_05_molco2m2yr_m.zip', "Gross Primary Productivity for 2004 (annual mean)"),
+        ('gppyr_2005_06_molco2m2yr_m.zip', "Gross Primary Productivity for 2005 (annual mean)"),
+        ('gppyr_2006_07_molco2m2yr_m.zip', "Gross Primary Productivity for 2006 (annual mean)"),
     ]
 
     def __init__(self, transmogrifier, name, options, previous):

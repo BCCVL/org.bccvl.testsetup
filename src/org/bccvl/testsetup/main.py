@@ -175,4 +175,5 @@ def zopectl(app, args):
 
 if 'app' in locals():
     # we have been started via ./bin/instance run main.py
-    main(app)
+    # but ideally should be run via ./bin/instance testsetup
+    main(app, parse_args(sys.argv[4:]))

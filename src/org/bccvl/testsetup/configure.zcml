@@ -92,4 +92,9 @@
         component=".transmogrify.WorldClimFutureLayers"
         name="org.bccvl.testsetup.transmogrify.wcfsource"
         />
+    
+    <utility
+        component=".transmogrify.GPPLayers"
+        name="org.bccvl.testsetup.transmogrify.gppsource"
+        />
 </configure>

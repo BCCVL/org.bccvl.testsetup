@@ -697,9 +697,9 @@ class GPPLayers(object):
             return
 
         for dfile, dtitle in self.datasets:
-            _url = '{0}/.../{1}'.format(SWIFTROOT, dfile)
+            _url = '{0}/gpp/{1}'.format(SWIFTROOT, dfile)
             item = {
-                "_path": 'datasets/environmental/{0}'.format(dfile),
+                "_path": 'datasets/environmental/gpp/{0}'.format(dfile),
                 "_owner":  (1,  'admin'),
                 "_type": "org.bccvl.content.remotedataset",
                 "title": dtitle,

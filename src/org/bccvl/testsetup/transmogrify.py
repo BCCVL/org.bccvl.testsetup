@@ -697,6 +697,13 @@ class GPPLayers(object):
             return
 
         for dfile, dtitle in self.datasets:
+            if dfile == 'gpp_maxmin_2000_2007':
+                start = 2000
+                end = 2000
+            else:
+                _date = dfile.split('_')[1]
+                start = _date
+                end = _date
             _url = '{0}/gpp/{1}'.format(SWIFTROOT, dfile)
             item = {
                 "_path": 'datasets/environmental/gpp/{0}'.format(dfile),
@@ -706,5 +713,10 @@ class GPPLayers(object):
                 "remoteUrl": _url,
                 "creators": 'BCCVL',
                 "_transitions": "publish",
+                "bccvlmetadata": {
+                    "genre": "DataGenreE",
+                    "resolution": 'Resolution9s',
+                    "temporal": "start=2000; end=2007; scheme=W3C-DTF;",
+                },
             }
             yield item

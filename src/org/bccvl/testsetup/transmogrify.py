@@ -720,3 +720,68 @@ class GPPLayers(object):
                 },
             }
             yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class FPARLayers(object):
+    """Fraction of Photosynthetically Active Radiation
+    """
+
+    # (year, start_month, end_month)
+    ranges = [
+        (2000, 04, 12),
+        (2001, 01, 12),
+        (2002, 01, 12),
+        (2003, 01, 12),
+        (2004, 01, 12),
+        (2005, 01, 12),
+        (2006, 01, 12),
+        (2007, 01, 12),
+        (2008, 01, 12),
+        (2009, 01, 12),
+        (2010, 01, 12),
+        (2011, 01, 12),
+        (2012, 01, 12),
+        (2013, 01, 12),
+        (2014, 01, 10),
+    ]
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        for year, start_month, end_month in self.ranges:
+            for month in xrange(start_month, end_month+1):
+                dfile = 'fpar.{year}.{month}.aust.zip'.format(month=month, year=year)
+                dtitle = 'MODIS-fPAR time series for Australia - {month} {year}'.format(month=month, year=year)
+                _url = '{0}/fpar/{1}'.format(SWIFTROOT, dfile)
+                item = {
+                    "_path": 'datasets/environmental/fpar/{0}'.format(dfile),
+                    "_owner":  (1,  'admin'),
+                    "_type": "org.bccvl.content.remotedataset",
+                    "title": dtitle,
+                    "remoteUrl": _url,
+                    "creators": 'BCCVL',
+                    "_transitions": "publish",
+                    "bccvlmetadata": {
+                        "genre": "DataGenreE",
+                        "resolution": 'Resolution9s',
+                        "temporal": "start=2000; end=2014; scheme=W3C-DTF;",
+                    },
+                }
+                yield item

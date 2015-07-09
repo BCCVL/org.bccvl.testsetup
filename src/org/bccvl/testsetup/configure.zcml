@@ -97,4 +97,9 @@
         component=".transmogrify.GPPLayers"
         name="org.bccvl.testsetup.transmogrify.gppsource"
         />
+    
+    <utility
+        component=".transmogrify.FPARLayers"
+        name="org.bccvl.testsetup.transmogrify.fparsource"
+        />
 </configure>

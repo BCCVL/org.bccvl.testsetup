@@ -74,6 +74,7 @@ def import_data(site, params):
             'wccsource': {'enabled': "False"},
             'wcfsource': {'enabled': "False"},
             'gppsource': {'emabled': "False"},
+            'fparsource': {'emabled': "False"},
         }
     else:
         for fcsource in ('a5ksource', 'a1ksource', 'a250source', 'awapsource'):
@@ -87,7 +88,7 @@ def import_data(site, params):
                        'mrrtfsource', 'mrvbfsource',
                        'petsource', 'ndlcsource',
                        'wccsource', 'wcfsource',
-                       'gppsource']:
+                       'gppsource', 'fparsource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
 
@@ -152,6 +153,7 @@ def parse_args(args):
     parser.add_argument('--wccsource', action='store_true')
     parser.add_argument('--wcfsource', action='store_true')
     parser.add_argument('--gppsource', action='store_true')
+    parser.add_argument('--fparsource', action='store_true')
     pargs = parser.parse_args(args)
     return vars(pargs)
 

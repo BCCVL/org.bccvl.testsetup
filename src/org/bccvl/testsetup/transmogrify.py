@@ -111,7 +111,7 @@ class DownloadFile(object):
 class FutureClimateLayer5k(object):
 
     resolution = 'Resolution2_5m'
-    folder = 'australia_5km'
+    folder = 'australia/australia_5km'
     titletempl = "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}"
     current_title = "Current Climate 1976 to 2005, 2.5arcmin (~5km)"
     current_file = "current.zip"
@@ -211,7 +211,7 @@ class FutureClimateLayer5k(object):
 class FutureClimateLayer1k(FutureClimateLayer5k):
 
     resolution = 'Resolution30s'
-    folder = 'australia_1km'
+    folder = 'australia/australia_1km'
     titletempl = "Climate Projection {0} based on {1}, 30arcsec (~1km) - {2}"
     current_title = "Current Climate 1976 to 2005, 30arcsec (~1km)"
     current_file = "current.76to05.zip"
@@ -222,11 +222,11 @@ class FutureClimateLayer1k(FutureClimateLayer5k):
 class FutureClimateLayer250m(FutureClimateLayer5k):
 
     resolution = 'Resolution9s'
-    folder = 'australia_250m'
+    folder = 'australia/australia_250m'
     titletempl = "Climate Projection {0} based on {1}, 9arcsec (~250m) - {2}"
     current_title = "Current Climate 1976 to 2005, 9arcsec (~250m)"
     current_file = None
-    
+
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
@@ -256,7 +256,7 @@ class NationalSoilgridLayers(object):
             'url': '{0}/national_soil_grids/nsg-2011-250m.zip'.format(SWIFTROOT)
         }
         item = {
-            "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_path": 'datasets/environmental/national_soil_grids/{}'.format(opt['id']),
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "National Soil Grids",
@@ -296,7 +296,7 @@ class VegetationAssetsStatesTransitionsLayers(object):
             'url': '{0}/vast/vast.zip'.format(SWIFTROOT),
         }
         item = {
-            "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_path": 'datasets/environmental/vast/{}'.format(opt['id']),
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008",
@@ -336,7 +336,7 @@ class MultiResolutionRidgeTopFlatnessLayers(object):
             'url': '{0}/multi_res_ridge_top_flat/multi_res_ridge_top_flat.zip'.format(SWIFTROOT),
         }
         item = {
-            "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_path": 'datasets/environmental/mrrtf/{}'.format(opt['id']),
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution)",
@@ -376,7 +376,7 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
             'url': '{0}/multi_res_valley_bottom_flat/multi_res_valley_bottom_flat.zip'.format(SWIFTROOT),
         }
         item = {
-            "_path": 'datasets/environmental/{}'.format(opt['id']),
+            "_path": 'datasets/environmental/mrvbf/{}'.format(opt['id']),
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)",
@@ -426,7 +426,7 @@ class AWAPLayers(object):
                 'url': '{0}/awap/awap_ann_{1}1231.zip'.format(SWIFTROOT, year),
             }
             item = {
-                "_path": 'datasets/environmental/{0}'.format(opt['id']),
+                "_path": 'datasets/environmental/awap/{0}'.format(opt['id']),
                 "_owner":  (1,  'admin'),
                 "_type": "org.bccvl.content.remotedataset",
                 "title": "Local Discharge (Runoff+Drainage) {0}".format(year),
@@ -469,7 +469,7 @@ class GlobPETAridLayers(object):
             'url': '{0}/glob_pet_and_aridity/global-pet-and-aridity.zip'.format(SWIFTROOT),
         }
         item = {
-            "_path": 'datasets/environmental/{0}'.format(opt['id']),
+            "_path": 'datasets/environmental/gpet/{0}'.format(opt['id']),
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "Global PET and Aridity",
@@ -522,7 +522,7 @@ class NDLCLayers(object):
                 'url': '{0}/national-dynamic-land-cover/{1}'.format(SWIFTROOT, filename),
             }
             item = {
-                "_path": 'datasets/environmental/{0}'.format(opt['id']),
+                "_path": 'datasets/environmental/ndlc/{0}'.format(opt['id']),
                 "_owner":  (1,  'admin'),
                 "_type": "org.bccvl.content.remotedataset",
                 "title": title,
@@ -546,7 +546,7 @@ class WorldClimLayer(object):
         # get filters from configuration
         self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
-        
+
 @provider(ISectionBlueprint)
 @implementer(ISection)
 class WorldClimFutureLayers(WorldClimLayer):
@@ -585,7 +585,7 @@ class WorldClimFutureLayers(WorldClimLayer):
                 if emsc == 'ccsm4':
                     emsc = 'ncar-ccsm40'
                 yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.','')
-        
+
     def __iter__(self):
         # exhaust previous
         for item in self.previous:

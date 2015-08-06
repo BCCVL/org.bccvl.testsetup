@@ -111,7 +111,7 @@ class DownloadFile(object):
 class FutureClimateLayer5k(object):
 
     resolution = 'Resolution2_5m'
-    swiftconatiner = 'australia_5km'
+    swiftcontainer = 'australia_5km'
     folder = 'australia/australia_5km'
     titletempl = "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}"
     current_title = "Current Climate 1976 to 2005, 2.5arcmin (~5km)"

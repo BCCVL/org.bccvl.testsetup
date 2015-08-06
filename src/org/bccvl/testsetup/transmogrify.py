@@ -111,6 +111,7 @@ class DownloadFile(object):
 class FutureClimateLayer5k(object):
 
     resolution = 'Resolution2_5m'
+    swiftconatiner = 'australia_5km'
     folder = 'australia/australia_5km'
     titletempl = "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}"
     current_title = "Current Climate 1976 to 2005, 2.5arcmin (~5km)"
@@ -171,7 +172,7 @@ class FutureClimateLayer5k(object):
             "_owner": (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": self.current_title,
-            "remoteUrl": "{0}/{1}/{2}".format(SWIFTROOT, self.folder, self.current_file),
+            "remoteUrl": "{0}/{1}/{2}".format(SWIFTROOT, self.swiftcontainer, self.current_file),
             "creators": "BCCVL",
             "_transitions": "publish",
             "bccvlmetadata": {
@@ -184,7 +185,7 @@ class FutureClimateLayer5k(object):
 
     def createItem(self, emsc, gcm, year):
         url = "{0}/{1}/{2}_{3}_{4}.zip".format(
-            SWIFTROOT, self.folder, emsc, gcm, year)
+            SWIFTROOT, self.swiftcontainer, emsc, gcm, year)
         filename = os.path.basename(url)
         item = {
             "_path": 'datasets/climate/{0}/{1}'.format(self.folder, filename),
@@ -211,6 +212,7 @@ class FutureClimateLayer5k(object):
 class FutureClimateLayer1k(FutureClimateLayer5k):
 
     resolution = 'Resolution30s'
+    swiftcontainer = 'australia_1km'
     folder = 'australia/australia_1km'
     titletempl = "Climate Projection {0} based on {1}, 30arcsec (~1km) - {2}"
     current_title = "Current Climate 1976 to 2005, 30arcsec (~1km)"
@@ -222,6 +224,7 @@ class FutureClimateLayer1k(FutureClimateLayer5k):
 class FutureClimateLayer250m(FutureClimateLayer5k):
 
     resolution = 'Resolution9s'
+    swiftcontainer = 'australia_250m'
     folder = 'australia/australia_250m'
     titletempl = "Climate Projection {0} based on {1}, 9arcsec (~250m) - {2}"
     current_title = "Current Climate 1976 to 2005, 9arcsec (~250m)"

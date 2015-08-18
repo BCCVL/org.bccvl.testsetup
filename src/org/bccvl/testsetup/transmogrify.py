@@ -1,12 +1,10 @@
 from zope.interface import implementer, provider
 from collective.transmogrifier.interfaces import ISectionBlueprint
 from collective.transmogrifier.interfaces import ISection
-from collective.transmogrifier.utils import defaultMatcher
 from itertools import product
 import urllib
 import os
 import os.path
-import re
 import logging
 import shutil
 from tempfile import mkdtemp
@@ -178,7 +176,8 @@ class FutureClimateLayer5k(object):
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": self.resolution,
-                "temporal": "start=1976; end=2005; scheme=W3C-DTF;"
+                "temporal": "start=1976; end=2005; scheme=W3C-DTF;",
+                "categories": ["current"],
             },
         }
         return item
@@ -202,6 +201,7 @@ class FutureClimateLayer5k(object):
                 "emsc": emsc,
                 "gcm": gcm,
                 "temporal": "start={0}; end={0}; scheme=W3C-DTF;".format(year),
+                "categories": ["future"],
             }
         }
         return item
@@ -266,6 +266,11 @@ class NationalSoilgridLayers(object):
             "remoteUrl": opt['url'],
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "resolution": 'Resolution9s',
+                "categories": ["substrate"],
+            },
         }
         yield item
 
@@ -306,6 +311,11 @@ class VegetationAssetsStatesTransitionsLayers(object):
             "remoteUrl": opt['url'],
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "resolution": 'Resolution30s',
+                "categories": ["vegetation"],
+            },
         }
         yield item
 
@@ -346,6 +356,11 @@ class MultiResolutionRidgeTopFlatnessLayers(object):
             "remoteUrl": opt['url'],
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "resolution": 'Resolution3s',
+                "categories": ["topography"],
+            },
         }
         yield item
 
@@ -386,6 +401,11 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
             "remoteUrl": opt['url'],
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "resolution": 'Resolution3s',
+                "categories": ["topography"],
+            },
         }
         yield item
 
@@ -436,6 +456,12 @@ class AWAPLayers(object):
                 "remoteUrl": opt['url'],
                 "creators": 'BCCVL',
                 "_transitions": "publish",
+                "bccvlmetadata": {
+                    "genre": "DataGenreE",
+                    "resolution": 'Resolution3m',
+                    "temporal": "start={}; end={}; scheme=W3C-DTF;".format(year, year),
+                    "categories": ["hydrology"],
+                },
             }
             yield item
 
@@ -479,6 +505,12 @@ class GlobPETAridLayers(object):
             "remoteUrl": opt['url'],
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "resolution": 'Resolution30s',
+                "temporal": "start=1950; end=2000; scheme=W3C-DTF;",
+                "categories": ["hydrology"],
+            },
         }
         yield item
 
@@ -532,6 +564,12 @@ class NDLCLayers(object):
                 "remoteUrl": opt['url'],
                 "creators": 'BCCVL',
                 "_transitions": "publish",
+                "bccvlmetadata": {
+                    "genre": "DataGenreE",
+                    "resolution": 'Resolution9s',
+                    "temporal": "start=2000; end=2008; scheme=W3C-DTF;",
+                    "categories": ["landcover"],
+                },
             }
             yield item
 
@@ -719,7 +757,8 @@ class GPPLayers(object):
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution9s',
-                    "temporal": "start=2000; end=2007; scheme=W3C-DTF;",
+                    "temporal": "start={}; end={}; scheme=W3C-DTF;".format(start, end),
+                    "categories": ["vegetation"],
                 },
             }
             yield item
@@ -785,6 +824,7 @@ class FPARLayers(object):
                         "genre": "DataGenreE",
                         "resolution": 'Resolution9s',
                         "temporal": "start=2000; end=2014; scheme=W3C-DTF;",
+                        "categories": ["vegetation"],
                     },
                 }
                 yield item

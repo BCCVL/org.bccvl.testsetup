@@ -1,0 +1,20 @@
+{
+    "_type": "org.bccvl.content.dataset",
+    "title": "ABT absence data",
+    "file": {
+        "file": "abt_bkgd.csv",
+        "contenttype": "text/csv",
+        "filename": "abt_bkgd.csv"
+    },
+    "creators": "BCCVL",
+    "_transitions": "publish",
+    "bccvlmetadata": {
+        "genre": "DataGenreSpeciesAbsence",
+        "species": {
+            "scientificName": "Alectura lathami",
+            "vernacularName": "Australian Brush-turkey",
+            "taxonID": "urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986"
+        },
+        "categories": ["absence"]
+    }
+}

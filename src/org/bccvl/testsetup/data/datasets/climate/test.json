@@ -1,5 +1,6 @@
 {
     "_type": "Folder",
     "title": "Test Climate Data",
+    "description": "Climate data used for testing",
     "_transitions": "publish"
 }

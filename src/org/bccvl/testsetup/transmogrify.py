@@ -200,7 +200,7 @@ class FutureClimateLayer5k(object):
                 "resolution": self.resolution,
                 "emsc": emsc,
                 "gcm": gcm,
-                "temporal": "start={0}; end={0}; scheme=W3C-DTF;".format(year),
+                "year": year,
                 "categories": ["future"],
             }
         }
@@ -459,7 +459,7 @@ class AWAPLayers(object):
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution3m',
-                    "temporal": "start={}; end={}; scheme=W3C-DTF;".format(year, year),
+                    "year": year,
                     "categories": ["hydrology"],
                 },
             }
@@ -586,6 +586,9 @@ class WorldClimLayer(object):
 
         # get filters from configuration
         self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+        self.emsc = set(x.strip() for x in options.get('emsc', "").split(',') if x)
+        self.gcm = set(x.strip() for x in options.get('gcm', "").split(',') if x)
+        self.year = set(x.strip() for x in options.get('year', "").split(',') if x)
 
 
 @provider(ISectionBlueprint)
@@ -619,10 +622,24 @@ class WorldClimFutureLayers(WorldClimLayer):
             '5m', '10m', '2.5m', # '30s' # TODO: 30s are 12+GB, need to resolve
         ]
 
-        for gcm, year, res in product(MODELS, YEARS, RESOS):
+        LAYERS = ['bioclim', 'prec', 'tmin', 'tmax']
+
+        for gcm, year, res, layer in product(MODELS, YEARS, RESOS, LAYERS):
+            if self.gcm and gcm not in self.gcm:
+                # skip this gcm
+                continue
+            if self.year and year not in self.year:
+                # skip this year
+                continue
             for emsc in MODELS[gcm]:
-                filename = '{gcm}_{emsc}_{year}_{res}.zip'.format(**locals())
-                title = u'WorldClim Future Projection using {gcm} {emsc} at {res} ({year})'.format(**locals())
+                if self.emsc and emsc not in self.emsc:
+                    # skip
+                    continue
+                filename = '{}_{}_{}_{}_{}.zip'.format(gcm, emsc, year, res, layer)
+                if layer == 'bioclim':
+                    title = u'WorldClim Future Projection using {} {} at {} ({})'.format(gcm, emsc, res, year)
+                else:
+                    title = u'WorldClim Future Projection monthly {} using {} {} at {} ({})'.format(layer, gcm, emsc, res, year)
                 if emsc == 'ccsm4':
                     emsc = 'ncar-ccsm40'
                 yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.','')
@@ -636,31 +653,34 @@ class WorldClimFutureLayers(WorldClimLayer):
             return
 
         for filename, title, res, year, gcm, emsc  in self.datasets():
-            opt = {
-                'id': filename,
-                'url': '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
-            }
-            item = {
-                '_path': 'datasets/climate/worldclim/{}/{}'.format(res, opt['id']),
-                "_owner":  (1,  'admin'),
-                "_type": "org.bccvl.content.remotedataset",
-                "title": title,
-                "remoteUrl": opt['url'],
-                "creators": 'BCCVL',
-                "_transitions": "publish",
-                "bccvlmetadata": {
-                    "genre": "DataGenreFC",
-                    "resolution": 'Resolution{}'.format(res),
-                    "emsc": emsc,
-                    "gcm": gcm,
-                    "temporal": "start={year}; end={year}; scheme=W3C-DTF;".format(year=year)
-                },
-            }
+            item = self._createItem(title, filename, res, gcm, emsc, year)
             yield item
+
+    def _createItem(self, title, filename, res, gcm, emsc, year):
+        item = {
+            '_path': 'datasets/climate/worldclim/{}/{}'.format(res, filename),
+            "_owner":  (1,  'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": title,
+            "remoteUrl": '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreFC",
+                "resolution": 'Resolution{}'.format(res),
+                "emsc": emsc,
+                "gcm": gcm,
+                "year": year,
+                "categories": ["future"],
+            },
+        }
+        return item
+
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
 class WorldClimCurrentLayers(WorldClimLayer):
+
     def __iter__(self):
         # exhaust previous
         for item in self.previous:
@@ -676,29 +696,44 @@ class WorldClimCurrentLayers(WorldClimLayer):
             '10m': '10 arcmin',
         }
 
+        MONTHLY = ['prec', 'tmax', 'tmin', 'tmean']
+
         for scale in RESOLUTION_MAP.keys():
-            filename = 'worldclim_{}.zip'.format(scale)
-            title = u'WorldClim Current Conditions (1950-2000) at {}'.format(RESOLUTION_MAP[scale])
-            res = scale.replace('-', '_')
-            opt = {
-                'id': filename,
-                'url': '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
-            }
-            item = {
-                '_path': 'datasets/climate/worldclim/{}/{}'.format(res, opt['id']),
-                "_owner":  (1,  'admin'),
-                "_type": "org.bccvl.content.remotedataset",
-                "title": title,
-                "remoteUrl": opt['url'],
-                "creators": 'BCCVL',
-                "_transitions": "publish",
-                "bccvlmetadata": {
-                    "genre": "DataGenreCC",
-                    "resolution": 'Resolution{}'.format(res),
-                    "temporal": "start=1950; end=2000; scheme=W3C-DTF;",
-                },
-            }
+            # yield altitude layer
+            title = u'WorldClim Altitude at {}'.format(RESOLUTION_MAP[scale])
+            item = self._createItem(title, scale, 'alt')
             yield item
+            # yield bioclim layer
+            title = u'WorldClim Current Conditions (1950-2000) at {}'.format(RESOLUTION_MAP[scale])
+            item = self._createItem(title, scale, 'bioclim')
+            yield item
+            # yield monthly layers
+            for layer in MONTHLY:
+                title = u'WorldClim Current Conditions monthly {} (1950-2000) at {}'.format(layer, RESOLUTION_MAP[scale])
+                item = self._createItem(title, scale, layer)
+                yield item
+
+    def _createItem(self, title, scale, layer):
+        res = scale.replace('-', '_')
+        filename = 'worldclim_{}_{}.zip'.format(scale, layer)
+        item = {
+            '_path': 'datasets/climate/worldclim/{}/{}'.format(res, filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": title,
+            "remoteUrl": '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreCC",
+                "resolution": 'Resolution{}'.format(res),
+                "temporal": "start=1950; end=2000; scheme=W3C-DTF;",
+                "categories": ["current"],
+            },
+        }
+        if 'layer' == 'alt':
+            item['bccvlmetadat']['categories'] = ['topography']
+        return item
 
 #
 

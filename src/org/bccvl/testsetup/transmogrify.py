@@ -170,13 +170,13 @@ class FutureClimateLayer5k(object):
             "_owner": (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": self.current_title,
+            "description": "Current climate baseline of 1976 to 2005 - climate of 1990 - generated from aggregating monthly data from Australia Water Availability Project (AWAP; http://www.bom.gov.au/jsp/awap/).",
             "remoteUrl": "{0}/{1}/{2}".format(SWIFTROOT, self.swiftcontainer, self.current_file),
             "creators": "BCCVL",
             "_transitions": "publish",
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": self.resolution,
-                "temporal": "start=1976; end=2005; scheme=W3C-DTF;",
                 "categories": ["current"],
             },
         }
@@ -502,13 +502,13 @@ class GlobPETAridLayers(object):
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": "Global PET and Aridity",
+            "description": "The Global-PET and Global-Aridity are both modeled using the data monthly average data (1950-2000) available from the WorldClim Global Climate Data.",
             "remoteUrl": opt['url'],
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution30s',
-                "temporal": "start=1950; end=2000; scheme=W3C-DTF;",
                 "categories": ["hydrology"],
             },
         }
@@ -561,13 +561,13 @@ class NDLCLayers(object):
                 "_owner":  (1,  'admin'),
                 "_type": "org.bccvl.content.remotedataset",
                 "title": title,
+                "description": "Shows trend of EVI from 2000 to 2008",
                 "remoteUrl": opt['url'],
                 "creators": 'BCCVL',
                 "_transitions": "publish",
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution9s',
-                    "temporal": "start=2000; end=2008; scheme=W3C-DTF;",
                     "categories": ["landcover"],
                 },
             }
@@ -721,13 +721,13 @@ class WorldClimCurrentLayers(WorldClimLayer):
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": title,
+            "description": "Bioclimatic variables generated using data from 9150 -2000",
             "remoteUrl": '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
-                "temporal": "start=1950; end=2000; scheme=W3C-DTF;",
                 "categories": ["current"],
             },
         }
@@ -773,13 +773,6 @@ class GPPLayers(object):
             return
 
         for dfile, dtitle in self.datasets:
-            if dfile == 'gpp_maxmin_2000_2007':
-                start = 2000
-                end = 2000
-            else:
-                _date = dfile.split('_')[1]
-                start = _date
-                end = _date
             _url = '{0}/gpp/{1}'.format(SWIFTROOT, dfile)
             item = {
                 "_path": 'datasets/environmental/gpp/{0}'.format(dfile),
@@ -792,10 +785,13 @@ class GPPLayers(object):
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution9s',
-                    "temporal": "start={}; end={}; scheme=W3C-DTF;".format(start, end),
                     "categories": ["vegetation"],
                 },
             }
+            if dfile == 'gpp_maxmin_2000_2007':
+                item['description'] = "Data aggregated over period 2000 - 2007",
+            else:
+                item['description'] = 'Data for year {}'.format(dfile.split('_')[1])
             yield item
 
 
@@ -852,13 +848,13 @@ class FPARLayers(object):
                     "_owner":  (1,  'admin'),
                     "_type": "org.bccvl.content.remotedataset",
                     "title": dtitle,
+                    "description": "Data for year {} and month {}".format(year, month),
                     "remoteUrl": _url,
                     "creators": 'BCCVL',
                     "_transitions": "publish",
                     "bccvlmetadata": {
                         "genre": "DataGenreE",
                         "resolution": 'Resolution9s',
-                        "temporal": "start=2000; end=2014; scheme=W3C-DTF;",
                         "categories": ["vegetation"],
                     },
                 }

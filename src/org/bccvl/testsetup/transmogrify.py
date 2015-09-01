@@ -840,7 +840,7 @@ class FPARLayers(object):
 
         for year, start_month, end_month in self.ranges:
             for month in xrange(start_month, end_month+1):
-                dfile = 'fpar.{year}.{month}.aust.zip'.format(month=month, year=year)
+                dfile = 'fpar.{year}.{month:02d}.aust.zip'.format(month=month, year=year)
                 dtitle = 'MODIS-fPAR time series for Australia - {month} {year}'.format(month=month, year=year)
                 _url = '{0}/fpar/{1}'.format(SWIFTROOT, dfile)
                 item = {

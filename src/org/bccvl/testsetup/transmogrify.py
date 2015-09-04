@@ -732,7 +732,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
             },
         }
         if 'layer' == 'alt':
-            item['bccvlmetadat']['categories'] = ['topography']
+            item['bccvlmetadata']['categories'] = ['topography']
         return item
 
 #

@@ -731,7 +731,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
                 "categories": ["current"],
             },
         }
-        if 'layer' == 'alt':
+        if layer == 'alt':
             item['bccvlmetadata']['categories'] = ['topography']
         return item
 

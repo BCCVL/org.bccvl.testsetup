@@ -619,7 +619,7 @@ class WorldClimFutureLayers(WorldClimLayer):
         }
         YEARS = [ '2050', '2070' ]
         RESOS = [
-            '5m', '10m', '2.5m', # '30s' # TODO: 30s are 12+GB, need to resolve
+            '5 arcmin', '10 arcmin', '2.5 arcmin', # '30s' # TODO: 30s are 12+GB, need to resolve
         ]
 
         LAYERS = ['bioclim', 'prec', 'tmin', 'tmax']
@@ -721,7 +721,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": title,
-            "description": "Bioclimatic variables generated using data from 9150 -2000",
+            "description": "Bioclimatic variables generated using data from 1950 -2000",
             "remoteUrl": '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
             "creators": 'BCCVL',
             "_transitions": "publish",

@@ -1,6 +1,7 @@
 {
-    "_type": "Folder",
+    "_type": "org.bccvl.content.collection",
     "title": "Test Species Data",
     "description": "Species data used for testing",
+    "categories": ["biological"],
     "_transitions": "publish"
 }

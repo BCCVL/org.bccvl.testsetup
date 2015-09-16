@@ -1,6 +1,7 @@
 {
-    "_type": "Folder",
+    "_type": "org.bccvl.content.collection",
     "title": "Test Climate Data",
     "description": "Climate data used for testing",
+    "categories": ["climate"],
     "_transitions": "publish"
 }

@@ -618,10 +618,12 @@ class WorldClimFutureLayers(WorldClimLayer):
             'NorESM1-M': ['RCP3PD', 'RCP4.5', 'RCP6', 'RCP8.5'],
         }
         YEARS = [ '2050', '2070' ]
-        RESOS = [
-            '5 arcmin', '10 arcmin', '2.5 arcmin', # '30s' # TODO: 30s are 12+GB, need to resolve
-        ]
-
+        RESOS = {
+            # '30s': '30 arcsec', # TODO: 30s are 12+GB, need to resolve
+            '2-5m': '2.5 arcmin',
+            '5m': '5 arcmin',
+            '10m': '10 arcmin',
+        }
         LAYERS = ['bioclim', 'prec', 'tmin', 'tmax']
 
         for gcm, year, res, layer in product(MODELS, YEARS, RESOS, LAYERS):
@@ -637,12 +639,12 @@ class WorldClimFutureLayers(WorldClimLayer):
                     continue
                 filename = '{}_{}_{}_{}_{}.zip'.format(gcm, emsc, year, res, layer)
                 if layer == 'bioclim':
-                    title = u'WorldClim Future Projection using {} {} at {} ({})'.format(gcm, emsc, res, year)
+                    title = u'WorldClim Future Projection using {} {} at {} ({})'.format(gcm, emsc, RESOS[res], year)
                 else:
-                    title = u'WorldClim Future Projection monthly {} using {} {} at {} ({})'.format(layer, gcm, emsc, res, year)
+                    title = u'WorldClim Future Projection monthly {} using {} {} at {} ({})'.format(layer, gcm, emsc, RESOS[res], year)
                 if emsc == 'ccsm4':
                     emsc = 'ncar-ccsm40'
-                yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.','')
+                yield filename, title, res.replace('-', '_'), year, gcm.lower(), emsc.replace('.','')
 
     def __iter__(self):
         # exhaust previous

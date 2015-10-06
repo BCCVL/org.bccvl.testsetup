@@ -620,7 +620,7 @@ class WorldClimFutureLayers(WorldClimLayer):
         YEARS = [ '2050', '2070' ]
         RESOS = {
             # '30s': '30 arcsec', # TODO: 30s are 12+GB, need to resolve
-            '2-5m': '2.5 arcmin',
+            '2.5m': '2.5 arcmin',
             '5m': '5 arcmin',
             '10m': '10 arcmin',
         }
@@ -644,7 +644,7 @@ class WorldClimFutureLayers(WorldClimLayer):
                     title = u'WorldClim Future Projection monthly {} using {} {} at {} ({})'.format(layer, gcm, emsc, RESOS[res], year)
                 if emsc == 'ccsm4':
                     emsc = 'ncar-ccsm40'
-                yield filename, title, res.replace('-', '_'), year, gcm.lower(), emsc.replace('.','')
+                yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.','')
 
     def __iter__(self):
         # exhaust previous

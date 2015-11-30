@@ -840,17 +840,38 @@ class FPARLayers(object):
         if not self.enabled:
             return
 
-        for year, start_month, end_month in self.ranges:
-            for month in xrange(start_month, end_month+1):
-                dfile = 'fpar.{year}.{month:02d}.aust.zip'.format(month=month, year=year)
-                dtitle = 'MODIS-fPAR time series for Australia - {month} {year}'.format(month=month, year=year)
-                _url = '{0}/fpar/{1}'.format(SWIFTROOT, dfile)
-                item = {
+        # for year, start_month, end_month in self.ranges:
+        #     for month in xrange(start_month, end_month+1):
+        #         dfile = 'fpar.{year}.{month:02d}.aust.zip'.format(month=month, year=year)
+        #         dtitle = 'MODIS-fPAR time series for Australia - {month} {year}'.format(month=month, year=year)
+        #         _url = '{0}/fpar/{1}'.format(SWIFTROOT, dfile)
+        #         item = {
+        #             "_path": 'datasets/environmental/fpar/{0}'.format(dfile),
+        #             "_owner":  (1,  'admin'),
+        #             "_type": "org.bccvl.content.remotedataset",
+        #             "title": dtitle,
+        #             "description": "Data for year {} and month {}".format(year, month),
+        #             "remoteUrl": _url,
+        #             "creators": 'BCCVL',
+        #             "_transitions": "publish",
+        #             "bccvlmetadata": {
+        #                 "genre": "DataGenreE",
+        #                 "resolution": 'Resolution9s',
+        #                 "categories": ["vegetation"],
+        #             },
+        #         }
+        #         yield item
+
+        for year in xrange(2000, 2015):
+            dfile = 'fpar.{year}.stats.aust.zip'.format(year=year)
+            dtitle = 'MODIS-fPAR time series for Australia - {year} (Annual Maximum, Minimum, and Mean)'.format(year=year)
+            _url = '{0}/fpar/{1}'.format(SWIFTROOT, dfile)
+            item = {
                     "_path": 'datasets/environmental/fpar/{0}'.format(dfile),
                     "_owner":  (1,  'admin'),
                     "_type": "org.bccvl.content.remotedataset",
                     "title": dtitle,
-                    "description": "Data for year {} and month {}".format(year, month),
+                    "description": "Data for year {} (Annual Maximum, Minimum, and Mean)".format(year),
                     "remoteUrl": _url,
                     "creators": 'BCCVL',
                     "_transitions": "publish",
@@ -860,4 +881,25 @@ class FPARLayers(object):
                         "categories": ["vegetation"],
                     },
                 }
-                yield item
+            yield item
+
+        year = 20002014
+        dfile = 'fpar.{year}.stats.aust.zip'.format(year=year)
+        dtitle = 'MODIS-fPAR time series for Australia - 2000 to 2014 (Annual Maximum, Minimum, and Mean)'
+        _url = '{0}/fpar/{1}'.format(SWIFTROOT, dfile)
+        item = {
+                "_path": 'datasets/environmental/fpar/{0}'.format(dfile),
+                "_owner":  (1,  'admin'),
+                "_type": "org.bccvl.content.remotedataset",
+                "title": dtitle,
+                "description": "Data for years 2000 to 2014 (Maximum, Minimum, and Mean)",
+                "remoteUrl": _url,
+                "creators": 'BCCVL',
+                "_transitions": "publish",
+                "bccvlmetadata": {
+                    "genre": "DataGenreE",
+                    "resolution": 'Resolution9s',
+                    "categories": ["vegetation"],
+                },
+            }
+        yield item

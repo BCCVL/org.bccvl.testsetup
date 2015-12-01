@@ -1,106 +1,131 @@
-from zope.interface import implementer, provider
-from collective.transmogrifier.interfaces import ISectionBlueprint
-from collective.transmogrifier.interfaces import ISection
 from itertools import product
-import urllib
+import logging
 import os
 import os.path
-import logging
-import shutil
-from tempfile import mkdtemp
+
+from collective.transmogrifier.interfaces import ISectionBlueprint
+from collective.transmogrifier.interfaces import ISection
+from collective.transmogrifier.utils import defaultMatcher
+from plone import api
+from zope.interface import implementer, provider
+
+from org.bccvl.tasks.celery import app
+from org.bccvl.tasks.plone import after_commit_task
+from org.bccvl.site.job.interfaces import IJobTracker
+
 
 LOG = logging.getLogger(__name__)
-# TODO: make this configurable somewhere
+# FIXME: make this configurable somewhere
 SWIFTROOT = 'https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f960ae5677'
 
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
-class DownloadFile(object):
+class UpdateMetadata(object):
+    """Trigger task to update file metadata on imported item"""
+    # TODO: have option to run in process or async
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
         self.name = name
         self.options = options
         self.previous = previous
 
-        # TODO: Need configurable cache folder?
-
         # keys for sections further down the chain
-        self.pathkey = options.get('path-key', '_path').strip()
-        self.fileskey = options.get('files-key', '_files').strip()
-        # A temporary directory to store downloaded files
-        self.tmpdir = None
+        self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
+        self.siteurl = options.get('siteurl')
+        sync = options.get('sync', 'False').strip().lower() not in ('false', '0')
+        if sync:
+            app.conf['CELERY_ALWAYS_EAGER'] = True
+
 
     def __iter__(self):
         for item in self.previous:
 
-            # check if current item has 'file'
-            LOG.info("Check for downloads %s", item['_path'])
-            if 'file' not in item and 'remoteUrl' not in item:
+            if item.get("_type") not in ('org.bccvl.content.dataset',
+                                         'org.bccvl.content.remotedataset'):
+                # shortcut types we are not interested in
                 yield item
                 continue
-            # TODO: add check for _type == some dataset type
 
-            # do we have a 'url' to fetch?
-            if 'url' in item.get('file', {}) or 'remoteUrl' in item:
-                self.downloadData(item)
-            # self.updateItemData(item)
+            if not self.siteurl:
+                LOG.warn("Can't run metadata update without configured site url")
+                yield item
+                continue
+
+            pathkey = self.pathkey(*item.keys())[0]
+            # no path .. can't do anything
+            if not pathkey:
+                yield item
+                continue
+
+            path = item[pathkey]
+            # Skip the Plone site object itself
+            if not path:
+                yield item
+                continue
+
+            obj = self.context.unrestrictedTraverse(
+                path.encode().lstrip('/'), None)
+
+            # path doesn't exist
+            if obj is None:
+                yield item
+                continue
+
+            # get username
+            member = api.user.get_current()
+            # do we have a propery member?
+            if member.getId():
+                user = {
+                    'id': member.getUserName(),
+                    'email': member.getProperty('email'),
+                    'fullname': member.getProperty('fullname')
+                }
+            else:
+                # assume admin for background task
+                user = {
+                    'id': 'admin',
+                    'email': None,
+                    'fullname': None
+                }
+
+            # build download url
+            # 1. get context (site) relative path
+            context_path = self.context.getPhysicalPath()
+            obj_path = obj.getPhysicalPath()
+            obj_path = '/'.join(obj_path[len(context_path):])
+            if obj.portal_type == 'org.bccvl.content.dataset':
+                filename = obj.file.filename
+                obj_url = '{}/{}/@@download/file/{}'.format(
+                    self.siteurl, obj_path, filename)
+            else:
+                filename = os.path.basename(obj.remoteUrl)
+                obj_url = '{}/{}/@@download/{}'.format(
+                    self.siteurl, obj_path, filename)
+            # schedule metadata update task in process
+            # FIXME: do we have obj.format already set?
+            update_task = app.signature(
+                "org.bccvl.tasks.datamover.update_metadata",
+                args=(obj_url,
+                      filename,
+                      obj.format,
+                      {
+                          'context': '/'.join(obj.getPhysicalPath()),
+                          'user': user,
+                      }
+                ),
+                options={'immutable': True});
+
+            after_commit_task(update_task)
+            # track background job state
+            jt = IJobTracker(obj)
+            job = jt.new_job('TODO: generate id', 'generate taskname: update_metadata')
+            job.type = obj.portal_type
+            jt.set_progress('PENDING', 'Metadata update pending')
+
             yield item
-            # TODO: what happens to tmp file if there is an exception while yielded?
-            # clean up downloaded file
-            if self.tmpdir and os.path.exists(self.tmpdir):
-                LOG.info('Remove temp folder %s', self.tmpdir)
-                shutil.rmtree(self.tmpdir)
-                self.tmpdir = None
-
-    def downloadData(self, item):
-        """assumes there is either 'file' or 'remoteUrl' in item dictionary.
-        but not both"""
-        self.tmpdir = mkdtemp('testsetup')
-        fileitem = item.get('file', {})
-        url = item.get('remoteUrl') or fileitem.get('url')
-        name = fileitem.get('filename')
-        contenttype = fileitem.get('contenttype')
-        # use basename from download url as filename
-        zipname = os.path.basename(url)
-        # covert to absolute path
-        zipfile = os.path.join(self.tmpdir, zipname)
-        # check if file exists (shouldn't)
-        if not os.path.exists(zipfile):
-            LOG.info('Download %s to %s', url, zipfile)
-            # TODO: 3rd argument could be report hook, which is a method that
-            #       accepts 3 params: numblocks, bytes per block, total size(-1)
-            (_, resp) = urllib.urlretrieve(url, zipfile)
-            #name = name or resp.info().headers # content-disposition?
-            # TODO: other interesting headers:
-            #       contentlength
-            #       last-modified / date
-            contenttype = contenttype or resp.get('content-type')
-            # FIXME: get http response headers from resp.info().headers
-            #    mix filename: item.file.filename, response, basename(url)
-            #  same for content-type / mime-type
-        # We have the file now, let's replace 'url' with 'file'
-        if 'file' in item:
-            item['file']['filename'] = name or zipname
-            item['file']['file'] = zipfile
-            item['file']['contenttype'] = contenttype
-            files = item.setdefault(self.fileskey, {})
-            files[zipfile] = {
-                'filename': zipfile,
-                'path': zipfile,
-                # dexterity schemaupdater needs data here or it will break the pipeline
-                'data': open(zipfile, mode='r')
-            }
-        else:
-            # FIXME: need to store for remoteUrl as well
-            files = item.setdefault(self.fileskey, {})
-            files[url] = {
-                'filename': name or zipname,
-                'contenttype': contenttype,
-                'path': zipfile
-                # data not needed here as schemaupdater won't check this file
-            }
 
 
 #### Below are custom sources, to inject additional items
@@ -180,6 +205,7 @@ class FutureClimateLayer5k(object):
                 "categories": ["current"],
             },
         }
+        LOG.info('Import %s', item['title'])
         return item
 
     def createItem(self, emsc, gcm, year):
@@ -204,6 +230,7 @@ class FutureClimateLayer5k(object):
                 "categories": ["future"],
             }
         }
+        LOG.info('Import %s', item['title'])
         return item
 
 
@@ -272,6 +299,7 @@ class NationalSoilgridLayers(object):
                 "categories": ["substrate"],
             },
         }
+        LOG.info('Import %s', item['title'])
         yield item
 
 
@@ -317,6 +345,7 @@ class VegetationAssetsStatesTransitionsLayers(object):
                 "categories": ["vegetation"],
             },
         }
+        LOG.info('Import %s', item['title'])
         yield item
 
 
@@ -362,6 +391,7 @@ class MultiResolutionRidgeTopFlatnessLayers(object):
                 "categories": ["topography"],
             },
         }
+        LOG.info('Import %s', item['title'])
         yield item
 
 
@@ -407,6 +437,7 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
                 "categories": ["topography"],
             },
         }
+        LOG.info('Import %s', item['title'])
         yield item
 
 
@@ -463,6 +494,7 @@ class AWAPLayers(object):
                     "categories": ["hydrology"],
                 },
             }
+            LOG.info('Import %s', item['title'])
             yield item
 
 
@@ -512,6 +544,7 @@ class GlobPETAridLayers(object):
                 "categories": ["hydrology"],
             },
         }
+        LOG.info('Import %s', item['title'])
         yield item
 
 
@@ -571,6 +604,7 @@ class NDLCLayers(object):
                     "categories": ["landcover"],
                 },
             }
+            LOG.info('Import %s', item['title'])
             yield item
 
 #
@@ -656,6 +690,7 @@ class WorldClimFutureLayers(WorldClimLayer):
 
         for filename, title, res, year, gcm, emsc  in self.datasets():
             item = self._createItem(title, filename, res, gcm, emsc, year)
+            LOG.info('Import %s', item['title'])
             yield item
 
     def _createItem(self, title, filename, res, gcm, emsc, year):
@@ -735,6 +770,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
         }
         if layer == 'alt':
             item['bccvlmetadata']['categories'] = ['topography']
+        LOG.info('Import %s', item['title'])
         return item
 
 #
@@ -794,6 +830,7 @@ class GPPLayers(object):
                 item['description'] = "Data aggregated over period 2000 - 2007",
             else:
                 item['description'] = 'Data for year {}'.format(dfile.split('_')[1])
+            LOG.info('Import %s', item['title'])
             yield item
 
 
@@ -860,4 +897,5 @@ class FPARLayers(object):
                         "categories": ["vegetation"],
                     },
                 }
+                LOG.info('Import %s', item['title'])
                 yield item

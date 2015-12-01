@@ -92,6 +92,17 @@ def import_data(site, params):
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
 
+    source_options['updatemetadata'] = {
+        'siteurl': params.get('siteurl', ''),
+        'sync': str(params.get('sync'))
+    }
+    if params.get('sync'):
+        # in case we do in process metadata update we can commit
+        # after every item
+        source_options['commit'] ={
+            'every': '1'
+        }
+
     transmogrifier = Transmogrifier(site)
     transmogrifier(u'org.bccvl.testsetup.dataimport',
                    **source_options)
@@ -134,6 +145,8 @@ def main(app, params):
 
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Import datasets.')
+    parser.add_argument('--siteurl')
+    parser.add_argument('--sync', action='store_true')
     parser.add_argument('--dev', action='store_true')
     parser.add_argument('--test', action='store_true')
     parser.add_argument('--all', action='store_true')

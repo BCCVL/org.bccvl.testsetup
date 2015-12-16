@@ -104,6 +104,11 @@ class UpdateMetadata(object):
                 filename = os.path.basename(obj.remoteUrl)
                 obj_url = '{}/{}/@@download/{}'.format(
                     self.siteurl, obj_path, filename)
+            # apply "format" propertiy if available
+            # TODO: format should be applied by Dexterity schema updater, but there is no schema
+            #       that includes 'format'
+            if 'format' in item:
+                obj.format = item['format']
             # schedule metadata update task in process
             # FIXME: do we have obj.format already set?
             update_task = app.signature(
@@ -197,6 +202,7 @@ class FutureClimateLayer5k(object):
             "title": self.current_title,
             "description": "Current climate baseline of 1976 to 2005 - climate of 1990 - generated from aggregating monthly data from Australia Water Availability Project (AWAP; http://www.bom.gov.au/jsp/awap/).",
             "remoteUrl": "{0}/{1}/{2}".format(SWIFTROOT, self.swiftcontainer, self.current_file),
+            "format": "application/zip",
             "creators": "BCCVL",
             "_transitions": "publish",
             "bccvlmetadata": {
@@ -219,6 +225,7 @@ class FutureClimateLayer5k(object):
             "title": self.titletempl.format(
                 emsc, gcm.upper(), year),
             "remoteUrl": url,
+            "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {
@@ -291,7 +298,9 @@ class NationalSoilgridLayers(object):
             "_type": "org.bccvl.content.remotedataset",
             "title": "National Soil Grids",
             "remoteUrl": opt['url'],
+            "format": "application/zip",
             "creators": 'BCCVL',
+            "format": "application/zip",
             "_transitions": "publish",
             "bccvlmetadata": {
                 "genre": "DataGenreE",
@@ -337,6 +346,7 @@ class VegetationAssetsStatesTransitionsLayers(object):
             "_type": "org.bccvl.content.remotedataset",
             "title": "National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008",
             "remoteUrl": opt['url'],
+            "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {
@@ -383,6 +393,7 @@ class MultiResolutionRidgeTopFlatnessLayers(object):
             "_type": "org.bccvl.content.remotedataset",
             "title": "Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution)",
             "remoteUrl": opt['url'],
+            "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {
@@ -429,6 +440,7 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
             "_type": "org.bccvl.content.remotedataset",
             "title": "Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)",
             "remoteUrl": opt['url'],
+            "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {
@@ -485,6 +497,7 @@ class AWAPLayers(object):
                 "_type": "org.bccvl.content.remotedataset",
                 "title": "Local Discharge (Runoff+Drainage) {0}".format(year),
                 "remoteUrl": opt['url'],
+                "format": "application/zip",
                 "creators": 'BCCVL',
                 "_transitions": "publish",
                 "bccvlmetadata": {
@@ -536,6 +549,7 @@ class GlobPETAridLayers(object):
             "title": "Global PET and Aridity",
             "description": "The Global-PET and Global-Aridity are both modeled using the data monthly average data (1950-2000) available from the WorldClim Global Climate Data.",
             "remoteUrl": opt['url'],
+            "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {
@@ -596,6 +610,7 @@ class NDLCLayers(object):
                 "title": title,
                 "description": "Shows trend of EVI from 2000 to 2008",
                 "remoteUrl": opt['url'],
+                "format": "application/zip",
                 "creators": 'BCCVL',
                 "_transitions": "publish",
                 "bccvlmetadata": {
@@ -700,6 +715,7 @@ class WorldClimFutureLayers(WorldClimLayer):
             "_type": "org.bccvl.content.remotedataset",
             "title": title,
             "remoteUrl": '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
+            "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {
@@ -760,6 +776,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
             "title": title,
             "description": "Bioclimatic variables generated using data from 1950 -2000",
             "remoteUrl": '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
+            "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {
@@ -818,6 +835,7 @@ class GPPLayers(object):
                 "_type": "org.bccvl.content.remotedataset",
                 "title": dtitle,
                 "remoteUrl": _url,
+                "format": "application/zip",
                 "creators": 'BCCVL',
                 "_transitions": "publish",
                 "bccvlmetadata": {
@@ -889,6 +907,7 @@ class FPARLayers(object):
                     "title": dtitle,
                     "description": "Data for year {} and month {}".format(year, month),
                     "remoteUrl": _url,
+                    "format": "application/zip",
                     "creators": 'BCCVL',
                     "_transitions": "publish",
                     "bccvlmetadata": {

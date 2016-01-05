@@ -29,8 +29,8 @@
         />
 
     <utility
-        component=".transmogrify.DownloadFile"
-        name="org.bccvl.testsetup.transmogrify.downloader"
+        component=".transmogrify.UpdateMetadata"
+        name="org.bccvl.testsetup.transmogrify.updatemetadata"
         />
 
     <utility

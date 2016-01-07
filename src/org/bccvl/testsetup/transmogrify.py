@@ -966,4 +966,5 @@ class FPARLayers(object):
                 item['title'] = 'MODIS-fPAR time series for Australia - {year} (Annual Maximum, Minimum, and Mean)'.format(year=year)
                 item['description'] = "Data aggregated for year {year} (Annual Maximum, Minimum, and Mean)".format(year=year)
                 item['bccvlmetadata']['year'] = year
+            LOG.info('Import %s', item['title'])
             yield item

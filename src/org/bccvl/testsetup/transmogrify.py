@@ -847,7 +847,9 @@ class GPPLayers(object):
             if dfile == 'gpp_maxmin_2000_2007':
                 item['description'] = "Data aggregated over period 2000 - 2007",
             else:
-                item['description'] = 'Data for year {}'.format(dfile.split('_')[1])
+                year = dfile.split('_')[1]
+                item['description'] = 'Data for year {}'.format(year)
+                item['bccvlmetadata']['year'] = year
             LOG.info('Import %s', item['title'])
             yield item
 
@@ -934,6 +936,7 @@ class FPARLayers(object):
                         "genre": "DataGenreE",
                         "resolution": 'Resolution9s',
                         "categories": ["vegetation"],
+                        "year": year,
                     },
                 }
                 LOG.info('Import %s', item['title'])
@@ -962,5 +965,5 @@ class FPARLayers(object):
                 year = dfile.split(".")[1]
                 item['title'] = 'MODIS-fPAR time series for Australia - {year} (Annual Maximum, Minimum, and Mean)'.format(year=year)
                 item['description'] = "Data aggregated for year {year} (Annual Maximum, Minimum, and Mean)".format(year=year)
+                item['bccvlmetadata']['year'] = year
             yield item
-

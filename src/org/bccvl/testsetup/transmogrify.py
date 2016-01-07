@@ -877,6 +877,25 @@ class FPARLayers(object):
         (2014, 01, 10),
     ]
 
+    datasets = [
+        ('fpar.2000.stats.aust.zip'),
+        ('fpar.2001.stats.aust.zip'),
+        ('fpar.2002.stats.aust.zip'),
+        ('fpar.2003.stats.aust.zip'),
+        ('fpar.2004.stats.aust.zip'),
+        ('fpar.2005.stats.aust.zip'),
+        ('fpar.2006.stats.aust.zip'),
+        ('fpar.2007.stats.aust.zip'),
+        ('fpar.2008.stats.aust.zip'),
+        ('fpar.2009.stats.aust.zip'),
+        ('fpar.2010.stats.aust.zip'),
+        ('fpar.2011.stats.aust.zip'),
+        ('fpar.2012.stats.aust.zip'),
+        ('fpar.2013.stats.aust.zip'),
+        ('fpar.2014.stats.aust.zip'),
+        ('fpar.20002014.stats.aust.zip'),
+    ]
+
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
         self.context = transmogrifier.context
@@ -895,6 +914,7 @@ class FPARLayers(object):
         if not self.enabled:
             return
 
+        # Monthly data loop
         for year, start_month, end_month in self.ranges:
             for month in xrange(start_month, end_month+1):
                 dfile = 'fpar.{year}.{month:02d}.aust.zip'.format(month=month, year=year)
@@ -918,3 +938,29 @@ class FPARLayers(object):
                 }
                 LOG.info('Import %s', item['title'])
                 yield item
+
+        # Yearly stats code
+        for dfile in self.datasets:
+            _url = '{0}/fpar/{1}'.format(SWIFTROOT, dfile)
+            item = {
+                "_path": 'datasets/environmental/fpar/{0}'.format(dfile),
+                "_owner":  (1,  'admin'),
+                "_type": "org.bccvl.content.remotedataset",
+                "remoteUrl": _url,
+                "creators": 'BCCVL',
+                "_transitions": "publish",
+                "bccvlmetadata": {
+                    "genre": "DataGenreE",
+                    "resolution": 'Resolution9s',
+                    "categories": ["vegetation"],
+                },
+            }
+            if dfile == 'fpar.20002014.stats.aust.zip':
+                item['title'] = 'MODIS-fPAR time series for Australia - Summary for 2000 to 2014 (Maximum, Minimum, and Mean)'
+                item['description'] = "Data aggregated over years 2000 to 2014 (Maximum, Minimum, and Mean)".format(year=dfile.split(".")[1])
+            else:
+                year = dfile.split(".")[1]
+                item['title'] = 'MODIS-fPAR time series for Australia - {year} (Annual Maximum, Minimum, and Mean)'.format(year=year)
+                item['description'] = "Data aggregated for year {year} (Annual Maximum, Minimum, and Mean)".format(year=year)
+            yield item
+

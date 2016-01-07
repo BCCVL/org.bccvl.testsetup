@@ -950,6 +950,7 @@ class FPARLayers(object):
                 "_owner":  (1,  'admin'),
                 "_type": "org.bccvl.content.remotedataset",
                 "remoteUrl": _url,
+                "format": "application/zip",
                 "creators": 'BCCVL',
                 "_transitions": "publish",
                 "bccvlmetadata": {

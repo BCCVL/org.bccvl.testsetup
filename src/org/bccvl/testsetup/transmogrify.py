@@ -989,9 +989,10 @@ class FPARLayers(object):
                 item['description'] = "Data aggregated over years 2000 to 2014 (Average, Minimum, Maximum)".format(year=dfile.split(".")[1])
             # Growing year (Jul - Jun)
             elif len(dfile) == 29:
-                year = dfile.split(".")[1]
-                item['title'] = 'MODIS-fPAR time series for Australia - {year1} to {year2} Growing Year (Average, Minimum, Maximum)'.format(year1=year, year2=year+1)
-                item['description'] = "Data aggregated for {year1} to {year2} Growing Year (Annual Average, Minimum, Maximum)".format(year1=year, year2=year+1)
+                year1 = dfile.split(".")[1].split("-")[0]
+                year2 = dfile.split(".")[1].split("-")[1]
+                item['title'] = 'MODIS-fPAR time series for Australia - {year1} to {year2} Growing Year (Average, Minimum, Maximum)'.format(year1=year1, year2=year2)
+                item['description'] = "Data aggregated for {year1} to {year2} Growing Year (Annual Average, Minimum, Maximum)".format(year1=year1, year2=year2)
             # Calendar year (Jan - Dec)
             elif len(dfile) == 24:
                 year = dfile.split(".")[1]

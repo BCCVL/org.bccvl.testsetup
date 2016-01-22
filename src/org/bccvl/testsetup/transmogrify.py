@@ -113,14 +113,15 @@ class UpdateMetadata(object):
             # FIXME: do we have obj.format already set?
             update_task = app.signature(
                 "org.bccvl.tasks.datamover.update_metadata",
-                args=(obj_url,
-                      filename,
-                      obj.format,
-                      {
-                          'context': '/'.join(obj.getPhysicalPath()),
-                          'user': user,
-                      }
-                ),
+                kwargs={
+                    'url': obj_url,
+                    'filename': filename,
+                    'contenttype': obj.format,
+                    'context': {
+                        'context': '/'.join(obj.getPhysicalPath()),
+                        'user': user,
+                    }
+                },
                 options={'immutable': True});
 
             after_commit_task(update_task)
@@ -998,12 +999,11 @@ class FPARLayers(object):
                 year = dfile.split(".")[1]
                 item['title'] = 'MODIS-fPAR time series for Australia - {year} Calendar Year (Average, Minimum, Maximum)'.format(year=year)
                 item['description'] = "Data aggregated for {year} Calendar Year (Annual Average, Minimum, Maximum)".format(year=year)
-            # Long-term monthly 
+            # Long-term monthly
             elif len(dfile) == 22:
                 month = dfile.split(".")[1]
                 item['title'] = 'MODIS-fPAR time series for Australia - {month} (Long-term Monthly Average, Minimum, Maximum)'.format(month=month)
                 item['description'] = "Data aggregated for {month} (Long-term Monthly Average, Minimum, Maximum)".format(month=month)
-            
+
             LOG.info('Import %s', item['title'])
             yield item
-

@@ -14,7 +14,6 @@ from Products.CMFCore.tests.base.security import PermissiveSecurityPolicy, Omnip
 from collective.transmogrifier.transmogrifier import Transmogrifier
 import argparse
 # TODO: if item/file id already exists, then just updload/update metadata
-
 try:
     from zope.component.hooks import site
 except ImportError:

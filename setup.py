@@ -34,5 +34,6 @@ setup(
     target = plone
     [zopectl.command]
     testsetup = org.bccvl.testsetup.main:zopectl
+    manage = org.bccvl.testsetup.manage:zopectl
     """,
     )

@@ -557,7 +557,7 @@ class GlobPETAridLayers(object):
                 "genre": "DataGenreE",
                 "resolution": 'Resolution30s',
                 "categories": ["hydrology"],
-            },
+            }
         }
         LOG.info('Import %s', item['title'])
         yield item
@@ -727,6 +727,7 @@ class WorldClimFutureLayers(WorldClimLayer):
                 "year": year,
                 "categories": ["future"],
             },
+            "downloadable": False,
         }
         return item
 
@@ -785,6 +786,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
                 "resolution": 'Resolution{}'.format(res),
                 "categories": ["current"],
             },
+            "downloadable": False,
         }
         if layer == 'alt':
             item['bccvlmetadata']['categories'] = ['topography']

@@ -1009,3 +1009,48 @@ class FPARLayers(object):
 
             LOG.info('Import %s', item['title'])
             yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class CRUClimLayers(WorldClimLayer):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        yield self._createItem()
+
+    def _createItem(self):
+        res = "30m"
+        filename = "cruclim_current_1976-2005.zip"
+        item = {
+            '_path': 'datasets/climate/cruclim/{}/{}'.format(res, filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": u"Climatic Research Unit (CRU) current bioclimate maps (1976 - 2005) with global extent at 0.5 degrees resolution.",
+            "description": u"A set of 19 bioclimatic variables, calculated according to the WorldClim method.  The 19 variables calculated are as follows: They are coded as follows: \nBIO1 = Annual Mean Temperature, BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp)), BIO3 = Isothermality (BIO2/BIO7), BIO4 = Temperature Seasonality, BIO5 = Max Temperature of Warmest Month, BIO6 = Min Temperature of Coldest Month, BIO7 = Temperature Annual Range (BIO5-BIO6), BIO8 = Mean Temperature of Wettest Quarter, BIO9 = Mean Temperature of Driest Quarter, BIO10 = Mean Temperature of Warmest Quarter, BIO11 = Mean Temperature of Coldest Quarter, BIO12 = Annual Precipitation, BIO13 = Precipitation of Wettest Month, BIO14 = Precipitation of Driest Month, BIO15 = Precipitation Seasonality (Coefficient of Variation), BIO16 = Precipitation of Wettest Quarter, BIO17 = Precipitation of Driest Quarter, BIO18 = Precipitation of Warmest Quarter, BIO19 = Precipitation of Coldest Quarter.",
+            "remoteUrl": '{0}/cruclim/{1}'.format(SWIFTROOT, filename),
+            "format": "application/zip",
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreCC",
+                "resolution": 'Resolution{}'.format(res),
+                "categories": ["current"],
+            },
+        }
+        return item

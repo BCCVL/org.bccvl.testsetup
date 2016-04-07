@@ -102,4 +102,10 @@
         component=".transmogrify.FPARLayers"
         name="org.bccvl.testsetup.transmogrify.fparsource"
         />
+
+    <utility
+        component=".transmogrify.CRUClimLayers"
+        name="org.bccvl.testsetup.transmogrify.cruclimsource"
+        />
+    
 </configure>

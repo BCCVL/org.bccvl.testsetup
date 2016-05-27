@@ -112,7 +112,7 @@ class UpdateMetadata(object):
             # schedule metadata update task in process
             # FIXME: do we have obj.format already set?
             update_task = app.signature(
-                "org.bccvl.tasks.datamover.update_metadata",
+                "org.bccvl.tasks.datamover.tasks.update_metadata",
                 kwargs={
                     'url': obj_url,
                     'filename': filename,
@@ -1053,4 +1053,119 @@ class CRUClimLayers(WorldClimLayer):
                 "categories": ["current"],
             },
         }
+        return item
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class ACCUClimLayers(WorldClimLayer):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        #import ipdb; ipdb.set_trace()
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        for year in range(1965, 2001, 5):        
+            yield self._createItem(year)
+
+    def _createItem(self, year):
+        res = "9m"
+        filename = 'accuclim_{year}.zip'.format(year=year)
+        item = {
+            '_path': 'datasets/climate/accuclim/{}/{}'.format(res, filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": u'accuCLIM Bioclimate Map Time-Series, 1965 - 2000: year {year}. 30-year average mapped bioclimatic variables for the Australian Wet Tropics, statistically downscaled according to key environmental and topographic factors, at 9 arcsecond resolution.'.format(year=year),
+            "description": u"A set of 7 bioclimatic variables, calculated according to the WorldClim method.  They are coded as follows: accuCLIM_01 = Annual Mean Temperature, accuCLIM_02 = Mean Diurnal Range, accuCLIM_03 = Isothermality (accuCLIM_02/accuCLIM_07), accuCLIM_04 = Temperature Seasonality, accuCLIM_05 = Max Temperature of Warmest Month, accuCLIM_06 = Min Temperature of Coldest Month, accuCLIM_07 = Temperature Annual Range (accuCLIM_05-accuCLIM_06).",
+            "remoteUrl": '{0}/accuclim/{1}'.format(SWIFTROOT, filename),
+            "format": "application/zip",
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreCC",
+                "resolution": 'Resolution{}'.format(res),
+                "categories": ["current"],
+            },
+        }
+        LOG.info('Import %s', item['title'])
+        return item
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class TASClimLayers(WorldClimLayer):
+
+    emscs = ['SRES-A2', 'SRES-B1']
+    gcms = ['ECHAM5', 'GCM_MEAN', 'GFDL-CM2.0', 'GFDL-CM2.1', 'MIROC3.2_MEDRES', 'UKMO-HadCM3']
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        #import ipdb; ipdb.set_trace()
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        for emsc in self.emscs:
+            for gcm in self.gcms:
+                for year in range(1980, 2086, 5):
+                    yield self._createItem(emsc, gcm, year)
+
+    def _createItem(self, emsc, gcm, year):
+        res = "6m"
+        filename = 'TASCLIM_{emsc}_{gcm}_{year}.zip'.format(emsc=emsc, gcm=gcm, year=year)
+        item = {
+            '_path': 'datasets/climate/tasclim/{}/{}'.format(res, filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": u'Tasmania Future Climate ({emsc}) based on {gcm}, 6 arcmin ({year})'.format(emsc=emsc.upper(), gcm=gcm.upper(), year=year),
+            "description": u"A set of 19 bioclimatic variables, calculated according to the WorldClim method.  They are coded as follows: TASCLIM_01 = Annual Mean Temperature, TASCLIM_02 = Mean Diurnal Range, TASCLIM_03 = Isothermality (TASCLIM_02/TASCLIM_07), TASCLIM_04 = Temperature Seasonality, TASCLIM_05 = Max Temperature of Warmest Month, TASCLIM_06 = Min Temperature of Coldest Month, TASCLIM_07 = Temperature Annual Range (TASCLIM_05-TASCLIM_06), TASCLIM_08 = Mean Temperature of Wettest Quarter, TASCLIM_09 = Mean Temperature of Driest Quarter, TASCLIM_10 = Mean Temperature of Warmest Quarter, TASCLIM_11 = Mean Temperature of Coldest Quarter, TASCLIM_12 = Annual Precipitation, TASCLIM_13 = Precipitation of Wettest Month, TASCLIM_14 = Precipitation of Driest Month, TASCLIM_15 = Precipitation Seasonality (Coefficient of Variation), TASCLIM_16 = Precipitation of Wettest Quarter, TASCLIM_17 = Precipitation of Driest Quarter, TASCLIM_18 = Precipitation of Warmest Quarter, TASCLIM_19 = Precipitation of Coldest Quarter",
+            "remoteUrl": '{0}/tasclim/{1}'.format(SWIFTROOT, filename),
+            "format": "application/zip",
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreFC",
+                "resolution": 'Resolution{}'.format(res),
+                "emsc": emsc,
+                "gcm": gcm,
+                "year": year,
+                "categories": ["future"],
+            },
+        }
+
+        # Set category to current for year <= 2015
+        if  year <= 2015:
+            item["title"] = u'Tasmania Current Climate ({emsc}) based on {gcm}, 6 arcmin ({year})'.format(emsc=emsc.upper(), gcm=gcm.upper(), year=year)
+            item["bccvlmetadata"] = {
+                "genre": "DataGenreCC",
+                "resolution": 'Resolution{}'.format(res),
+                "emsc": emsc,
+                "gcm": gcm,
+                "year": year,
+                "categories": ["current"],
+            }
+        LOG.info('Import %s', item['title'])
         return item

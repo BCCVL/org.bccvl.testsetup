@@ -75,6 +75,8 @@ def import_data(site, params):
             'gppsource': {'enabled': "False"},
             'fparsource': {'enabled': "False"},
             'cruclimsource': {'enabled': "False"},
+            'accuclimsource': {'enabled': "False"},
+            'tasclimsource': {'enabled': "False"}
         }
     else:
         for fcsource in ('a5ksource', 'a1ksource', 'a250source', 'awapsource', 'wcfsource'):
@@ -87,8 +89,9 @@ def import_data(site, params):
         for source in ['nsgsource', 'vastsource',
                        'mrrtfsource', 'mrvbfsource',
                        'petsource', 'ndlcsource',
-                       'wccsource', 'gppsource'
-                       'fparsource', 'cruclimsource']:
+                       'wccsource', 'gppsource',
+                       'fparsource', 'cruclimsource',
+                       'accuclimsource', 'tasclimsource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
 
@@ -96,6 +99,7 @@ def import_data(site, params):
         'siteurl': params.get('siteurl', ''),
         'sync': str(params.get('sync'))
     }
+
     if params.get('sync'):
         # in case we do in process metadata update we can commit
         # after every item
@@ -168,6 +172,8 @@ def parse_args(args):
     parser.add_argument('--gppsource', action='store_true')
     parser.add_argument('--fparsource', action='store_true')
     parser.add_argument('--cruclimsource', action='store_true')
+    parser.add_argument('--accuclimsource', action='store_true')
+    parser.add_argument('--tasclimsource', action='store_true')
     pargs = parser.parse_args(args)
     return vars(pargs)
 

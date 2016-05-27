@@ -107,5 +107,15 @@
         component=".transmogrify.CRUClimLayers"
         name="org.bccvl.testsetup.transmogrify.cruclimsource"
         />
-    
+
+    <utility
+        component=".transmogrify.ACCUClimLayers"
+        name="org.bccvl.testsetup.transmogrify.accuclimsource"
+        />
+
+    <utility
+        component=".transmogrify.TASClimLayers"
+        name="org.bccvl.testsetup.transmogrify.tasclimsource"
+        />
+
 </configure>

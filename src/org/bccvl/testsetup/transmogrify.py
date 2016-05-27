@@ -112,7 +112,7 @@ class UpdateMetadata(object):
             # schedule metadata update task in process
             # FIXME: do we have obj.format already set?
             update_task = app.signature(
-                "org.bccvl.tasks.datamover.update_metadata",
+                "org.bccvl.tasks.datamover.tasks.update_metadata",
                 kwargs={
                     'url': obj_url,
                     'filename': filename,

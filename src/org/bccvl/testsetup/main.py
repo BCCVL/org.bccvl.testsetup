@@ -76,7 +76,8 @@ def import_data(site, params):
             'fparsource': {'enabled': "False"},
             'cruclimsource': {'enabled': "False"},
             'accuclimsource': {'enabled': "False"},
-            'tasclimsource': {'enabled': "False"}
+            'tasclimsource': {'enabled': "False"},
+            'climondsource': {'enabled': "False"}
         }
     else:
         for fcsource in ('a5ksource', 'a1ksource', 'a250source', 'awapsource', 'wcfsource'):
@@ -91,7 +92,8 @@ def import_data(site, params):
                        'petsource', 'ndlcsource',
                        'wccsource', 'gppsource',
                        'fparsource', 'cruclimsource',
-                       'accuclimsource', 'tasclimsource']:
+                       'accuclimsource', 'tasclimsource',
+                       'climondsource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
 
@@ -174,6 +176,7 @@ def parse_args(args):
     parser.add_argument('--cruclimsource', action='store_true')
     parser.add_argument('--accuclimsource', action='store_true')
     parser.add_argument('--tasclimsource', action='store_true')
+    parser.add_argument('--climondsource', action='store_true')
     pargs = parser.parse_args(args)
     return vars(pargs)
 

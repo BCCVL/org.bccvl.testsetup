@@ -118,4 +118,9 @@
         name="org.bccvl.testsetup.transmogrify.tasclimsource"
         />
 
+    <utility
+        component=".transmogrify.ClimondLayers"
+        name="org.bccvl.testsetup.transmogrify.climondsource"
+        />
+
 </configure>

@@ -1169,3 +1169,88 @@ class TASClimLayers(WorldClimLayer):
             }
         LOG.info('Import %s', item['title'])
         return item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class ClimondLayers(WorldClimLayer):
+
+    emscs = ['SRES-A2', 'SRES-A1B']
+    gcms = ['MIROC-H', 'CSIRO-Mk3.0']
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        #import ipdb; ipdb.set_trace()
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # Current climate datasets
+        yield self._createCurrentItem()
+
+        # Future climate datasets
+        for emsc in self.emscs:
+            for gcm in self.gcms:
+                for year in [2030, 2050, 2070, 2090, 2100]:
+                    yield self._createItem(emsc, gcm, year)
+
+    def _createItem(self, emsc, gcm, year):
+        res = "10m"
+        filename = 'CLIMOND_{emsc}_{gcm}_{year}.zip'.format(emsc=emsc, gcm=gcm, year=year)
+        item = {
+            '_path': 'datasets/climate/climond/{}/{}'.format(res, filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": u'CLIMOND Bioclimate Map Time-Series, 1975 - 2100: year {year}.  30-year average mapped bioclimatic variables at global extent with 10 arcminute resolution.',
+            "description": u"A set of 35 bioclimatic variables, calculated according to the WorldClim method.  They are coded as follows: CLIMOND_01 = Annual Mean Temperature, CLIMOND_02 = Mean Diurnal Range, CLIMOND_03 = Isothermality (CLIMOND_02/CLIMOND_07), CLIMOND_04 = Temperature Seasonality, CLIMOND_05 = Max Temperature of Warmest Month, CLIMOND_06 = Min Temperature of Coldest Month, CLIMOND_07 = Temperature Annual Range (CLIMOND_05-CLIMOND_06), CLIMOND_08 = Mean Temperature of Wettest Quarter, CLIMOND_09 = Mean Temperature of Driest Quarter, CLIMOND_10 = Mean Temperature of Warmest Quarter, CLIMOND_11 = Mean Temperature of Coldest Quarter, CLIMOND_12 = Annual Precipitation, CLIMOND_13 = Precipitation of Wettest Month, CLIMOND_14 = Precipitation of Driest Month, CLIMOND_15 = Precipitation Seasonality (Coefficient of Variation), CLIMOND_16 = Precipitation of Wettest Quarter, CLIMOND_17 = Precipitation of Driest Quarter, CLIMOND_18 = Precipitation of Warmest Quarter, CLIMOND_19 = Precipitation of Coldest Quarter, CLIMOND_20 = Annual Mean Radiation, CLIMOND_21 = Highest Weekly Radiation, CLIMOND_22 = Lowest Weekly Radiation, CLIMOND_23 = Radiation Seasonality (Coefficient of Variation), CLIMOND_24 = Radiation of the Wettest Quarter, CLIMOND_25 = Radiation of the Driest Quarter, CLIMOND_26 = Radiation of the Warmest Quarter, CLIMOND_27 = Radiation of the Coldest Quarter, CLIMOND_28 = Annual Mean Moisture Index, CLIMOND_29 = Highest Weekly Moisture Index, CLIMOND_30 = Lowest Weekly Moisture Index, CLIMOND_31 = Moisture Index Seasonality (Coefficient of Variation), CLIMOND_32 = Mean Moisture Index of the Wettest Quarter, CLIMOND_33 = Mean Moisture Index of the Driest Quarter, CLIMOND_34 = Mean Moisture Index of the Warmest Quarter, CLIMOND_35 = Mean Moisture Index of the Coldest Quarter",
+            "remoteUrl": '{0}/climond/{1}'.format(SWIFTROOT, filename),
+            "format": "application/zip",
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreFC",
+                "resolution": 'Resolution{}'.format(res),
+                "emsc": emsc,
+                "gcm": gcm,
+                "year": year,
+                "categories": ["future"],
+            },
+        }
+
+        LOG.info('Import %s', item['title'])
+        return item
+
+    def _createCurrentItem(self):
+        res = "10m"
+        filename = 'CLIMOND_CURRENT.zip'
+        item = {
+            '_path': 'datasets/climate/climond/{}/{}'.format(res, filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": u'CLIMOND Bioclimate Map Time-Series, 1975 - 2100: year 1975 (current).  30-year average mapped bioclimatic variables at global extent with 10 arcminute resolution.',
+            "description": u"A set of 35 bioclimatic variables, calculated according to the WorldClim method.  They are coded as follows: CLIMOND_01 = Annual Mean Temperature, CLIMOND_02 = Mean Diurnal Range, CLIMOND_03 = Isothermality (CLIMOND_02/CLIMOND_07), CLIMOND_04 = Temperature Seasonality, CLIMOND_05 = Max Temperature of Warmest Month, CLIMOND_06 = Min Temperature of Coldest Month, CLIMOND_07 = Temperature Annual Range (CLIMOND_05-CLIMOND_06), CLIMOND_08 = Mean Temperature of Wettest Quarter, CLIMOND_09 = Mean Temperature of Driest Quarter, CLIMOND_10 = Mean Temperature of Warmest Quarter, CLIMOND_11 = Mean Temperature of Coldest Quarter, CLIMOND_12 = Annual Precipitation, CLIMOND_13 = Precipitation of Wettest Month, CLIMOND_14 = Precipitation of Driest Month, CLIMOND_15 = Precipitation Seasonality (Coefficient of Variation), CLIMOND_16 = Precipitation of Wettest Quarter, CLIMOND_17 = Precipitation of Driest Quarter, CLIMOND_18 = Precipitation of Warmest Quarter, CLIMOND_19 = Precipitation of Coldest Quarter, CLIMOND_20 = Annual Mean Radiation, CLIMOND_21 = Highest Weekly Radiation, CLIMOND_22 = Lowest Weekly Radiation, CLIMOND_23 = Radiation Seasonality (Coefficient of Variation), CLIMOND_24 = Radiation of the Wettest Quarter, CLIMOND_25 = Radiation of the Driest Quarter, CLIMOND_26 = Radiation of the Warmest Quarter, CLIMOND_27 = Radiation of the Coldest Quarter, CLIMOND_28 = Annual Mean Moisture Index, CLIMOND_29 = Highest Weekly Moisture Index, CLIMOND_30 = Lowest Weekly Moisture Index, CLIMOND_31 = Moisture Index Seasonality (Coefficient of Variation), CLIMOND_32 = Mean Moisture Index of the Wettest Quarter, CLIMOND_33 = Mean Moisture Index of the Driest Quarter, CLIMOND_34 = Mean Moisture Index of the Warmest Quarter, CLIMOND_35 = Mean Moisture Index of the Coldest Quarter",
+            "remoteUrl": '{0}/climond/{1}'.format(SWIFTROOT, filename),
+            "format": "application/zip",
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreCC",
+                "resolution": 'Resolution{}'.format(res),
+                "categories": ["current"],
+            },
+        }
+
+        LOG.info('Import %s', item['title'])
+        return item

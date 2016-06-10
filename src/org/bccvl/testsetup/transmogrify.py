@@ -1254,3 +1254,99 @@ class ClimondLayers(WorldClimLayer):
 
         LOG.info('Import %s', item['title'])
         return item
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class NarclimLayers(WorldClimLayer):
+
+    emscs = ['SRES-A2']
+    gcms = ['CCCMA3.1', 'CSIRO-Mk3.0', 'ECHAM5', 'MIROC3.2']
+    rcms = ['R1', 'R2', 'R3']
+
+    # NaRCLIM current datasets 
+    current_datasets = [('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000), ('NaRCLIM_baseline_NaR_Extent.zip', '36s', 2000), ('NaRCLIM_baseline.zip', '9s', 2000)]
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # Future climate datasets
+        for gcm in self.gcms:
+            for rcm in self.rcms:
+                for year in [2030, 2070]:
+                    for res in ['36s', '9s']:
+                        yield self._createItem(gcm, rcm, res, year)
+
+        # Current climate datasets
+        for filename, res, year in self.current_datasets:
+            yield self._createCurrentItem(filename, res, year)
+
+
+    def _createItem(self, gcm, rcm, res, year):
+        if res == '36s':
+            resolution = '36 arcsec'
+        else:
+            resolution = '9 arcsec'
+        filename = 'NaRCLIM_{gcm}_{rcm}_{year}.zip'.format(gcm=gcm, rcm=rcm, year=year)
+        item = {
+            '_path': 'datasets/climate/narclim/{}/{}'.format(res, filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": u'NaRCLIM Future Climate (SRES-A2) based on {gcm}-{rcm}, {resolution} ({year})'.format(gcm=gcm.upper(), rcm=rcm.upper(), resolution=resolution, year=year),
+            "description": u"NaRCLIM Bioclimate Maps: year {year}. A set of 35 bioclimatic variables (20-year average) for NSW, VIC & ACT with {resolution} resolution, calculated according to the WorldClim method.".format(year=year, resolution=resolution),
+            "remoteUrl": '{0}/narclim/{1}/{2}'.format(SWIFTROOT, res, filename),
+            "format": "application/zip",
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreFC",
+                "resolution": 'Resolution{}'.format(res),           # This shall match to the resolution vacab in registry
+                "emsc": 'SRES-A2',
+                "gcm": gcm,
+                "rcm": rcm,
+                "year": year,
+                "categories": ["future"],
+            },
+        }
+
+        LOG.info('Import %s', item['title'])
+        return item
+
+    def _createCurrentItem(self, filename, res, year):
+        if res == '36s':
+            resolution = '36 arcsec'
+        else:
+            resolution = '9 arcsec'
+        item = {
+            '_path': 'datasets/climate/narclim/{}/{}'.format(res, filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": u'NaRCLIM Current Climate, {resolution} ({year})'.format(resolution=resolution, year=year),
+            "description": u"NaRCLIM Bioclimate Maps: year {year}. A set of 35 bioclimatic variables (20-year average) for NSW, VIC & ACT with {resolution} resolution, calculated according to the WorldClim method.".format(year=year, resolution=resolution),
+            "remoteUrl": '{0}/narclim/{1}/{2}'.format(SWIFTROOT, res, filename),
+            "format": "application/zip",
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreCC",
+                "resolution": 'Resolution{}'.format(res),
+                "categories": ["current"],
+            },
+        }
+
+        LOG.info('Import %s', item['title'])
+        return item

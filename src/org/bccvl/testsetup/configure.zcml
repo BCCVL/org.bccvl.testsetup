@@ -123,4 +123,9 @@
         name="org.bccvl.testsetup.transmogrify.climondsource"
         />
 
+    <utility
+        component=".transmogrify.NarclimLayers"
+        name="org.bccvl.testsetup.transmogrify.narclimsource"
+        />
+
 </configure>

@@ -128,4 +128,9 @@
         name="org.bccvl.testsetup.transmogrify.narclimsource"
         />
 
+    <utility
+        component=".transmogrify.GeofabricLayers"
+        name="org.bccvl.testsetup.transmogrify.geofabricsource"
+        />
+
 </configure>

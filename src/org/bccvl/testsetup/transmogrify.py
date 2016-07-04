@@ -42,7 +42,6 @@ class UpdateMetadata(object):
 
     def __iter__(self):
         for item in self.previous:
-
             if item.get("_type") not in ('org.bccvl.content.dataset',
                                          'org.bccvl.content.remotedataset'):
                 # shortcut types we are not interested in
@@ -1121,7 +1120,6 @@ class TASClimLayers(WorldClimLayer):
 
     def __iter__(self):
         # exhaust previous
-        #import ipdb; ipdb.set_trace()
         for item in self.previous:
             yield item
 
@@ -1350,3 +1348,150 @@ class NarclimLayers(WorldClimLayer):
 
         LOG.info('Import %s', item['title'])
         return item
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class GeofabricLayers(WorldClimLayer):
+
+    cats = [('SH_Network.gdb.zip', 'catchment', 'ahgfcatchment'), 
+            ('SH_Network.gdb.zip' , 'stream', 'ahgfnetworkstream')]
+
+    layers = [('stream_attributesv1.1.5.gdb.zip', 'climate', 'climate_lut'), 
+              ('stream_attributesv1.1.5.gdb.zip', 'vegetation', 'veg_lut'),
+              ('stream_attributesv1.1.5.gdb.zip', 'substrate', 'substrate_lut'), 
+              ('stream_attributesv1.1.5.gdb.zip', 'terrain', 'terrain_lut')]
+
+    descriptions = {
+        'climate': u'9" DEM of Australia version 3 (2008), ANUCLIM (Fenner School)',
+        'substrate': u'Surface geology of Australia 1:1M',
+        'terrain': '9" DEM of Australia version 3 (2008)',
+        'vegetation': u'NVIS Major Vegetation sub-groups version 3.1'
+    }
+
+    # Attributes for dataset
+    attributes = {
+        'catchment': {
+            'climate': ['catannrad', 'catanntemp', 'catcoldmthmin', 'cathotmthmax', 'catannrain', 'catdryqrain', 
+                        'catwetqrain', 'catwarmqrain', 'catcoldqrain', 'catcoldqtemp', 'catdryqtemp', 'catwetqtemp',
+                        'catanngromega', 'catanngromeso', 'catanngromicro', 'catgromegaseas', 'catgromesoseas', 
+                        'catgromicroseas', 'caterosivity'],
+            'vegetation': ['catbare_ext', 'catforests_ext', 'catgrasses_ext', 'catnodata_ext', 'catwoodlands_ext', 
+                           'catshrubs_ext', 'catbare_nat', 'catforests_nat', 'catgrasses_nat', 'catnodata_nat', 
+                           'catwoodlands_nat', 'catshrubs_nat'],
+            'substrate': ['cat_carbnatesed', 'cat_igneous', 'cat_metamorph', 'cat_oldrock', 'cat_othersed', 
+                          'cat_sedvolc', 'cat_silicsed', 'cat_unconsoldted', 'cat_a_ksat', 'cat_solpawhc'],
+            'terrain': ['catarea', 'catelemax', 'catelemean', 'catrelief', 'catslope', 'catstorage',
+                        'elongratio', 'reliefratio']
+        },
+        'stream': {
+            'climate': ['strannrad', 'stranntemp', 'strcoldmthmin', 'strhotmthmax', 'strannrain', 'strdryqrain', 
+                        'strwetqrain', 'strwarmqrain', 'strcoldqrain', 'strcoldqtemp', 'strdryqtemp', 'strwetqtemp',
+                        'stranngromega', 'stranngromeso', 'stranngromicro', 'strgromegaseas', 'strgromesoseas', 
+                        'strgromicroseas', 'suberosivity'],
+            'vegetation': ['strbare_ext', 'strforests_ext', 'strgrasses_ext', 'strnodata_ext', 'strwoodlands_ext', 
+                           'strshrubs_ext', 'strbare_nat', 'strforests_nat', 'strgrasses_nat', 'strnodata_nat', 
+                           'strwoodlands_nat', 'strshrubs_nat'],
+            'substrate': ['str_carbnatesed', 'str_igneous', 'str_metamorph', 'str_oldrock', 'str_othersed', 
+                          'str_sedvolc', 'str_silicsed', 'str_unconsoldted', 'str_a_ksat', 'str_sanda',
+                          'str_claya', 'str_clayb'],
+            'terrain': ['subarea', 'subelemax', 'subelemean', 'subslope', 'subslope_gt_10', 'subslope_gt_30', 
+                        'strahler', 'strelemax', 'strelemean', 'strelemin', 'valleyslope', 'downavgslp',
+                        'downmaxslp', 'upsdist', 'd2outlet', 'aspect', 'confinement']
+        }
+    }
+    # Geofabric datasets 
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # attribute datasets
+        for baselayer in self.cats:
+            for attrlayer in self.layers:
+                yield self._createAttributeItem(baselayer, attrlayer)
+
+        # create geospatial dataset
+
+
+    def _createAttributeItem(self, baselayer, attrlayer):
+        base_filename, baselyrname, basetable = baselayer
+        attr_filename, layername, attrtable = attrlayer
+
+        basename = "{baselayer}_{attrlayer}".format(baselayer=baselyrname, attrlayer=layername)
+        filename = basename + '.zip'
+        dbfilename = basename + '.dbf'
+
+        layers = ["{bfname}-{cat}.{afname}-{layername}.{attr}".format( 
+            bfname=base_filename, cat=basetable, afname=dbfilename, layername=basename, attr=attr)
+            for attr in self.truncate_name(self.attributes[baselyrname][layername])]
+    
+        item = {
+            '_path': 'datasets/environmental/geofabric/{0}'.format(filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": u'Geofabric {layername} dataset ({cat})'.format(layername=layername, cat=baselyrname),
+            "description": self.descriptions[layername],
+            "remoteUrl": '{0}/geofabric/{1}'.format(SWIFTROOT, filename),
+            "format": "application/json",
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "categories": [layername],
+                "dblayers": layers,
+                "foreignKey": "segmentno"
+            },
+        }
+
+        LOG.info('Import %s', item['title'])
+        return item
+
+    def _createGeospatialItem(self, baselayer, attrlayer):
+        filename = 'geofabric_geospatial.gdb.zip'    
+        item = {
+            '_path': 'datasets/environmental/geofabric/{0}'.format(filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": u'Geofabric Geospatial dataset',
+            "description": "Geofabric geospatial data",
+            "remoteUrl": '{0}/geofabric/{1}'.format(SWIFTROOT, filename),
+            "format": "application/json",
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "categories": "geospatial",
+                "foreignKey": "segmentno"
+            },
+        }
+
+        LOG.info('Import %s', item['title'])
+        return item
+
+    def truncate_name(self, namelist, maxchar=10):
+        truncatedList = [name[:maxchar] for name in namelist]
+        for i in range(len(truncatedList)):
+            index = [i]
+            for j in range(len(truncatedList)):
+                if i != j and truncatedList[j] == truncatedList[i]:
+                    index.append(j)
+            # Change name again; the last 2 character is _{digit}
+            if len(index) > 1:
+                for k in range(1, len(index)):
+                    tname = truncatedList[index[k]][:(maxchar-2)] + "_{}".format(k)
+                    truncatedList[index[k]] = tname
+        return truncatedList

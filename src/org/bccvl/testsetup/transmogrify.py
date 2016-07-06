@@ -10,7 +10,7 @@ from plone import api
 from zope.interface import implementer, provider
 
 from org.bccvl.tasks.celery import app
-from org.bccvl.tasks.plone import after_commit_task
+from org.bccvl.tasks.plone.utils import after_commit_task, create_task_context
 from org.bccvl.site.job.interfaces import IJobTracker
 
 
@@ -83,6 +83,7 @@ class UpdateMetadata(object):
                     'email': member.getProperty('email'),
                     'fullname': member.getProperty('fullname')
                 }
+            #FAIL FAIL ... need member object for create_task_context
             else:
                 # assume admin for background task
                 user = {
@@ -117,10 +118,11 @@ class UpdateMetadata(object):
                     'url': obj_url,
                     'filename': filename,
                     'contenttype': obj.format,
-                    'context': {
-                        'context': '/'.join(obj.getPhysicalPath()),
-                        'user': user,
-                    }
+                    'context': create_task_context(obj)
+                    #'context': {
+                    #    'context': '/'.join(obj.getPhysicalPath()),
+                    #    'user': user,
+                    #}
                 },
                 options={'immutable': True});
 
@@ -1077,7 +1079,7 @@ class ACCUClimLayers(WorldClimLayer):
         if not self.enabled:
             return
 
-        for year in range(1965, 2001, 5):        
+        for year in range(1965, 2001, 5):
             yield self._createItem(year)
 
     def _createItem(self, year):
@@ -1263,7 +1265,7 @@ class NarclimLayers(WorldClimLayer):
     gcms = ['CCCMA3.1', 'CSIRO-Mk3.0', 'ECHAM5', 'MIROC3.2']
     rcms = ['R1', 'R2', 'R3']
 
-    # NaRCLIM current datasets 
+    # NaRCLIM current datasets
     current_datasets = [('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000), ('NaRCLIM_baseline_NaR_Extent.zip', '36s', 2000), ('NaRCLIM_baseline.zip', '9s', 2000)]
 
     def __init__(self, transmogrifier, name, options, previous):

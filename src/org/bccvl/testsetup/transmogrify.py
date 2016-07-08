@@ -1069,7 +1069,6 @@ class ACCUClimLayers(WorldClimLayer):
 
     def __iter__(self):
         # exhaust previous
-        #import ipdb; ipdb.set_trace()
         for item in self.previous:
             yield item
 
@@ -1188,7 +1187,6 @@ class ClimondLayers(WorldClimLayer):
 
     def __iter__(self):
         # exhaust previous
-        #import ipdb; ipdb.set_trace()
         for item in self.previous:
             yield item
 
@@ -1356,16 +1354,23 @@ class GeofabricLayers(WorldClimLayer):
     cats = [('SH_Network.gdb.zip', 'catchment', 'ahgfcatchment'), 
             ('SH_Network.gdb.zip' , 'stream', 'ahgfnetworkstream')]
 
-    layers = [('stream_attributesv1.1.5.gdb.zip', 'climate', 'climate_lut'), 
-              ('stream_attributesv1.1.5.gdb.zip', 'vegetation', 'veg_lut'),
-              ('stream_attributesv1.1.5.gdb.zip', 'substrate', 'substrate_lut'), 
-              ('stream_attributesv1.1.5.gdb.zip', 'terrain', 'terrain_lut')]
-
-    descriptions = {
-        'climate': u'9" DEM of Australia version 3 (2008), ANUCLIM (Fenner School)',
-        'substrate': u'Surface geology of Australia 1:1M',
-        'terrain': '9" DEM of Australia version 3 (2008)',
-        'vegetation': u'NVIS Major Vegetation sub-groups version 3.1'
+    layers = {
+        'catchment': [('stream_attributesv1.1.5.gdb.zip', 'climate', 'climate_lut', u'Climate Data from 9" DEM of Australia version 3 (2008), ANUCLIM (Fenner School)'), 
+                      ('stream_attributesv1.1.5.gdb.zip', 'vegetation', 'veg_lut', u'NVIS Major Vegetation sub-groups version 3.1'),
+                      ('stream_attributesv1.1.5.gdb.zip', 'substrate', 'substrate_lut', u'Surface geology of Australia 1:1M'), 
+                      ('stream_attributesv1.1.5.gdb.zip', 'terrain', 'terrain_lut', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
+                      ('stream_attributesv1.1.5.gdb.zip', 'landuse', 'landuse_lut', u'Catchment Scale Land Use Mapping for Australia Update (CLUM Update 04/09)'),
+                      ('stream_attributesv1.1.5.gdb.zip', 'population', 'landuse_lut', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts'),
+                      ('stream_attributesv1.1.5.gdb.zip', 'npp', 'npp_lut', u'Net Primary Production (pre-1788)'),
+                      ('stream_attributesv1.1.5.gdb.zip', 'rdi', 'rdi_geodata2_lut', u'River Disturbance Indeces and Factors')],
+        'stream':    [('stream_attributesv1.1.5.gdb.zip', 'climate', 'climate_lut', u'Climate Data from 9" DEM of Australia version 3 (2008), ANUCLIM (Fenner School)'), 
+                      ('stream_attributesv1.1.5.gdb.zip', 'vegetation', 'veg_lut', u'NVIS Major Vegetation sub-groups version 3.1'),
+                      ('stream_attributesv1.1.5.gdb.zip', 'substrate', 'substrate_lut', u'Surface geology of Australia 1:1M'), 
+                      ('stream_attributesv1.1.5.gdb.zip', 'terrain', 'terrain_lut', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
+                      ('stream_attributesv1.1.5.gdb.zip', 'landuse', 'landuse_lut', u'Catchment Scale Land Use Mapping for Australia Update (CLUM Update 04/09)'),
+                      ('stream_attributesv1.1.5.gdb.zip', 'population', 'landuse_lut', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts'),
+                      ('stream_attributesv1.1.5.gdb.zip', 'network', 'network_lut', u'Stream Network from AusHydro version 1.1.6'),
+                      ('stream_attributesv1.1.5.gdb.zip', 'connectivity', 'connectivity_lut', u'Stream Connectivity from AusHydro version 1.1.6')]
     }
 
     # Attributes for dataset
@@ -1381,8 +1386,16 @@ class GeofabricLayers(WorldClimLayer):
             'substrate': ['cat_carbnatesed', 'cat_igneous', 'cat_metamorph', 'cat_oldrock', 'cat_othersed', 
                           'cat_sedvolc', 'cat_silicsed', 'cat_unconsoldted', 'cat_a_ksat', 'cat_solpawhc'],
             'terrain': ['catarea', 'catelemax', 'catelemean', 'catrelief', 'catslope', 'catstorage',
-                        'elongratio', 'reliefratio']
-        },
+                        'elongratio', 'reliefratio'],
+            'npp': ['nppbaseann', 'nppbase1', 'nppbase2', 'nppbase3', 'nppbase4', 'nppbase5', 'nppbase6', 
+                    'nppbase7', 'nppbase8', 'nppbase9', 'nppbase10', 'nppbase11', 'nppbase12'],
+            'landuse': ['cat_aqu', 'cat_artimp', 'cat_drainage', 'cat_fert', 'cat_forstry', 'cat_intan', 'cat_intpl', 
+                        'cat_irr', 'cat_mining', 'cat_mod', 'cat_pest', 'cat_road', 'cat_urban'],
+            'population': ['catpop_gt_1', 'catpop_gt_10', 'catpopmax', 'catpopmean'],
+            'rdi': ['sfrdi','imf', 'fdf', 'scdi', 'ef', 'if', 'sf', 'nwisf', 'gdsf', 'sdsf',
+                    'nwiif', 'gdif', 'sdif', 'nwief', 'gdef', 'sdef', 'luf', 'lbf', 'nwiimf',
+                    'gdimf', 'sdimf', 'nwifdf', 'gdfdf', 'sdfdf', 'cdi', 'frdi', 'rdi']
+        }, 
         'stream': {
             'climate': ['strannrad', 'stranntemp', 'strcoldmthmin', 'strhotmthmax', 'strannrain', 'strdryqrain', 
                         'strwetqrain', 'strwarmqrain', 'strcoldqrain', 'strcoldqtemp', 'strdryqtemp', 'strwetqtemp',
@@ -1394,11 +1407,20 @@ class GeofabricLayers(WorldClimLayer):
             'substrate': ['str_carbnatesed', 'str_igneous', 'str_metamorph', 'str_oldrock', 'str_othersed', 
                           'str_sedvolc', 'str_silicsed', 'str_unconsoldted', 'str_a_ksat', 'str_sanda',
                           'str_claya', 'str_clayb'],
-            'terrain': ['subarea', 'subelemax', 'subelemean', 'subslope', 'subslope_gt_10', 'subslope_gt_30', 
-                        'strahler', 'strelemax', 'strelemean', 'strelemin', 'valleyslope', 'downavgslp',
-                        'downmaxslp', 'upsdist', 'd2outlet', 'aspect', 'confinement']
+            'terrain': ['strahler', 'strelemax', 'strelemean', 'strelemin', 'valleyslope', 'downavgslp',
+                        'downmaxslp', 'upsdist', 'd2outlet', 'aspect', 'confinement'],
+            'landuse': ['str_aqu', 'str_artimp', 'str_drainage', 'str_fert', 'str_forstry', 'str_intan', 'str_intpl',
+                        'str_irr', 'str_mining', 'str_mod', 'str_pest', 'str_road', 'str_urban'], 
+            'population': ['strpop_gt_1', 'strpop_gt_10', 'strpopmax', 'strpopmean'],
+            'network': ['strdensity', 'no_waterholes', 'km_waterholes', 'no_springs', 'km_springs', 'a_lakes',
+                        'km_lakes', 'a_wcourse', 'km_wcourse', 'lakes', 'springs', 'watcrsarea', 'waterholes',
+                        'wateryness', 'rchlen'],
+            'connectivity': ['conlen', 'dupreservr', 'd2reservor', 'barrierdown', 'barrierup', 'distupdamw', 'd2damwall', 
+                             'conlenres', 'conlendam', 'artfbarier', 'totlen', 'cliffdown', 'cliffup', 'waterfall',
+                             'wfalldown', 'waterfallup']        
         }
     }
+
     # Geofabric datasets 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -1421,15 +1443,17 @@ class GeofabricLayers(WorldClimLayer):
 
         # attribute datasets
         for baselayer in self.cats:
-            for attrlayer in self.layers:
+            for attrlayer in self.layers[baselayer[1]]:
                 yield self._createAttributeItem(baselayer, attrlayer)
 
         # create geospatial dataset
+        # TODO: Move to new cpllection geospatial?
+        self._createGeospatialItem()
 
 
     def _createAttributeItem(self, baselayer, attrlayer):
         base_filename, baselyrname, basetable = baselayer
-        attr_filename, layername, attrtable = attrlayer
+        attr_filename, layername, attrtable, attrdesc = attrlayer
 
         basename = "{baselayer}_{attrlayer}".format(baselayer=baselyrname, attrlayer=layername)
         filename = basename + '.zip'
@@ -1444,7 +1468,7 @@ class GeofabricLayers(WorldClimLayer):
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": u'Geofabric {layername} dataset ({cat})'.format(layername=layername, cat=baselyrname),
-            "description": self.descriptions[layername],
+            "description": attrdesc,
             "remoteUrl": '{0}/geofabric/{1}'.format(SWIFTROOT, filename),
             "format": "application/json",
             "creators": 'BCCVL',
@@ -1460,7 +1484,7 @@ class GeofabricLayers(WorldClimLayer):
         LOG.info('Import %s', item['title'])
         return item
 
-    def _createGeospatialItem(self, baselayer, attrlayer):
+    def _createGeospatialItem(self):
         filename = 'geofabric_geospatial.gdb.zip'    
         item = {
             '_path': 'datasets/environmental/geofabric/{0}'.format(filename),

@@ -1470,7 +1470,7 @@ class GeofabricLayers(WorldClimLayer):
             "title": u'Geofabric {layername} dataset ({cat})'.format(layername=layername, cat=baselyrname),
             "description": attrdesc,
             "remoteUrl": '{0}/geofabric/{1}'.format(SWIFTROOT, filename),
-            "format": "application/json",
+            "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {
@@ -1493,7 +1493,7 @@ class GeofabricLayers(WorldClimLayer):
             "title": u'Geofabric Geospatial dataset',
             "description": "Geofabric geospatial data",
             "remoteUrl": '{0}/geofabric/{1}'.format(SWIFTROOT, filename),
-            "format": "application/json",
+            "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
             "bccvlmetadata": {

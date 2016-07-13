@@ -1260,7 +1260,7 @@ class ClimondLayers(WorldClimLayer):
 class NarclimLayers(WorldClimLayer):
 
     emscs = ['SRES-A2']
-    gcms = ['CCCMA3.1', 'CSIRO-Mk3.0', 'ECHAM5', 'MIROC3.2']
+    gcms = ['CCCMA3.1', 'CSIRO-MK3.0', 'ECHAM5', 'MIROC3.2']
     rcms = ['R1', 'R2', 'R3']
 
     # NaRCLIM current datasets 

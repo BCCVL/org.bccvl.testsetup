@@ -1373,52 +1373,67 @@ class GeofabricLayers(WorldClimLayer):
                       ('stream_attributesv1.1.5.gdb.zip', 'connectivity', 'connectivity_lut', u'Stream Connectivity from AusHydro version 1.1.6')]
     }
 
-    # Attributes for dataset
+    # Attributes, and vocabularies for dataset
     attributes = {
         'catchment': {
-            'climate': ['catannrad', 'catanntemp', 'catcoldmthmin', 'cathotmthmax', 'catannrain', 'catdryqrain', 
-                        'catwetqrain', 'catwarmqrain', 'catcoldqrain', 'catcoldqtemp', 'catdryqtemp', 'catwetqtemp',
-                        'catanngromega', 'catanngromeso', 'catanngromicro', 'catgromegaseas', 'catgromesoseas', 
-                        'catgromicroseas', 'caterosivity'],
-            'vegetation': ['catbare_ext', 'catforests_ext', 'catgrasses_ext', 'catnodata_ext', 'catwoodlands_ext', 
-                           'catshrubs_ext', 'catbare_nat', 'catforests_nat', 'catgrasses_nat', 'catnodata_nat', 
-                           'catwoodlands_nat', 'catshrubs_nat'],
-            'substrate': ['cat_carbnatesed', 'cat_igneous', 'cat_metamorph', 'cat_oldrock', 'cat_othersed', 
-                          'cat_sedvolc', 'cat_silicsed', 'cat_unconsoldted', 'cat_a_ksat', 'cat_solpawhc'],
-            'terrain': ['catarea', 'catelemax', 'catelemean', 'catrelief', 'catslope', 'catstorage',
-                        'elongratio', 'reliefratio'],
-            'npp': ['nppbaseann', 'nppbase1', 'nppbase2', 'nppbase3', 'nppbase4', 'nppbase5', 'nppbase6', 
-                    'nppbase7', 'nppbase8', 'nppbase9', 'nppbase10', 'nppbase11', 'nppbase12'],
-            'landuse': ['cat_aqu', 'cat_artimp', 'cat_drainage', 'cat_fert', 'cat_forstry', 'cat_intan', 'cat_intpl', 
-                        'cat_irr', 'cat_mining', 'cat_mod', 'cat_pest', 'cat_road', 'cat_urban'],
-            'population': ['catpop_gt_1', 'catpop_gt_10', 'catpopmax', 'catpopmean'],
-            'rdi': ['sfrdi','imf', 'fdf', 'scdi', 'ef', 'if', 'sf', 'nwisf', 'gdsf', 'sdsf',
-                    'nwiif', 'gdif', 'sdif', 'nwief', 'gdef', 'sdef', 'luf', 'lbf', 'nwiimf',
-                    'gdimf', 'sdimf', 'nwifdf', 'gdfdf', 'sdfdf', 'cdi', 'frdi', 'rdi']
+            'climate': [('catannrad', 'B20'), ('catanntemp', 'B01'), ('catcoldmthmin', 'B06'), ('cathotmthmax', 'B05'), ('catannrain', 'B12'), ('catdryqrain', 'B17'), 
+                        ('catwetqrain', 'B16'), ('catwarmqrain', 'B18'), ('catcoldqrain', 'B19'), ('catcoldqtemp', 'B11'), ('catdryqtemp', 'B09'), ('catwetqtemp', 'B08'),
+                        ('catanngromega', 'megathermgrowindex'), ('catanngromeso', 'mesothermgrowindex'), ('catanngromicro', 'microthermgrowindex'), 
+                        ('catgromegaseas', 'megaseasongrowindex'),  ('catgromesoseas', 'mesoseasongrowindex'), ('catgromicroseas', 'microseasongrowindex'),
+                        ('caterosivity', 'rainerosivityfactor')],
+            'vegetation': [('catbare_ext', 'bareextant'), ('catforests_ext', 'forestcover'), ('catgrasses_ext', 'grasscover'), ('catnodata_ext', 'nodataextant'), ('catwoodlands_ext', 'woodlandcover'),
+                           ('catshrubs_ext', 'shrubcover'), ('catbare_nat', 'naturallybare'), ('catforests_nat', 'natforestcover'), ('catgrasses_nat', 'natgrasscover'), ('catnodata_nat', 'natnodata'),
+                           ('catwoodlands_nat', 'natshrubcover'), ('catshrubs_nat', 'natwoodlandcover')],
+            'substrate': [('cat_carbnatesed', 'carbonatesedimentrock'), ('cat_igneous', 'igneousrock'), ('cat_metamorph', 'metamorphicrock'), ('cat_oldrock', 'oldbedrock'), ('cat_othersed', 'othersedimentrock'),
+                          ('cat_sedvolc', 'mixedsedimentigneousrock'), ('cat_silicsed', 'siliciclasticrock'), ('cat_unconsoldted', 'unconsolidatedrock'), ('cat_a_ksat', 'sathydraulicconductivity'), 
+                          ('cat_solpawhc', 'WaterHoldCapacity')],
+            'terrain': [('catarea', 'areatotal'), ('catelemax', 'elevationmax'), ('catelemean', 'elevationmean'), ('catrelief', 'relief'), ('catslope', 'slope'), ('catstorage', 'storage'),
+                        ('elongratio', 'elongationratio'), ('reliefratio', 'reliefratio')],
+            'npp': [('nppbaseann', 'npp00'), ('nppbase1', 'npp01'), ('nppbase2', 'npp02'), ('nppbase3', 'npp03'), ('nppbase4', 'npp04'), ('nppbase5', 'npp05'), ('nppbase6', 'npp06'),
+                    ('nppbase7', 'npp07'), ('nppbase8', 'npp08'), ('nppbase9', 'npp09'), ('nppbase10', 'npp10'), ('nppbase11', 'npp11'), ('nppbase12', 'npp12')],
+            'landuse': [('cat_aqu', 'aquaculture'), ('cat_artimp', 'artficialimpoundment'), ('cat_drainage', 'irridrainageland'), ('cat_fert', 'fertilzerused'), ('cat_forstry', 'forestryland'), 
+                        ('cat_intan', 'animalproduction'), ('cat_intpl', 'plantproduction'), ('cat_irr', 'irrigatedland'), ('cat_mining', 'miningland'), ('cat_mod', 'modifiedland'), 
+                        ('cat_pest', 'pestherbicidesused'), ('cat_road', 'roadland'), ('cat_urban', 'urbanland')],
+            'population': [('catpop_gt_1', 'popdensitygter1'), ('catpop_gt_10', 'popdensitygter10'), ('catpopmax', 'popdensitymax'), ('catpopmean', 'popdensitymean')],
+            'rdi': [('sfrdi', 'segflowdisturbindex'), ('imf', 'maximpfactor'), ('fdf', 'maxdiverfactor'), ('scdi', 'subcatdisturbindex'), ('ef', 'extindsrcptfactor'), ('if', 'maxinffactor'),
+                    ('sf', 'maxsettlefactor'), ('nwisf', 'nwisettlefactor'), ('gdsf', 'geodatasettlefactor'), ('sdsf', 'otherdatasettlefactor'), ('nwiif', 'nwiinffactor'), ('gdif', 'geodatainffactor'), 
+                    ('luf', 'landusefactor'), ('lbf', 'leveebankfactor'), ('nwiimf', 'nwiimpfactor'), ('gdimf', 'geodataimpfactor'), ('nwifdf', 'nwidiverfactor'), ('gdfdf', 'geodatadiverfactor'), 
+                    ('cdi', 'catdisturbindex'), ('frdi', 'flowregimedisturbindex'), ('rdi', 'riverdisturbindex'), ('sdif', 'sdif'), ('nwief', 'nwief'), ('gdef', 'gdef'), ('sdef', 'sdef'), 
+                    ('sdimf', 'sdimf'), ('sdfdf', 'sdfdf')]
         }, 
         'stream': {
-            'climate': ['strannrad', 'stranntemp', 'strcoldmthmin', 'strhotmthmax', 'strannrain', 'strdryqrain', 
-                        'strwetqrain', 'strwarmqrain', 'strcoldqrain', 'strcoldqtemp', 'strdryqtemp', 'strwetqtemp',
-                        'stranngromega', 'stranngromeso', 'stranngromicro', 'strgromegaseas', 'strgromesoseas', 
-                        'strgromicroseas', 'suberosivity'],
-            'vegetation': ['strbare_ext', 'strforests_ext', 'strgrasses_ext', 'strnodata_ext', 'strwoodlands_ext', 
-                           'strshrubs_ext', 'strbare_nat', 'strforests_nat', 'strgrasses_nat', 'strnodata_nat', 
-                           'strwoodlands_nat', 'strshrubs_nat'],
-            'substrate': ['str_carbnatesed', 'str_igneous', 'str_metamorph', 'str_oldrock', 'str_othersed', 
-                          'str_sedvolc', 'str_silicsed', 'str_unconsoldted', 'str_a_ksat', 'str_sanda',
-                          'str_claya', 'str_clayb'],
-            'terrain': ['strahler', 'strelemax', 'strelemean', 'strelemin', 'valleyslope', 'downavgslp',
-                        'downmaxslp', 'upsdist', 'd2outlet', 'aspect', 'confinement'],
-            'landuse': ['str_aqu', 'str_artimp', 'str_drainage', 'str_fert', 'str_forstry', 'str_intan', 'str_intpl',
-                        'str_irr', 'str_mining', 'str_mod', 'str_pest', 'str_road', 'str_urban'], 
-            'population': ['strpop_gt_1', 'strpop_gt_10', 'strpopmax', 'strpopmean'],
-            'network': ['strdensity', 'no_waterholes', 'km_waterholes', 'no_springs', 'km_springs', 'a_lakes',
-                        'km_lakes', 'a_wcourse', 'km_wcourse', 'lakes', 'springs', 'watcrsarea', 'waterholes',
-                        'wateryness', 'rchlen'],
-            'connectivity': ['conlen', 'dupreservr', 'd2reservor', 'barrierdown', 'barrierup', 'distupdamw', 'd2damwall', 
-                             'conlenres', 'conlendam', 'artfbarier', 'totlen', 'cliffdown', 'cliffup', 'waterfall',
-                             'wfalldown', 'waterfallup']        
+            'climate': [('strannrad', 'B20'), ('stranntemp', 'B01'), ('strcoldmthmin', 'B06'), ('strhotmthmax', 'B05'), ('strannrain', 'B12'),  ('strdryqrain', 'B17'), 
+                        ('strwetqrain', 'B16'), ('strwarmqrain', 'B18'), ('strcoldqrain', 'B19'), ('strcoldqtemp', 'B11'), ('strdryqtemp', 'B09'), ('strwetqtemp', 'B08'),
+                        ('stranngromega', 'megathermgrowindex'), ('stranngromeso', 'mesothermgrowindex'), ('stranngromicro', 'microthermgrowindex'), 
+                        ('strgromegaseas', 'megaseasongrowindex'), ('strgromesoseas', 'mesoseasongrowindex'), ('strgromicroseas', 'microseasongrowindex'), 
+                        ('suberosivity', 'rainerosivityfactor')],
+            'vegetation': [('strbare_ext', 'bareextant'), ('strforests_ext', 'forestcover'), ('strgrasses_ext', 'grasscover'), ('strnodata_ext', 'nodataextant'), ('strwoodlands_ext', 'woodlandcover'),
+                           ('strshrubs_ext', 'shrubcover'), ('strbare_nat', 'naturallybare'), ('strforests_nat', 'natforestcover'), ('strgrasses_nat', 'natgrasscover'), ('strnodata_nat', 'natnodata'),
+                           ('strwoodlands_nat', 'natwoodlandcover'), ('strshrubs_nat', 'natshrubcover')],
+            'substrate': [('str_carbnatesed', 'carbonatesedimentrock'), ('str_igneous', 'igneousrock'), ('str_metamorph', 'metamorphicrock'), ('str_oldrock', 'oldbedrock'), ('str_othersed', 'othersedimentrock'), 
+                          ('str_sedvolc', 'mixedsedimentigneousrock'), ('str_silicsed', 'siliciclasticrock'), ('str_unconsoldted', 'unconsolidatedrock'),  ('str_a_ksat', 'sathydraulicconductivity'), 
+                          ('str_sanda', 'clayAhorizon'), ('str_claya', 'clayBhorizon'), ('str_clayb', 'sandAhorizon')],
+            'terrain': [('strahler', 'strahlerorder'), ('strelemax', 'segelevationmax'), ('strelemean', 'segelevationmean'), ('strelemin', 'segelevationmin'), ('valleyslope', 'segslope'), 
+                        ('downavgslp', 'downstreamslope'), ('downmaxslp', 'downstreamslopemax'), ('upsdist', 'sourcedistance'), ('d2outlet', 'outletdistance'), ('aspect', 'localaspect'), 
+                        ('confinement', 'confinement')],
+            'landuse': [('str_aqu', 'aquaculture'), ('str_artimp', 'artficialimpoundment'), ('str_drainage', 'irridrainageland'), ('str_fert', 'fertilzerused'), ('str_forstry', 'forestryland'), 
+                        ('str_intan', 'animalproduction'), ('str_intpl', 'plantproduction'), ('str_irr', 'irrigatedland'), ('str_mining', 'miningland'), ('str_mod', 'modifiedland'), 
+                        ('str_pest', 'pestherbicidesused'), ('str_road', 'roadland'), ('str_urban', 'urbanland')], 
+            'population': [('strpop_gt_1', 'popdensitygter1'), ('strpop_gt_10', 'popdensitygter10'), ('strpopmax', 'popdensitymax'), ('strpopmean', 'popdensitymean')],
+            'network': [('strdensity', 'strdensity'), ('no_waterholes', 'waterholecount'), ('km_waterholes', 'waterholedensity'), ('no_springs', 'springcount'), ('km_springs', 'springdensity'), 
+                        ('a_lakes', 'lakearea'), ('km_lakes', 'lakedensity'), ('a_wcourse', 'watercoursearea'), ('km_wcourse', 'watercoursedensity'), ('lakes', 'lakeportion'), 
+                        ('springs', 'springportion'), ('watcrsarea', 'watercourseportion'), ('waterholes', 'waterholeportion'), ('wateryness', 'waterynessind'), ('rchlen', 'strsegmentleng')],
+            'connectivity': [('conlen', 'barfreelengmin'), ('dupreservr', 'maxupstbffplengres'), ('d2reservor', 'unrestdowndistres'), ('barrierdown', 'barrierdownstr'), ('barrierup', 'barrierupstr'), 
+                             ('distupdamw', 'maxupstbffplengdam'), ('d2damwall', 'unrestdowndistdam'), ('conlenres', 'barfreelengresv'), ('conlendam', 'barfreelengdam'), ('artfbarier', 'barrierupdownstr'), 
+                             ('totlen', 'totalcatlength'), ('cliffdown', 'cliffupstr'), ('cliffup', 'cliffupstr'), ('waterfall', 'waterfallflow'), ('wfalldown', 'waterfallupstr'), 
+                             ('waterfallup', 'waterfalldownstr')]        
         }
+    }
+
+    cats = [('SH_Network.gdb.zip', 'catchment', 'ahgfcatchment')]
+
+    layers = {
+        'catchment': [('stream_attributesv1.1.5.gdb.zip', 'population', 'landuse_lut', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts')]
     }
 
     # Geofabric datasets 
@@ -1459,9 +1474,13 @@ class GeofabricLayers(WorldClimLayer):
         filename = basename + '.zip'
         dbfilename = basename + '.dbf'
 
-        layers = ["{bfname}-{cat}.{afname}-{layername}.{attr}".format( 
-            bfname=base_filename, cat=basetable, afname=dbfilename, layername=basename, attr=attr)
-            for attr in self.truncate_name(self.attributes[baselyrname][layername])]
+        layers = {}
+        for attr, vocab in self.truncate_name(self.attributes[baselyrname][layername]):
+            lyrname = "{bfname}-{cat}.{afname}-{layername}.{attr}".format( 
+                        bfname=base_filename, cat=basetable, afname=dbfilename, layername=basename, attr=attr)
+            layers[attr] =  { 'layer': vocab,
+                              'name': lyrname
+                            } 
     
         item = {
             '_path': 'datasets/environmental/geofabric/{0}'.format(filename),
@@ -1507,15 +1526,15 @@ class GeofabricLayers(WorldClimLayer):
         return item
 
     def truncate_name(self, namelist, maxchar=10):
-        truncatedList = [name[:maxchar] for name in namelist]
+        truncatedList = [(name[:maxchar], vocab)  for name, vocab in namelist]
         for i in range(len(truncatedList)):
             index = [i]
             for j in range(len(truncatedList)):
-                if i != j and truncatedList[j] == truncatedList[i]:
+                if i != j and truncatedList[j][0] == truncatedList[i][0]:
                     index.append(j)
             # Change name again; the last 2 character is _{digit}
             if len(index) > 1:
                 for k in range(1, len(index)):
-                    tname = truncatedList[index[k]][:(maxchar-2)] + "_{}".format(k)
-                    truncatedList[index[k]] = tname
+                    tname = truncatedList[index[k]][0][:(maxchar-2)] + "_{}".format(k)
+                    truncatedList[index[k]] = (tname, truncatedList[index[k]][1])
         return truncatedList

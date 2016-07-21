@@ -196,12 +196,16 @@ class FutureClimateLayer5k(object):
             yield self.createCurrentItem()
 
     def createCurrentItem(self):
+        description = "Current climate baseline of 1976 to 2005 - climate of 1990 - generated from aggregating monthly data from Australia Water Availability Project (AWAP; http://www.bom.gov.au/jsp/awap/). " \
+                      "These data were then aggregated to Bioclim variables according to the methodology of WorldClim www.worldclim.org/methods. " \
+                      "For the gridded Australian data sets which are 1-kilometer in resolution, the base layers (i.e. daily AWAP 5k grids) are the same as they are in the 5-kilometer resolution dataset. " \
+                      "The difference is that the final product (i.e. the aggregated data in the form of a Bioclim variable) is interpolated from 5k res to 1k res."
         item = {
             "_path": "datasets/climate/{0}/{1}".format(self.folder, self.current_file),
             "_owner": (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": self.current_title,
-            "description": "Current climate baseline of 1976 to 2005 - climate of 1990 - generated from aggregating monthly data from Australia Water Availability Project (AWAP; http://www.bom.gov.au/jsp/awap/).",
+            "description": description,
             "remoteUrl": "{0}/{1}/{2}".format(SWIFTROOT, self.swiftcontainer, self.current_file),
             "format": "application/zip",
             "creators": "BCCVL",

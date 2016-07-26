@@ -807,6 +807,7 @@ class GPPLayers(object):
 
     datasets = [
         ('gpp_maxmin_2000_2007.zip', "Gross Primary Productivity for 2000-2007 (min, max & mean)"),
+        ('gpp_summary_00_07.zip', "Gross Primary Productivity for 2000-2007 (coefficient of variance)"),
         ('gppyr_2000_01_molco2m2yr_m.zip', "Gross Primary Productivity for 2000 (annual mean)"),
         ('gppyr_2001_02_molco2m2yr_m.zip', "Gross Primary Productivity for 2001 (annual mean)"),
         ('gppyr_2002_03_molco2m2yr_m.zip', "Gross Primary Productivity for 2002 (annual mean)"),
@@ -851,8 +852,10 @@ class GPPLayers(object):
                     "categories": ["vegetation"],
                 },
             }
-            if dfile == 'gpp_maxmin_2000_2007':
-                item['description'] = "Data aggregated over period 2000 - 2007",
+            if dfile == 'gpp_maxmin_2000_2007.zip':
+                item['description'] = "Data aggregated over period 2000 - 2007"
+            elif dfile == 'gpp_summary_00_07.zip':
+                item['description'] = "Data aggregated over yearly averages from 2000 - 2007"
             else:
                 item['description'] = 'Data for year {}'.format(dfile.split('_')[1])
             LOG.info('Import %s', item['title'])
@@ -1081,7 +1084,7 @@ class ACCUClimLayers(WorldClimLayer):
         if not self.enabled:
             return
 
-        for year in range(1965, 2001, 5):        
+        for year in range(1965, 2001, 5):
             yield self._createItem(year)
 
     def _createItem(self, year):
@@ -1267,7 +1270,7 @@ class NarclimLayers(WorldClimLayer):
     gcms = ['CCCMA3.1', 'CSIRO-MK3.0', 'ECHAM5', 'MIROC3.2']
     rcms = ['R1', 'R2', 'R3']
 
-    # NaRCLIM current datasets 
+    # NaRCLIM current datasets
     current_datasets = [('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000), ('NaRCLIM_baseline_NaR_Extent.zip', '36s', 2000), ('NaRCLIM_baseline.zip', '9s', 2000)]
 
     def __init__(self, transmogrifier, name, options, previous):

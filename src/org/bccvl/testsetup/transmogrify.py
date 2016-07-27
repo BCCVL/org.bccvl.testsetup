@@ -1301,7 +1301,11 @@ class NarclimLayers(WorldClimLayer):
     rcms = ['R1', 'R2', 'R3']
 
     # NaRCLIM current datasets
-    current_datasets = [('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000), ('NaRCLIM_baseline_NaR_Extent.zip', '36s', 2000), ('NaRCLIM_baseline.zip', '9s', 2000)]
+    current_datasets = [
+        ('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000),
+        ('NaRCLIM_baseline_NaR_Extent.zip', '36s', 2000),
+        # ('NaRCLIM_baseline.zip', '9s', 2000)
+    ]
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -1325,7 +1329,7 @@ class NarclimLayers(WorldClimLayer):
         for gcm in self.gcms.keys():
             for rcm in self.rcms:
                 for year in [2030, 2070]:
-                    for res in ['36s', '9s']:
+                    for res in ['36s']:  # ['36s', '9s']:
                         yield self._createItem(gcm, rcm, res, year)
 
         # Current climate datasets

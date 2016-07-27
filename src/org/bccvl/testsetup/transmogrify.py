@@ -1113,8 +1113,20 @@ class ACCUClimLayers(WorldClimLayer):
 @implementer(ISection)
 class TASClimLayers(WorldClimLayer):
 
-    emscs = ['SRES-A2', 'SRES-B1']
-    gcms = ['ECHAM5', 'GCM_MEAN', 'GFDL-CM2.0', 'GFDL-CM2.1', 'MIROC3.2_MEDRES', 'UKMO-HadCM3']
+    # map emscs from file name to vorabulary id
+    emscs = {
+        'SRES-A2': 'SRESA2',
+        'SRES-B1': 'SRESB1'
+    }
+    # map gcms from file name to vocab id
+    gcms = {
+        'ECHAM5': 'mpi-echam5',
+        'GCM_MEAN': 'gcm-mean-5',
+        'GFDL-CM2.0': 'gfdl-cm20',
+        'GFDL-CM2.1': 'gfdl-cm21',
+        'MIROC3.2_MEDRES': 'ccsr-miroc32med',
+        'UKMO-HadCM3': 'ukmo-hadcm3'
+    }
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -1135,8 +1147,8 @@ class TASClimLayers(WorldClimLayer):
         if not self.enabled:
             return
 
-        for emsc in self.emscs:
-            for gcm in self.gcms:
+        for emsc in self.emscs.keys():
+            for gcm in self.gcms.keys():
                 for year in range(1980, 2086, 5):
                     yield self._createItem(emsc, gcm, year)
 
@@ -1156,8 +1168,8 @@ class TASClimLayers(WorldClimLayer):
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),
-                "emsc": emsc,
-                "gcm": gcm,
+                "emsc": self.emscs[emsc],
+                "gcm": self.gcms[gcm],
                 "year": year,
                 "categories": ["future"],
             },
@@ -1169,8 +1181,8 @@ class TASClimLayers(WorldClimLayer):
             item["bccvlmetadata"] = {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
-                "emsc": emsc,
-                "gcm": gcm,
+                "emsc": self.emscs[emsc],
+                "gcm": self.gcms[gcm],
                 "year": year,
                 "categories": ["current"],
             }
@@ -1182,8 +1194,16 @@ class TASClimLayers(WorldClimLayer):
 @implementer(ISection)
 class ClimondLayers(WorldClimLayer):
 
-    emscs = ['SRES-A2', 'SRES-A1B']
-    gcms = ['MIROC-H', 'CSIRO-Mk3.0']
+    # map emscs from file name to vorabulary id
+    emscs = {
+        'SRES-A2': 'SRESA2',
+        'SRES-A1B': 'SRESA1B'
+    }
+    # map gcms from file name to vocab id
+    gcms = {
+        'MIROC-H': 'ccsr-miroc32hi',
+        'CSIRO-Mk3.0': 'csiro-mk30',
+    }
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -1208,8 +1228,8 @@ class ClimondLayers(WorldClimLayer):
         yield self._createCurrentItem()
 
         # Future climate datasets
-        for emsc in self.emscs:
-            for gcm in self.gcms:
+        for emsc in self.emscs.keys():
+            for gcm in self.gcms.keys():
                 for year in [2030, 2050, 2070, 2090, 2100]:
                     yield self._createItem(emsc, gcm, year)
 
@@ -1229,8 +1249,8 @@ class ClimondLayers(WorldClimLayer):
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),
-                "emsc": emsc,
-                "gcm": gcm,
+                "emsc": self.emscs[emsc],
+                "gcm": self.gcms[gcm],
                 "year": year,
                 "categories": ["future"],
             },
@@ -1266,12 +1286,26 @@ class ClimondLayers(WorldClimLayer):
 @implementer(ISection)
 class NarclimLayers(WorldClimLayer):
 
-    emscs = ['SRES-A2']
-    gcms = ['CCCMA3.1', 'CSIRO-MK3.0', 'ECHAM5', 'MIROC3.2']
+    # map emscs from file name to vorabulary id
+    emscs = {
+        'SRES-A2': 'SRESA2',
+    }
+    # map gcms from file name to vocab id
+    gcms = {
+        'CCCMA3.1': 'cccma-cgcm31',
+        'CSIRO-MK3.0': 'csiro-mk30',
+        'ECHAM5': 'mpi-echam5',
+        'MIROC3.2': 'ccsr-miroc32med',
+    }
+    # map rcms from file name to vocab id
     rcms = ['R1', 'R2', 'R3']
 
     # NaRCLIM current datasets
-    current_datasets = [('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000), ('NaRCLIM_baseline_NaR_Extent.zip', '36s', 2000), ('NaRCLIM_baseline.zip', '9s', 2000)]
+    current_datasets = [
+        ('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000),
+        ('NaRCLIM_baseline_NaR_Extent.zip', '36s', 2000),
+        # ('NaRCLIM_baseline.zip', '9s', 2000)
+    ]
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -1292,10 +1326,10 @@ class NarclimLayers(WorldClimLayer):
             return
 
         # Future climate datasets
-        for gcm in self.gcms:
+        for gcm in self.gcms.keys():
             for rcm in self.rcms:
                 for year in [2030, 2070]:
-                    for res in ['36s', '9s']:
+                    for res in ['36s']:  # ['36s', '9s']:
                         yield self._createItem(gcm, rcm, res, year)
 
         # Current climate datasets
@@ -1322,8 +1356,8 @@ class NarclimLayers(WorldClimLayer):
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),           # This shall match to the resolution vacab in registry
-                "emsc": 'SRES-A2',
-                "gcm": gcm,
+                "emsc": self.emscs['SRES-A2'],
+                "gcm": self.gcms[gcm],
                 "rcm": rcm,
                 "year": year,
                 "categories": ["future"],

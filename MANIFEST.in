@@ -1,2 +1,2 @@
 include README.rst MANIFEST.in LICENSE
-recursive-include src *.zcml *.json *.ttl *.zip *.csv *.txt *.xml *.cfg
+recursive-include src *.zcml *.json *.zip *.csv *.txt *.xml *.cfg

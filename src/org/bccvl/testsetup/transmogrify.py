@@ -198,12 +198,16 @@ class FutureClimateLayer5k(object):
             yield self.createCurrentItem()
 
     def createCurrentItem(self):
+        description = "Current climate baseline of 1976 to 2005 - climate of 1990 - generated from aggregating monthly data from Australia Water Availability Project (AWAP; http://www.bom.gov.au/jsp/awap/). " \
+                      "These data were then aggregated to Bioclim variables according to the methodology of WorldClim www.worldclim.org/methods. " \
+                      "For the gridded Australian data sets which are 1-kilometer in resolution, the base layers (i.e. daily AWAP 5k grids) are the same as they are in the 5-kilometer resolution dataset. " \
+                      "The difference is that the final product (i.e. the aggregated data in the form of a Bioclim variable) is interpolated from 5k res to 1k res."
         item = {
             "_path": "datasets/climate/{0}/{1}".format(self.folder, self.current_file),
             "_owner": (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": self.current_title,
-            "description": "Current climate baseline of 1976 to 2005 - climate of 1990 - generated from aggregating monthly data from Australia Water Availability Project (AWAP; http://www.bom.gov.au/jsp/awap/).",
+            "description": description,
             "remoteUrl": "{0}/{1}/{2}".format(SWIFTROOT, self.swiftcontainer, self.current_file),
             "format": "application/zip",
             "creators": "BCCVL",
@@ -805,6 +809,7 @@ class GPPLayers(object):
 
     datasets = [
         ('gpp_maxmin_2000_2007.zip', "Gross Primary Productivity for 2000-2007 (min, max & mean)"),
+        ('gpp_summary_00_07.zip', "Gross Primary Productivity for 2000-2007 (coefficient of variance)"),
         ('gppyr_2000_01_molco2m2yr_m.zip', "Gross Primary Productivity for 2000 (annual mean)"),
         ('gppyr_2001_02_molco2m2yr_m.zip', "Gross Primary Productivity for 2001 (annual mean)"),
         ('gppyr_2002_03_molco2m2yr_m.zip', "Gross Primary Productivity for 2002 (annual mean)"),
@@ -849,8 +854,10 @@ class GPPLayers(object):
                     "categories": ["vegetation"],
                 },
             }
-            if dfile == 'gpp_maxmin_2000_2007':
-                item['description'] = "Data aggregated over period 2000 - 2007",
+            if dfile == 'gpp_maxmin_2000_2007.zip':
+                item['description'] = "Data aggregated over period 2000 - 2007"
+            elif dfile == 'gpp_summary_00_07.zip':
+                item['description'] = "Data aggregated over yearly averages from 2000 - 2007"
             else:
                 item['description'] = 'Data for year {}'.format(dfile.split('_')[1])
             LOG.info('Import %s', item['title'])
@@ -1108,8 +1115,20 @@ class ACCUClimLayers(WorldClimLayer):
 @implementer(ISection)
 class TASClimLayers(WorldClimLayer):
 
-    emscs = ['SRES-A2', 'SRES-B1']
-    gcms = ['ECHAM5', 'GCM_MEAN', 'GFDL-CM2.0', 'GFDL-CM2.1', 'MIROC3.2_MEDRES', 'UKMO-HadCM3']
+    # map emscs from file name to vorabulary id
+    emscs = {
+        'SRES-A2': 'SRESA2',
+        'SRES-B1': 'SRESB1'
+    }
+    # map gcms from file name to vocab id
+    gcms = {
+        'ECHAM5': 'mpi-echam5',
+        'GCM_MEAN': 'gcm-mean-5',
+        'GFDL-CM2.0': 'gfdl-cm20',
+        'GFDL-CM2.1': 'gfdl-cm21',
+        'MIROC3.2_MEDRES': 'ccsr-miroc32med',
+        'UKMO-HadCM3': 'ukmo-hadcm3'
+    }
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -1130,8 +1149,8 @@ class TASClimLayers(WorldClimLayer):
         if not self.enabled:
             return
 
-        for emsc in self.emscs:
-            for gcm in self.gcms:
+        for emsc in self.emscs.keys():
+            for gcm in self.gcms.keys():
                 for year in range(1980, 2086, 5):
                     yield self._createItem(emsc, gcm, year)
 
@@ -1151,8 +1170,8 @@ class TASClimLayers(WorldClimLayer):
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),
-                "emsc": emsc,
-                "gcm": gcm,
+                "emsc": self.emscs[emsc],
+                "gcm": self.gcms[gcm],
                 "year": year,
                 "categories": ["future"],
             },
@@ -1164,8 +1183,8 @@ class TASClimLayers(WorldClimLayer):
             item["bccvlmetadata"] = {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
-                "emsc": emsc,
-                "gcm": gcm,
+                "emsc": self.emscs[emsc],
+                "gcm": self.gcms[gcm],
                 "year": year,
                 "categories": ["current"],
             }
@@ -1177,8 +1196,16 @@ class TASClimLayers(WorldClimLayer):
 @implementer(ISection)
 class ClimondLayers(WorldClimLayer):
 
-    emscs = ['SRES-A2', 'SRES-A1B']
-    gcms = ['MIROC-H', 'CSIRO-Mk3.0']
+    # map emscs from file name to vorabulary id
+    emscs = {
+        'SRES-A2': 'SRESA2',
+        'SRES-A1B': 'SRESA1B'
+    }
+    # map gcms from file name to vocab id
+    gcms = {
+        'MIROC-H': 'ccsr-miroc32hi',
+        'CSIRO-Mk3.0': 'csiro-mk30',
+    }
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -1203,8 +1230,8 @@ class ClimondLayers(WorldClimLayer):
         yield self._createCurrentItem()
 
         # Future climate datasets
-        for emsc in self.emscs:
-            for gcm in self.gcms:
+        for emsc in self.emscs.keys():
+            for gcm in self.gcms.keys():
                 for year in [2030, 2050, 2070, 2090, 2100]:
                     yield self._createItem(emsc, gcm, year)
 
@@ -1224,8 +1251,8 @@ class ClimondLayers(WorldClimLayer):
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),
-                "emsc": emsc,
-                "gcm": gcm,
+                "emsc": self.emscs[emsc],
+                "gcm": self.gcms[gcm],
                 "year": year,
                 "categories": ["future"],
             },
@@ -1261,12 +1288,26 @@ class ClimondLayers(WorldClimLayer):
 @implementer(ISection)
 class NarclimLayers(WorldClimLayer):
 
-    emscs = ['SRES-A2']
-    gcms = ['CCCMA3.1', 'CSIRO-MK3.0', 'ECHAM5', 'MIROC3.2']
+    # map emscs from file name to vorabulary id
+    emscs = {
+        'SRES-A2': 'SRESA2',
+    }
+    # map gcms from file name to vocab id
+    gcms = {
+        'CCCMA3.1': 'cccma-cgcm31',
+        'CSIRO-MK3.0': 'csiro-mk30',
+        'ECHAM5': 'mpi-echam5',
+        'MIROC3.2': 'ccsr-miroc32med',
+    }
+    # map rcms from file name to vocab id
     rcms = ['R1', 'R2', 'R3']
 
     # NaRCLIM current datasets
-    current_datasets = [('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000), ('NaRCLIM_baseline_NaR_Extent.zip', '36s', 2000), ('NaRCLIM_baseline.zip', '9s', 2000)]
+    current_datasets = [
+        ('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000),
+        ('NaRCLIM_baseline_NaR_Extent.zip', '36s', 2000),
+        # ('NaRCLIM_baseline.zip', '9s', 2000)
+    ]
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -1287,10 +1328,10 @@ class NarclimLayers(WorldClimLayer):
             return
 
         # Future climate datasets
-        for gcm in self.gcms:
+        for gcm in self.gcms.keys():
             for rcm in self.rcms:
                 for year in [2030, 2070]:
-                    for res in ['36s', '9s']:
+                    for res in ['36s']:  # ['36s', '9s']:
                         yield self._createItem(gcm, rcm, res, year)
 
         # Current climate datasets
@@ -1317,8 +1358,8 @@ class NarclimLayers(WorldClimLayer):
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),           # This shall match to the resolution vacab in registry
-                "emsc": 'SRES-A2',
-                "gcm": gcm,
+                "emsc": self.emscs['SRES-A2'],
+                "gcm": self.gcms[gcm],
                 "rcm": rcm,
                 "year": year,
                 "categories": ["future"],

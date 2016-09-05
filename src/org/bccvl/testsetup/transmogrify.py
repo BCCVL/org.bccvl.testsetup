@@ -18,6 +18,24 @@ LOG = logging.getLogger(__name__)
 # FIXME: make this configurable somewhere
 SWIFTROOT = 'https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f960ae5677'
 
+# Tag used for summary datasets
+SUMMARY_DATASET_TAG = 'Summary datasets'
+SUMMARY_DATASET_TITLES = ['WorldClim Current Conditions (1950-2000) at 10 arcmin',
+                          'WorldClim Current Conditions (1950-2000) at 5 arcmin',
+                          'Current Climate 1976 to 2005, 30 arcsec (~1km)',
+                          'Current Climate 1976 to 2005, 2.5 arcmin (~5km)',
+                          'Climatic Research Unit (CRU) current bioclimate maps (1976 - 2005) with global extent at 0.5 degrees resolution',
+                          'CliMond Current Climate, 10 arcmin (1975)',
+                          'Dynamic Land Cover Dataset (DLCD) v1',
+                          'National Soil Grids',
+                          'Global PET and Aridity',
+                          'National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008',
+                          'Multi-resolution Ridge Top Flatness (MrRTF, 3" resolution)',
+                          'Multi-resolution Valley Bottom Flatness (MrVBF, 3" resolution)',
+                          'MODIS-fPAR time series for Australia - Summary for 2000 to 2014 (Average, Minimum, Maximum)',
+                          'Gross Primary Productivity for 2000-2007 (min, max & mean)',
+                         ]
+
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
@@ -48,6 +66,11 @@ class UpdateMetadata(object):
                 # shortcut types we are not interested in
                 yield item
                 continue
+
+            # Add tag for summary datasets
+            if item['title'] in SUMMARY_DATASET_TITLES:
+                LOG.info('{} is summary dataset'.format(item['title']))
+                item['subject'] = [SUMMARY_DATASET_TAG]
 
             if not self.siteurl:
                 LOG.warn("Can't run metadata update without configured site url")
@@ -109,6 +132,8 @@ class UpdateMetadata(object):
             #       that includes 'format'
             if 'format' in item:
                 obj.format = item['format']
+            if 'subject' in item:
+                obj.subject = item['subject']
             # schedule metadata update task in process
             # FIXME: do we have obj.format already set?
             update_task = app.signature(
@@ -142,8 +167,8 @@ class FutureClimateLayer5k(object):
     resolution = 'Resolution2_5m'
     swiftcontainer = 'australia_5km'
     folder = 'australia/australia_5km'
-    titletempl = "Climate Projection {0} based on {1}, 2.5arcmin (~5km) - {2}"
-    current_title = "Current Climate 1976 to 2005, 2.5arcmin (~5km)"
+    titletempl = "Climate Projection {0} based on {1}, 2.5 arcmin (~5km) - {2}"
+    current_title = "Current Climate 1976 to 2005, 2.5 arcmin (~5km)"
     current_file = "current.zip"
 
     def __init__(self, transmogrifier, name, options, previous):
@@ -253,8 +278,8 @@ class FutureClimateLayer1k(FutureClimateLayer5k):
     resolution = 'Resolution30s'
     swiftcontainer = 'australia_1km'
     folder = 'australia/australia_1km'
-    titletempl = "Climate Projection {0} based on {1}, 30arcsec (~1km) - {2}"
-    current_title = "Current Climate 1976 to 2005, 30arcsec (~1km)"
+    titletempl = "Climate Projection {0} based on {1}, 30 arcsec (~1km) - {2}"
+    current_title = "Current Climate 1976 to 2005, 30 arcsec (~1km)"
     current_file = "current.76to05.zip"
 
 
@@ -265,8 +290,8 @@ class FutureClimateLayer250m(FutureClimateLayer5k):
     resolution = 'Resolution9s'
     swiftcontainer = 'australia_250m'
     folder = 'australia/australia_250m'
-    titletempl = "Climate Projection {0} based on {1}, 9arcsec (~250m) - {2}"
-    current_title = "Current Climate 1976 to 2005, 9arcsec (~250m)"
+    titletempl = "Climate Projection {0} based on {1}, 9 arcsec (~250m) - {2}"
+    current_title = "Current Climate 1976 to 2005, 9 arcsec (~250m)"
     current_file = None
 
 
@@ -1048,7 +1073,7 @@ class CRUClimLayers(WorldClimLayer):
             '_path': 'datasets/climate/cruclim/{}/{}'.format(res, filename),
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
-            "title": u"Climatic Research Unit (CRU) current bioclimate maps (1976 - 2005) with global extent at 0.5 degrees resolution.",
+            "title": u"Climatic Research Unit (CRU) current bioclimate maps (1976 - 2005) with global extent at 0.5 degrees resolution",
             "description": u"A set of 19 bioclimatic variables, calculated according to the WorldClim method.  The 19 variables calculated are as follows: They are coded as follows: \nBIO1 = Annual Mean Temperature, BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp)), BIO3 = Isothermality (BIO2/BIO7), BIO4 = Temperature Seasonality, BIO5 = Max Temperature of Warmest Month, BIO6 = Min Temperature of Coldest Month, BIO7 = Temperature Annual Range (BIO5-BIO6), BIO8 = Mean Temperature of Wettest Quarter, BIO9 = Mean Temperature of Driest Quarter, BIO10 = Mean Temperature of Warmest Quarter, BIO11 = Mean Temperature of Coldest Quarter, BIO12 = Annual Precipitation, BIO13 = Precipitation of Wettest Month, BIO14 = Precipitation of Driest Month, BIO15 = Precipitation Seasonality (Coefficient of Variation), BIO16 = Precipitation of Wettest Quarter, BIO17 = Precipitation of Driest Quarter, BIO18 = Precipitation of Warmest Quarter, BIO19 = Precipitation of Coldest Quarter.",
             "remoteUrl": '{0}/cruclim/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
@@ -1278,7 +1303,6 @@ class ClimondLayers(WorldClimLayer):
                 "categories": ["current"],
             },
         }
-
         LOG.info('Import %s', item['title'])
         return item
 

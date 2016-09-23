@@ -8,6 +8,8 @@ from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.utils import defaultMatcher
 from plone import api
 from zope.interface import implementer, provider
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
 
 from org.bccvl.tasks.celery import app
 from org.bccvl.tasks.plone import after_commit_task
@@ -36,6 +38,11 @@ SUMMARY_DATASET_TITLES = ['WorldClim Current Conditions (1950-2000) at 10 arcmin
                           'Gross Primary Productivity for 2000-2007 (min, max & mean)',
                          ]
 
+def emsc_title(context, emsc):
+    emsc_vocab = getUtility(IVocabularyFactory, 'emsc_source')(context)
+    if emsc in emsc_vocab:
+        return emsc_vocab.getTerm(emsc).title
+    raise Exception("Invalid key {} for emission scenario".format(emsc))
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
@@ -253,7 +260,7 @@ class FutureClimateLayer5k(object):
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": self.titletempl.format(
-                emsc, gcm.upper(), year),
+                emsc_title(self.context, emsc), gcm.upper(), year),
             "remoteUrl": url,
             "format": "application/zip",
             "creators": 'BCCVL',
@@ -718,9 +725,11 @@ class WorldClimFutureLayers(WorldClimLayer):
                     continue
                 filename = '{}_{}_{}_{}_{}.zip'.format(gcm, emsc, year, res, layer)
                 if layer == 'bioclim':
-                    title = u'WorldClim Future Projection using {} {} at {} ({})'.format(gcm, emsc, RESOS[res], year)
+                    title = u'WorldClim Future Projection using {} {} at {} ({})'.format(
+                        gcm, emsc_title(self.context, emsc), RESOS[res], year)
                 else:
-                    title = u'WorldClim Future Projection monthly {} using {} {} at {} ({})'.format(layer, gcm, emsc, RESOS[res], year)
+                    title = u'WorldClim Future Projection monthly {} using {} {} at {} ({})'.format(
+                        layer, gcm, emsc_title(self.context, emsc), RESOS[res], year)
                 if emsc == 'ccsm4':
                     emsc = 'ncar-ccsm40'
                 yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.','')
@@ -1102,7 +1111,6 @@ class ACCUClimLayers(WorldClimLayer):
 
     def __iter__(self):
         # exhaust previous
-        #import ipdb; ipdb.set_trace()
         for item in self.previous:
             yield item
 
@@ -1184,7 +1192,8 @@ class TASClimLayers(WorldClimLayer):
             '_path': 'datasets/climate/tasclim/{}/{}'.format(res, filename),
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
-            "title": u'Tasmania Future Climate ({emsc}) based on {gcm}, 6 arcmin ({year})'.format(emsc=emsc.upper(), gcm=gcm.upper(), year=year),
+            "title": u'Tasmania Future Climate ({emsc}) based on {gcm}, 6 arcmin ({year})'.format(
+                emsc=emsc_title(self.context, emsc.upper()), gcm=gcm.upper(), year=year),
             "description": u"Climate Futures Tasmania (CFT) Bioclimate Map Time-Series, 1980 - 2085. A set of 19 bioclimatic variables (30-year average) with 6 arcminute resolution, calculated according to the WorldClim method.",
             "remoteUrl": '{0}/tasclim/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
@@ -1202,7 +1211,8 @@ class TASClimLayers(WorldClimLayer):
 
         # Set category to current for year <= 2015
         if  year <= 2015:
-            item["title"] = u'Tasmania Current Climate ({emsc}) based on {gcm}, 6 arcmin ({year})'.format(emsc=emsc.upper(), gcm=gcm.upper(), year=year)
+            item["title"] = u'Tasmania Current Climate ({emsc}) based on {gcm}, 6 arcmin ({year})'.format(
+                emsc=emsc_title(self.context, emsc.upper()), gcm=gcm.upper(), year=year)
             item["bccvlmetadata"] = {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
@@ -1265,7 +1275,8 @@ class ClimondLayers(WorldClimLayer):
             '_path': 'datasets/climate/climond/{}/{}'.format(res, filename),
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
-            "title": u'CliMond Future Climate ({emsc}) based on {gcm}, 10 arcmin ({year})'.format(emsc=emsc.upper(), gcm=gcm.upper(), year=year),
+            "title": u'CliMond Future Climate ({emsc}) based on {gcm}, 10 arcmin ({year})'.format(
+                emsc=emsc_title(self.context, emsc.upper()), gcm=gcm.upper(), year=year),
             "description": u"CLIMOND Bioclimate Map Time-Series, 1975 - 2100.  A set of 35 bioclimatic variables (30-year average) with 10 arcminute resolution, calculated according to the WorldClim method.",
             "remoteUrl": '{0}/climond/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",

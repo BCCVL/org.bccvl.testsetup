@@ -128,4 +128,9 @@
         name="org.bccvl.testsetup.transmogrify.narclimsource"
         />
 
+    <utility
+        component=".transmogrify.NationalVegetationLayers"
+        name="org.bccvl.testsetup.transmogrify.nvissource"
+        />
+
 </configure>

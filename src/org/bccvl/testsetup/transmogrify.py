@@ -335,7 +335,6 @@ class NationalSoilgridLayers(object):
             "_type": "org.bccvl.content.remotedataset",
             "title": "National Soil Grids",
             "remoteUrl": opt['url'],
-            "format": "application/zip",
             "creators": 'BCCVL',
             "format": "application/zip",
             "_transitions": "publish",
@@ -348,6 +347,51 @@ class NationalSoilgridLayers(object):
         LOG.info('Import %s', item['title'])
         yield item
 
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class NationalVegetationLayers(object):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # TODO: maybe put some info in here? to access in a later stage...
+        #       bccvlmetadata.json may be an option here
+        opt = {
+            'id': 'nvis_major_vegetation_groups.zip',
+            'url': '{0}/nvis/nvis_major_vegetation_groups.zip'.format(SWIFTROOT)
+        }
+        item = {
+            "_path": 'datasets/environmental/nvis_vegetation_groups/{}'.format(opt['id']),
+            "_owner":  (1,  'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": "Australian Major Vegetation Groups (NVIS)",
+            "remoteUrl": opt['url'],
+            "creators": 'BCCVL',
+            "format": "application/zip",
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "resolution": 'Resolution3s',
+                "categories": ["vegetation"],
+            },
+        }
+        LOG.info('Import %s', item['title'])
+        yield item
 
 @provider(ISectionBlueprint)
 @implementer(ISection)

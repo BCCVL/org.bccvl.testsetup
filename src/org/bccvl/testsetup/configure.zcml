@@ -133,4 +133,9 @@
         name="org.bccvl.testsetup.transmogrify.geofabricsource"
         />
 
+    <utility
+        component=".transmogrify.NationalVegetationLayers"
+        name="org.bccvl.testsetup.transmogrify.nvissource"
+        />
+
 </configure>

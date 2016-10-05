@@ -8,6 +8,8 @@ from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.utils import defaultMatcher
 from plone import api
 from zope.interface import implementer, provider
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
 
 from org.bccvl.tasks.celery import app
 from org.bccvl.tasks.plone import after_commit_task
@@ -36,6 +38,11 @@ SUMMARY_DATASET_TITLES = ['WorldClim Current Conditions (1950-2000) at 10 arcmin
                           'Gross Primary Productivity for 2000-2007 (min, max & mean)',
                          ]
 
+def emsc_title(context, emsc):
+    emsc_vocab = getUtility(IVocabularyFactory, 'emsc_source')(context)
+    if emsc in emsc_vocab:
+        return emsc_vocab.getTerm(emsc).title
+    raise Exception("Invalid key {} for emission scenario".format(emsc))
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
@@ -178,14 +185,10 @@ class FutureClimateLayer5k(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
-        self.emsc = set(x.strip()
-                        for x in options.get('emsc', "").split(',') if x)
-        self.gcm = set(x.strip()
-                       for x in options.get('gcm', "").split(',') if x)
-        self.year = set(x.strip()
-                        for x in options.get('year', "").split(',') if x)
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+        self.emsc = set(x.strip() for x in options.get('emsc', "").split(',') if x)
+        self.gcm = set(x.strip() for x in options.get('gcm', "").split(',') if x)
+        self.year = set(x.strip() for x in options.get('year', "").split(',') if x)
 
     def __iter__(self):
         # exhaust previous
@@ -256,7 +259,7 @@ class FutureClimateLayer5k(object):
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": self.titletempl.format(
-                emsc, gcm.upper(), year),
+                emsc_title(self.context, emsc), gcm.upper(), year),
             "remoteUrl": url,
             "format": "application/zip",
             "creators": 'BCCVL',
@@ -310,8 +313,7 @@ class NationalSoilgridLayers(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -332,7 +334,6 @@ class NationalSoilgridLayers(object):
             "_type": "org.bccvl.content.remotedataset",
             "title": "National Soil Grids",
             "remoteUrl": opt['url'],
-            "format": "application/zip",
             "creators": 'BCCVL',
             "format": "application/zip",
             "_transitions": "publish",
@@ -340,6 +341,53 @@ class NationalSoilgridLayers(object):
                 "genre": "DataGenreE",
                 "resolution": 'Resolution9s',
                 "categories": ["substrate"],
+            },
+        }
+        LOG.info('Import %s', item['title'])
+        yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class NationalVegetationLayers(object):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # TODO: maybe put some info in here? to access in a later stage...
+        #       bccvlmetadata.json may be an option here
+        opt = {
+            'id': 'nvis_major_vegetation_groups.zip',
+            'url': '{0}/nvis/nvis_major_vegetation_groups.zip'.format(SWIFTROOT)
+        }
+        item = {
+            "_path": 'datasets/environmental/nvis_vegetation_groups/{}'.format(opt['id']),
+            "_owner":  (1,  'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": "Australian Major Vegetation Groups (NVIS)",
+            "remoteUrl": opt['url'],
+            "creators": 'BCCVL',
+            "format": "application/zip",
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "resolution": 'Resolution3s',
+                "categories": ["vegetation"],
             },
         }
         LOG.info('Import %s', item['title'])
@@ -358,8 +406,7 @@ class VegetationAssetsStatesTransitionsLayers(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -406,8 +453,7 @@ class MultiResolutionRidgeTopFlatnessLayers(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -454,8 +500,7 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -505,10 +550,8 @@ class AWAPLayers(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
-        self.year = set(x.strip()
-                        for x in options.get('year', "").split(',') if x)
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+        self.year = set(x.strip() for x in options.get('year', "").split(',') if x)
 
     def __iter__(self):
         # exhaust previous
@@ -565,8 +608,7 @@ class GlobPETAridLayers(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -617,8 +659,7 @@ class NDLCLayers(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -676,14 +717,10 @@ class WorldClimLayer(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
-        self.emsc = set(x.strip()
-                        for x in options.get('emsc', "").split(',') if x)
-        self.gcm = set(x.strip()
-                       for x in options.get('gcm', "").split(',') if x)
-        self.year = set(x.strip()
-                        for x in options.get('year', "").split(',') if x)
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
+        self.emsc = set(x.strip() for x in options.get('emsc', "").split(',') if x)
+        self.gcm = set(x.strip() for x in options.get('gcm', "").split(',') if x)
+        self.year = set(x.strip() for x in options.get('year', "").split(',') if x)
 
 
 @provider(ISectionBlueprint)
@@ -732,14 +769,13 @@ class WorldClimFutureLayers(WorldClimLayer):
                 if self.emsc and emsc not in self.emsc:
                     # skip
                     continue
-                filename = '{}_{}_{}_{}_{}.zip'.format(
-                    gcm, emsc, year, res, layer)
+                filename = '{}_{}_{}_{}_{}.zip'.format(gcm, emsc, year, res, layer)
                 if layer == 'bioclim':
                     title = u'WorldClim Future Projection using {} {} at {} ({})'.format(
-                        gcm, emsc, RESOS[res], year)
+                        gcm, emsc_title(self.context, emsc), RESOS[res], year)
                 else:
                     title = u'WorldClim Future Projection monthly {} using {} {} at {} ({})'.format(
-                        layer, gcm, emsc, RESOS[res], year)
+                        layer, gcm, emsc_title(self.context, emsc), RESOS[res], year)
                 if emsc == 'ccsm4':
                     emsc = 'ncar-ccsm40'
                 yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.', '')
@@ -807,14 +843,12 @@ class WorldClimCurrentLayers(WorldClimLayer):
             item = self._createItem(title, scale, 'alt')
             yield item
             # yield bioclim layer
-            title = u'WorldClim Current Conditions (1950-2000) at {}'.format(
-                RESOLUTION_MAP[scale])
+            title = u'WorldClim Current Conditions (1950-2000) at {}'.format(RESOLUTION_MAP[scale])
             item = self._createItem(title, scale, 'bioclim')
             yield item
             # yield monthly layers
             for layer in MONTHLY:
-                title = u'WorldClim Current Conditions monthly {} (1950-2000) at {}'.format(
-                    layer, RESOLUTION_MAP[scale])
+                title = u'WorldClim Current Conditions monthly {} (1950-2000) at {}'.format(layer, RESOLUTION_MAP[scale])
                 item = self._createItem(title, scale, layer)
                 yield item
 
@@ -881,8 +915,7 @@ class GPPLayers(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -912,11 +945,9 @@ class GPPLayers(object):
             if dfile == 'gpp_maxmin_2000_2007.zip':
                 item['description'] = "Data aggregated over period 2000 - 2007"
             elif dfile == 'gpp_summary_00_07.zip':
-                item[
-                    'description'] = "Data aggregated over yearly averages from 2000 - 2007"
+                item['description'] = "Data aggregated over yearly averages from 2000 - 2007"
             else:
-                item['description'] = 'Data for year {}'.format(
-                    dfile.split('_')[1])
+                item['description'] = 'Data for year {}'.format(dfile.split('_')[1])
             LOG.info('Import %s', item['title'])
             yield item
 
@@ -1001,8 +1032,7 @@ class FPARLayers(object):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -1014,11 +1044,9 @@ class FPARLayers(object):
 
         # Monthly data loop
         for year, start_month, end_month in self.ranges:
-            for month in xrange(start_month, end_month + 1):
-                dfile = 'fpar.{year}.{month:02d}.aust.zip'.format(
-                    month=month, year=year)
-                dtitle = 'MODIS-fPAR time series for Australia - {month} {year}'.format(
-                    month=month, year=year)
+            for month in xrange(start_month, end_month+1):
+                dfile = 'fpar.{year}.{month:02d}.aust.zip'.format(month=month, year=year)
+                dtitle = 'MODIS-fPAR time series for Australia - {month} {year}'.format(month=month, year=year)
                 _url = '{0}/fpar/{1}'.format(SWIFTROOT, dfile)
                 item = {
                     "_path": 'datasets/environmental/fpar/{0}'.format(dfile),
@@ -1057,32 +1085,24 @@ class FPARLayers(object):
                 },
             }
             if dfile == 'fpar.2000-2014.stats.aust.zip':
-                item[
-                    'title'] = 'MODIS-fPAR time series for Australia - Summary for 2000 to 2014 (Average, Minimum, Maximum)'
-                item['description'] = "Data aggregated over years 2000 to 2014 (Average, Minimum, Maximum)".format(
-                    year=dfile.split(".")[1])
+                item['title'] = 'MODIS-fPAR time series for Australia - Summary for 2000 to 2014 (Average, Minimum, Maximum)'
+                item['description'] = "Data aggregated over years 2000 to 2014 (Average, Minimum, Maximum)".format(year=dfile.split(".")[1])
             # Growing year (Jul - Jun)
             elif len(dfile) == 29:
                 year1 = dfile.split(".")[1].split("-")[0]
                 year2 = dfile.split(".")[1].split("-")[1]
-                item['title'] = 'MODIS-fPAR time series for Australia - {year1} to {year2} Growing Year (Average, Minimum, Maximum)'.format(
-                    year1=year1, year2=year2)
-                item['description'] = "Data aggregated for {year1} to {year2} Growing Year (Annual Average, Minimum, Maximum)".format(
-                    year1=year1, year2=year2)
+                item['title'] = 'MODIS-fPAR time series for Australia - {year1} to {year2} Growing Year (Average, Minimum, Maximum)'.format(year1=year1, year2=year2)
+                item['description'] = "Data aggregated for {year1} to {year2} Growing Year (Annual Average, Minimum, Maximum)".format(year1=year1, year2=year2)
             # Calendar year (Jan - Dec)
             elif len(dfile) == 24:
                 year = dfile.split(".")[1]
-                item[
-                    'title'] = 'MODIS-fPAR time series for Australia - {year} Calendar Year (Average, Minimum, Maximum)'.format(year=year)
-                item['description'] = "Data aggregated for {year} Calendar Year (Annual Average, Minimum, Maximum)".format(
-                    year=year)
+                item['title'] = 'MODIS-fPAR time series for Australia - {year} Calendar Year (Average, Minimum, Maximum)'.format(year=year)
+                item['description'] = "Data aggregated for {year} Calendar Year (Annual Average, Minimum, Maximum)".format(year=year)
             # Long-term monthly
             elif len(dfile) == 22:
                 month = dfile.split(".")[1]
-                item[
-                    'title'] = 'MODIS-fPAR time series for Australia - {month} (Long-term Monthly Average, Minimum, Maximum)'.format(month=month)
-                item[
-                    'description'] = "Data aggregated for {month} (Long-term Monthly Average, Minimum, Maximum)".format(month=month)
+                item['title'] = 'MODIS-fPAR time series for Australia - {month} (Long-term Monthly Average, Minimum, Maximum)'.format(month=month)
+                item['description'] = "Data aggregated for {month} (Long-term Monthly Average, Minimum, Maximum)".format(month=month)
 
             LOG.info('Import %s', item['title'])
             yield item
@@ -1099,8 +1119,7 @@ class CRUClimLayers(WorldClimLayer):
         self.options = options
         self.previous = previous
 
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -1145,8 +1164,7 @@ class ACCUClimLayers(WorldClimLayer):
         self.options = options
         self.previous = previous
 
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -1209,8 +1227,7 @@ class TASClimLayers(WorldClimLayer):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -1227,13 +1244,13 @@ class TASClimLayers(WorldClimLayer):
 
     def _createItem(self, emsc, gcm, year):
         res = "6m"
-        filename = 'TASCLIM_{emsc}_{gcm}_{year}.zip'.format(
-            emsc=emsc, gcm=gcm, year=year)
+        filename = 'TASCLIM_{emsc}_{gcm}_{year}.zip'.format(emsc=emsc, gcm=gcm, year=year)
         item = {
             '_path': 'datasets/climate/tasclim/{}/{}'.format(res, filename),
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
-            "title": u'Tasmania Future Climate ({emsc}) based on {gcm}, 6 arcmin ({year})'.format(emsc=emsc.upper(), gcm=gcm.upper(), year=year),
+            "title": u'Tasmania Future Climate ({emsc}) based on {gcm}, 6 arcmin ({year})'.format(
+                emsc=emsc_title(self.context, emsc.upper()), gcm=gcm.upper(), year=year),
             "description": u"Climate Futures Tasmania (CFT) Bioclimate Map Time-Series, 1980 - 2085. A set of 19 bioclimatic variables (30-year average) with 6 arcminute resolution, calculated according to the WorldClim method.",
             "remoteUrl": '{0}/tasclim/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
@@ -1250,9 +1267,9 @@ class TASClimLayers(WorldClimLayer):
         }
 
         # Set category to current for year <= 2015
-        if year <= 2015:
+        if  year <= 2015:
             item["title"] = u'Tasmania Current Climate ({emsc}) based on {gcm}, 6 arcmin ({year})'.format(
-                emsc=emsc.upper(), gcm=gcm.upper(), year=year)
+                emsc=emsc_title(self.context, emsc.upper()), gcm=gcm.upper(), year=year)
             item["bccvlmetadata"] = {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
@@ -1288,8 +1305,7 @@ class ClimondLayers(WorldClimLayer):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous
@@ -1316,7 +1332,8 @@ class ClimondLayers(WorldClimLayer):
             '_path': 'datasets/climate/climond/{}/{}'.format(res, filename),
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
-            "title": u'CliMond Future Climate ({emsc}) based on {gcm}, 10 arcmin ({year})'.format(emsc=emsc.upper(), gcm=gcm.upper(), year=year),
+            "title": u'CliMond Future Climate ({emsc}) based on {gcm}, 10 arcmin ({year})'.format(
+                emsc=emsc_title(self.context, emsc.upper()), gcm=gcm.upper(), year=year),
             "description": u"CLIMOND Bioclimate Map Time-Series, 1975 - 2100.  A set of 35 bioclimatic variables (30-year average) with 10 arcminute resolution, calculated according to the WorldClim method.",
             "remoteUrl": '{0}/climond/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
@@ -1391,8 +1408,7 @@ class NarclimLayers(WorldClimLayer):
         self.previous = previous
 
         # get filters from configuration
-        self.enabled = options.get('enabled', "").lower() in (
-            "true", "1", "on", "yes")
+        self.enabled = options.get('enabled', "").lower() in ("true", "1", "on", "yes")
 
     def __iter__(self):
         # exhaust previous

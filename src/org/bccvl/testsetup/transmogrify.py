@@ -34,7 +34,7 @@ SUMMARY_DATASET_TITLES = ['WorldClim Current Conditions (1950-2000) at 10 arcmin
                           'National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008',
                           'Multi-resolution Ridge Top Flatness (MrRTF, 3" resolution)',
                           'Multi-resolution Valley Bottom Flatness (MrVBF, 3" resolution)',
-                          'MODIS-fPAR time series for Australia - Summary for 2000 to 2014 (Average, Minimum, Maximum)',
+                          'MODIS-fPAR time series for Australia - Summary for 2000 to 2014 (Average, Minimum, Maximum, Coefficient of Variation)',
                           'Gross Primary Productivity for 2000-2007 (min, max & mean)',
                          ]
 
@@ -1073,8 +1073,8 @@ class FPARLayers(object):
                 },
             }
             if dfile == 'fpar.2000-2014.stats.aust.zip':
-                item['title'] = 'MODIS-fPAR time series for Australia - Summary for 2000 to 2014 (Average, Minimum, Maximum)'
-                item['description'] = "Data aggregated over years 2000 to 2014 (Average, Minimum, Maximum)".format(year=dfile.split(".")[1])
+                item['title'] = 'MODIS-fPAR time series for Australia - Summary for 2000 to 2014 (Average, Minimum, Maximum, Coefficient of Variation)'
+                item['description'] = "Data aggregated over years 2000 to 2014 (Average, Minimum, Maximum, Coefficient of Variation)".format(year=dfile.split(".")[1])
             # Growing year (Jul - Jun)
             elif len(dfile) == 29:
                 year1 = dfile.split(".")[1].split("-")[0]

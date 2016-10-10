@@ -930,7 +930,7 @@ class GPPLayers(object):
                     "categories": ["vegetation"],
                 },
             }
-            if dfile == 'gpp_maxmin_2000_2007.zip':
+            if dfile == 'gpp_maxmin_2000_2007.zip' or 'gpp_summary_00_07.zip':
                 item['description'] = "Data aggregated over period 2000 - 2007"
             elif dfile == 'gpp_summary_00_07.zip':
                 item['description'] = "Data aggregated over yearly averages from 2000 - 2007"

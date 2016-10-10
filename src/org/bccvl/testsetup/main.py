@@ -79,6 +79,7 @@ def import_data(site, params):
             'tasclimsource': {'enabled': "False"},
             'climondsource': {'enabled': "False"},
             'narclimsource': {'enabled': "False"},
+            'geofabricsource': {'enabled': "False"},
             'nvissource': {'enabled': "False"}
         }
     else:
@@ -96,7 +97,7 @@ def import_data(site, params):
                        'fparsource', 'cruclimsource',
                        'accuclimsource', 'tasclimsource',
                        'climondsource', 'narclimsource',
-                       'nvissource']:
+                       'geofabricsource', 'nvissource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
 
@@ -148,6 +149,7 @@ def main(app, params):
     # TODO: works only if site id is bccvl
     portal = app.unrestrictedTraverse('bccvl')
     # we didn't traverse, so we have to set the proper site
+
     with site(portal):
         import_data(portal, params)
 
@@ -181,6 +183,7 @@ def parse_args(args):
     parser.add_argument('--tasclimsource', action='store_true')
     parser.add_argument('--climondsource', action='store_true')
     parser.add_argument('--narclimsource', action='store_true')
+    parser.add_argument('--geofabricsource', action='store_true')
     parser.add_argument('--nvissource', action='store_true')
     pargs = parser.parse_args(args)
     return vars(pargs)

@@ -890,7 +890,7 @@ class GPPLayers(object):
         ('gpp_maxmin_2000_2007.zip',
          "Gross Primary Productivity for 2000-2007 (min, max & mean)"),
         ('gpp_summary_00_07.zip',
-         "Gross Primary Productivity for 2000-2007 (coefficient of variance)"),
+         "Gross Primary Productivity for 2000-2007 (coefficient of variation)"),
         ('gppyr_2000_01_molco2m2yr_m.zip',
          "Gross Primary Productivity for 2000 (annual mean)"),
         ('gppyr_2001_02_molco2m2yr_m.zip',

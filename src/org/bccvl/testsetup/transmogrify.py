@@ -36,6 +36,7 @@ SUMMARY_DATASET_TITLES = ['WorldClim Current Conditions (1950-2000) at 10 arcmin
                           'Multi-resolution Valley Bottom Flatness (MrVBF, 3" resolution)',
                           'MODIS-fPAR time series for Australia - Summary for 2000 to 2014 (Average, Minimum, Maximum, Coefficient of Variation)',
                           'Gross Primary Productivity for 2000-2007 (min, max & mean)',
+                          'Gross Primary Productivity for 2000-2007 (coefficient of variation)'
                           ]
 
 

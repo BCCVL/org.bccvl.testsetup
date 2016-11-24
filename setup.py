@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.14.0rc0'
+version = '1.14.0rc1'
 
 setup(
     name='org.bccvl.testsetup',

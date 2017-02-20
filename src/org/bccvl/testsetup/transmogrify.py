@@ -23,7 +23,8 @@ SWIFTROOT = 'https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f
 # Tag used for summary datasets
 SUMMARY_DATASET_TAG = 'Summary datasets'
 SUMMARY_DATASET_TITLES = ['WorldClim, current climate (1950-2000), 10 arcmin (~20 km)',
-                          'WorldClim, current climate (1950-2000), 5 arcmin (~10 km)', 
+                          'WorldClim, current climate (1950-2000), 5 arcmin (~10 km)',
+                          'WorldClim, current climate (1950-2000), 2.5 arcmin (~5 km)',
                           'Australia, current climate (1976-2005), 30 arcsec (~1 km)',
                           'Australia, current climate (1976-2005), 2.5 arcmin (~5 km)',
                           'CRUclim (global), current climate (1976-2005), 30 arcmin (~50 km)',

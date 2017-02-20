@@ -1,11 +1,10 @@
 from setuptools import setup, find_packages
-import os
 
-version = '1.14.2'
 
 setup(
     name='org.bccvl.testsetup',
-    version=version,
+    setup_requires=['guscmversion'],
+    guscmversion=True,
     description="BCCVL Test Content Setup",
     # long_description=open("README.txt").read() + "\n" +
     #                  open(os.path.join("docs", "HISTORY.txt")).read(),
@@ -28,12 +27,13 @@ setup(
     install_requires=[
         'setuptools',
     ],
-    entry_points="""
-    # -*- Entry points: -*-
-    [z3c.autoinclude.plugin]
-    target = plone
-    [zopectl.command]
-    testsetup = org.bccvl.testsetup.main:zopectl
-    manage = org.bccvl.testsetup.manage:zopectl
-    """,
+    entry_points={
+        'z3c.autoinclude.plugin': [
+            'target = plone',
+        ],
+        'zopectl.command': [
+            'testsetup = org.bccvl.testsetup.main:zopectl',
+            'manage = org.bccvl.testsetup.manage:zopectl'
+        ]
+    }
 )

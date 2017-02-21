@@ -1434,7 +1434,7 @@ class NarclimLayers(WorldClimLayer):
 
     # NaRCLIM current datasets
     current_datasets = [
-        ('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000),
+        #('NaRCLIM_baseline_Aus_Extent.zip', '36s', 2000),
         ('NaRCLIM_baseline_NaR_Extent.zip', '36s', 2000),
         # ('NaRCLIM_baseline.zip', '9s', 2000)
     ]

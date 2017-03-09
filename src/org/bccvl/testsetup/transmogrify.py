@@ -1529,6 +1529,65 @@ class NarclimLayers(WorldClimLayer):
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
+class ANUClimLayers(WorldClimLayer):
+    # ANUClim monthly datasets
+    MONTH_LIST = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in (
+            "true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # Current climate datasets
+        res = "30s"
+        resolution = "1km"
+        year = "1976-2005"
+        for month in range(12):
+            filename = 'anuclim_{}_{}'.format(resolution, self.SHORT_MONTH[month][:3])
+            yield self._createCurrentItem(filename, res, self.SHORT_MONTH[month], year)
+
+
+    def _createCurrentItem(self, filename, res, month, year):
+        resolution = ''
+        if res == '30s':
+            resolution = '30 arcsec (~1 km)'
+        item = {
+            '_path': 'datasets/climate/anuclim/{}/{}'.format(res, filename),
+            '_owner': (1, 'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": u'Australia, Current Climate {month}, ({year}), {resolution}'.format(resolution=resolution, month=month, year=year),
+            "description": u"Monthly climate data for the Australian continent between {year}, generated using ANUClimate 1.0. This dataset includes 5 variables: monthly mean precipitation, mean daily minimum and maximum temperature of the month, mean daily vapour pressure of the month and monthly total class A pan evaporation. The monthly anomalies were interpolated by trivariate thin plate smoothing spline functions of longitude, latitude and vertically exaggerated elevation using ANUSPLIN Version 4.5. Monthly data values were calculated from Bureau of Meteorology daily data at stations where there were no missing observations and any accumulated records were wholly within the month.".format(year=year),
+            "remoteUrl": '{0}/anuclim/{1}'.format(SWIFTROOT, filename),
+            "format": "application/zip",
+            "creators": 'BCCVL',
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreCC",
+                "resolution": 'Resolution{}'.format(res),
+                "categories": ["current"],
+            },
+        }
+
+        LOG.info('Import %s', item['title'])
+        return item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
 class GeofabricLayers(WorldClimLayer):
 
     cats = [

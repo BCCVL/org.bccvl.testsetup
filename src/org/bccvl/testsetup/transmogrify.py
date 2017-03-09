@@ -1557,7 +1557,7 @@ class ANUClimLayers(WorldClimLayer):
         resolution = "1km"
         year = "1976-2005"
         for month in range(12):
-            filename = 'anuclim_{}_{}'.format(resolution, self.MONTH_LIST[month][:3])
+            filename = 'anuclim_{}_{}.zip'.format(resolution, self.MONTH_LIST[month][:3])
             yield self._createCurrentItem(filename, res, self.MONTH_LIST[month], year)
 
 

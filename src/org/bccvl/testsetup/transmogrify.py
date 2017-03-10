@@ -1569,7 +1569,7 @@ class ANUClimLayers(WorldClimLayer):
             '_path': 'datasets/climate/anuclim/{}/{}'.format(res, filename),
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
-            "title": u'Australia, Current Climate {month}, ({year}), {resolution}'.format(resolution=resolution, month=month, year=year),
+            "title": u'ANUClim (Australia), Current Climate {month}, ({year}), {resolution}'.format(resolution=resolution, month=month, year=year),
             "description": u"Monthly climate data for the Australian continent between {year}, generated using ANUClimate 1.0. This dataset includes 5 variables: monthly mean precipitation, mean daily minimum and maximum temperature of the month, mean daily vapour pressure of the month and monthly total class A pan evaporation. The monthly anomalies were interpolated by trivariate thin plate smoothing spline functions of longitude, latitude and vertically exaggerated elevation using ANUSPLIN Version 4.5. Monthly data values were calculated from Bureau of Meteorology daily data at stations where there were no missing observations and any accumulated records were wholly within the month.".format(year=year),
             "remoteUrl": '{0}/anuclim/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",

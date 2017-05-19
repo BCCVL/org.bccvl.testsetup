@@ -21,6 +21,7 @@ LOG = logging.getLogger(__name__)
 SWIFTROOT = 'https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f960ae5677'
 
 # Tag used for summary datasets
+MONTHLY_DATASET_TAG = 'Monthly datasets'
 SUMMARY_DATASET_TAG = 'Summary datasets'
 SUMMARY_DATASET_TITLES = ['WorldClim, current climate (1950-2000), 10 arcmin (~20 km)',
                           'WorldClim, current climate (1950-2000), 5 arcmin (~10 km)',
@@ -872,10 +873,10 @@ class WorldClimCurrentLayers(WorldClimLayer):
             # yield monthly layers
             for layer in MONTHLY:
                 title = u'WorldClim, current climate monthly {} (1950-2000), {}'.format(layer, RESOLUTION_MAP[scale])
-                item = self._createItem(title, scale, layer)
+                item = self._createItem(title, scale, layer, MONTHLY_DATASET_TAG)
                 yield item
 
-    def _createItem(self, title, scale, layer):
+    def _createItem(self, title, scale, layer, tag=None):
         res = scale.replace('-', '_')
         filename = 'worldclim_{}_{}.zip'.format(scale, layer)
         item = {
@@ -897,6 +898,8 @@ class WorldClimCurrentLayers(WorldClimLayer):
         }
         if layer == 'alt':
             item['bccvlmetadata']['categories'] = ['topography']
+        if tag:
+            item['subject'] = [tag]
         LOG.info('Import %s', item['title'])
         return item
 
@@ -1580,6 +1583,7 @@ class ANUClimLayers(WorldClimLayer):
                 "resolution": 'Resolution{}'.format(res),
                 "categories": ["current"],
             },
+            "subject": [MONTHLY_DATASET_TAG],
         }
 
         LOG.info('Import %s', item['title'])

@@ -794,15 +794,17 @@ class WorldClimFutureLayers(WorldClimLayer):
                     continue
                 filename = '{}_{}_{}_{}_{}.zip'.format(
                     gcm, emsc, year, res, layer)
+                monthly_tag = None
                 if layer == 'bioclim':
                     title = u'WorldClim, future projection using {} {}, {} ({})'.format(
                         gcm, emsc_title(self.context, emsc.replace('.', '')), RESOS[res], year)
                 else:
                     title = u'WorldClim, future projection monthly {} using {} {}, {} ({})'.format(
                         layer, gcm, emsc_title(self.context, emsc.replace('.', '')), RESOS[res], year)
+                    monthly_tag = MONTHLY_DATASET_TAG
                 if emsc == 'ccsm4':
                     emsc = 'ncar-ccsm40'
-                yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.', '')
+                yield filename, title, res.replace('.', '_'), year, gcm.lower(), emsc.replace('.', ''), monthly_tag
 
     def __iter__(self):
         # exhaust previous
@@ -812,12 +814,12 @@ class WorldClimFutureLayers(WorldClimLayer):
         if not self.enabled:
             return
 
-        for filename, title, res, year, gcm, emsc in self.datasets():
-            item = self._createItem(title, filename, res, gcm, emsc, year)
+        for filename, title, res, year, gcm, emsc, monthtag in self.datasets():
+            item = self._createItem(title, filename, res, gcm, emsc, year, monthtag)
             LOG.info('Import %s', item['title'])
             yield item
 
-    def _createItem(self, title, filename, res, gcm, emsc, year):
+    def _createItem(self, title, filename, res, gcm, emsc, year, tag=None):
         item = {
             '_path': 'datasets/climate/worldclim/{}/{}'.format(res, filename),
             "_owner":  (1,  'admin'),
@@ -837,6 +839,8 @@ class WorldClimFutureLayers(WorldClimLayer):
             },
             "downloadable": False,
         }
+        if tag:
+            item['subject'] = [tag]
         return item
 
 

@@ -813,11 +813,11 @@ class WorldClimFutureLayers(WorldClimLayer):
             return
 
         for filename, title, res, year, gcm, emsc in self.datasets():
-            item = self._createItem(title, filename, res, gcm, emsc, year)
+            item = self._createItem(title, filename, res, gcm, emsc, year, MONTHLY_DATASET_TAG)
             LOG.info('Import %s', item['title'])
             yield item
 
-    def _createItem(self, title, filename, res, gcm, emsc, year):
+    def _createItem(self, title, filename, res, gcm, emsc, year, tag=None):
         item = {
             '_path': 'datasets/climate/worldclim/{}/{}'.format(res, filename),
             "_owner":  (1,  'admin'),
@@ -837,6 +837,8 @@ class WorldClimFutureLayers(WorldClimLayer):
             },
             "downloadable": False,
         }
+        if tag:
+            item['subject'] = [tag]        
         return item
 
 

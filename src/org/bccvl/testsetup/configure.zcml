@@ -47,6 +47,11 @@
         component=".transmogrify.FutureClimateLayer250m"
         name="org.bccvl.testsetup.transmogrify.a250source"
         />
+
+    <utility
+        component=".transmogrify.AustSubstrateFertilityLayers"
+        name="org.bccvl.testsetup.transmogrify.austsubsfertsource"
+        />
     
     <utility
         component=".transmogrify.NationalSoilgridLayers"

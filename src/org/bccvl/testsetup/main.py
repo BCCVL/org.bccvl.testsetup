@@ -81,7 +81,8 @@ def import_data(site, params):
             'narclimsource': {'enabled': "False"},
             'anuclimsource': {'enabled': "False"},
             'geofabricsource': {'enabled': "False"},
-            'nvissource': {'enabled': "False"}
+            'nvissource': {'enabled': "False"},
+            'austsubsfertsource': {'enabled': "False"}
         }
     else:
         for fcsource in ('a5ksource', 'a1ksource', 'a250source', 'awapsource', 'wcfsource'):
@@ -99,7 +100,7 @@ def import_data(site, params):
                        'accuclimsource', 'tasclimsource',
                        'climondsource', 'narclimsource',
                        'geofabricsource', 'nvissource',
-                       'anuclimsource']:
+                       'anuclimsource', 'austsubsfertsource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
 
@@ -169,6 +170,7 @@ def parse_args(args):
     parser.add_argument('--gcm')
     parser.add_argument('--emsc')
     parser.add_argument('--year')
+    parser.add_argument('--austsubsfertsource', action='store_true')
     parser.add_argument('--nsgsource', action='store_true')
     parser.add_argument('--vastsource', action='store_true')
     parser.add_argument('--mrrtfsource', action='store_true')

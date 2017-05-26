@@ -313,6 +313,53 @@ class FutureClimateLayer250m(FutureClimateLayer5k):
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
+class AustSubstrateFertilityLayers(object):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in (
+            "true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+        # TODO: maybe put some info in here? to access in a later stage...
+        #       bccvlmetadata.json may be an option here
+        opt = {
+            'id': 'australian_substrate_fertility.zip',
+            'url': '{0}/aust-substrate-fertility/australian_substrate_fertility.zip'.format(SWIFTROOT)
+        }
+        item = {
+            "_path": 'datasets/environmental/aust_substrate_fertility/{}'.format(opt['id']),
+            "_owner":  (1,  'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": "Australian Substrate Fertility, 36 arcsec (~1 km)",
+            "remoteUrl": opt['url'],
+            "creators": 'BCCVL',
+            "format": "application/zip",
+            "_transitions": "publish",
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "resolution": 'Resolution36s',
+                "categories": ["substrate"],
+            },
+        }
+        LOG.info('Import %s', item['title'])
+        yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
 class NationalSoilgridLayers(object):
 
     def __init__(self, transmogrifier, name, options, previous):

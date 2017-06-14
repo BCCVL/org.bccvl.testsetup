@@ -22,6 +22,7 @@ SWIFTROOT = 'https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f
 
 # Tag used for summary datasets
 MONTHLY_DATASET_TAG = 'Monthly datasets'
+FRESHWATER_DATASET_TAG='Freshwater datasets'
 SUMMARY_DATASET_TAG = 'Summary datasets'
 SUMMARY_DATASET_TITLES = ['WorldClim, current climate (1950-2000), 10 arcmin (~20 km)',
                           'WorldClim, current climate (1950-2000), 5 arcmin (~10 km)',
@@ -1645,115 +1646,23 @@ class ANUClimLayers(WorldClimLayer):
 @implementer(ISection)
 class GeofabricLayers(WorldClimLayer):
 
-    cats = [
-        ('SH_Network.gdb.zip', 'catchment', 'ahgfcatchment'),
-        # ('SH_Network.gdb.zip' , 'stream', 'ahgfnetworkstream')
-    ]
-
-    layers = {
-        'catchment': [
-            # ('stream_attributesv1.1.5.gdb.zip', 'climate', 'climate_lut', u'Climate Data from 9" DEM of Australia version 3 (2008), ANUCLIM (Fenner School)'),
-            # ('stream_attributesv1.1.5.gdb.zip', 'vegetation', 'veg_lut', u'NVIS Major Vegetation sub-groups version 3.1'),
-            # ('stream_attributesv1.1.5.gdb.zip', 'substrate', 'substrate_lut', u'Surface geology of Australia 1:1M'),
-            # ('stream_attributesv1.1.5.gdb.zip', 'terrain', 'terrain_lut', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
-            # ('stream_attributesv1.1.5.gdb.zip', 'landuse', 'landuse_lut', u'Catchment Scale Land Use Mapping for Australia Update (CLUM Update 04/09)'),
-            ('stream_attributesv1.1.5.gdb.zip', 'population', 'landuse_lut',
-             u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts'),
-            # ('stream_attributesv1.1.5.gdb.zip', 'npp', 'npp_lut', u'Net Primary Production (pre-1788)'),
-            # ('stream_attributesv1.1.5.gdb.zip', 'rdi', 'rdi_geodata2_lut', u'River Disturbance Indeces and Factors')
-        ],
-        # 'stream': [
-        #     ('stream_attributesv1.1.5.gdb.zip', 'climate', 'climate_lut', u'Climate Data from 9" DEM of Australia version 3 (2008), ANUCLIM (Fenner School)'),
-        #     ('stream_attributesv1.1.5.gdb.zip', 'vegetation', 'veg_lut', u'NVIS Major Vegetation sub-groups version 3.1'),
-        #     ('stream_attributesv1.1.5.gdb.zip', 'substrate', 'substrate_lut', u'Surface geology of Australia 1:1M'),
-        #     ('stream_attributesv1.1.5.gdb.zip', 'terrain', 'terrain_lut', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
-        #     ('stream_attributesv1.1.5.gdb.zip', 'landuse', 'landuse_lut', u'Catchment Scale Land Use Mapping for Australia Update (CLUM Update 04/09)'),
-        #     ('stream_attributesv1.1.5.gdb.zip', 'population', 'landuse_lut', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts'),
-        #     ('stream_attributesv1.1.5.gdb.zip', 'network', 'network_lut', u'Stream Network from AusHydro version 1.1.6'),
-        #     ('stream_attributesv1.1.5.gdb.zip', 'connectivity', 'connectivity_lut', u'Stream Connectivity from AusHydro version 1.1.6')
-        # ]
-    }
-
-    # Attributes, and vocabularies for dataset
-    attributes = {
-        'catchment': {
-            'climate': [('catannrad', 'B20'), ('catanntemp', 'B01'), ('catcoldmthmin', 'B06'), ('cathotmthmax', 'B05'), ('catannrain', 'B12'), ('catdryqrain', 'B17'),
-                        ('catwetqrain', 'B16'), ('catwarmqrain', 'B18'), ('catcoldqrain', 'B19'), (
-                            'catcoldqtemp', 'B11'), ('catdryqtemp', 'B09'), ('catwetqtemp', 'B08'),
-                        ('catanngromega', 'megathermgrowindex'), ('catanngromeso',
-                                                                  'mesothermgrowindex'), ('catanngromicro', 'microthermgrowindex'),
-                        ('catgromegaseas', 'megaseasongrowindex'),  ('catgromesoseas',
-                                                                     'mesoseasongrowindex'), ('catgromicroseas', 'microseasongrowindex'),
-                        ('caterosivity', 'rainerosivityfactor')],
-            'vegetation': [('catbare_ext', 'bareextant'), ('catforests_ext', 'forestcover'), ('catgrasses_ext', 'grasscover'), ('catnodata_ext', 'nodataextant'), ('catwoodlands_ext', 'woodlandcover'),
-                           ('catshrubs_ext', 'shrubcover'), ('catbare_nat', 'naturallybare'), ('catforests_nat',
-                                                                                               'natforestcover'), ('catgrasses_nat', 'natgrasscover'), ('catnodata_nat', 'natnodata'),
-                           ('catwoodlands_nat', 'natshrubcover'), ('catshrubs_nat', 'natwoodlandcover')],
-            'substrate': [('cat_carbnatesed', 'carbonatesedimentrock'), ('cat_igneous', 'igneousrock'), ('cat_metamorph', 'metamorphicrock'), ('cat_oldrock', 'oldbedrock'), ('cat_othersed', 'othersedimentrock'),
-                          ('cat_sedvolc', 'mixedsedimentigneousrock'), ('cat_silicsed', 'siliciclasticrock'), (
-                              'cat_unconsoldted', 'unconsolidatedrock'), ('cat_a_ksat', 'sathydraulicconductivity'),
-                          ('cat_solpawhc', 'WaterHoldCapacity')],
-            'terrain': [('catarea', 'areatotal'), ('catelemax', 'elevationmax'), ('catelemean', 'elevationmean'), ('catrelief', 'relief'), ('catslope', 'slope'), ('catstorage', 'storage'),
-                        ('elongratio', 'elongationratio'), ('reliefratio', 'reliefratio')],
-            'npp': [('nppbaseann', 'npp00'), ('nppbase1', 'npp01'), ('nppbase2', 'npp02'), ('nppbase3', 'npp03'), ('nppbase4', 'npp04'), ('nppbase5', 'npp05'), ('nppbase6', 'npp06'),
-                    ('nppbase7', 'npp07'), ('nppbase8', 'npp08'), ('nppbase9', 'npp09'), ('nppbase10', 'npp10'), ('nppbase11', 'npp11'), ('nppbase12', 'npp12')],
-            'landuse': [('cat_aqu', 'aquaculture'), ('cat_artimp', 'artficialimpoundment'), ('cat_drainage', 'irridrainageland'), ('cat_fert', 'fertilzerused'), ('cat_forstry', 'forestryland'),
-                        ('cat_intan', 'animalproduction'), ('cat_intpl', 'plantproduction'), ('cat_irr',
-                                                                                              'irrigatedland'), ('cat_mining', 'miningland'), ('cat_mod', 'modifiedland'),
-                        ('cat_pest', 'pestherbicidesused'), ('cat_road', 'roadland'), ('cat_urban', 'urbanland')],
-            'population': [('catpop_gt_1', 'popdensitygter1'), ('catpop_gt_10', 'popdensitygter10'), ('catpopmax', 'popdensitymax'), ('catpopmean', 'popdensitymean')],
-            'rdi': [('sfrdi', 'segflowdisturbindex'), ('imf', 'maximpfactor'), ('fdf', 'maxdiverfactor'), ('scdi', 'subcatdisturbindex'), ('ef', 'extindsrcptfactor'), ('if', 'maxinffactor'),
-                    ('sf', 'maxsettlefactor'), ('nwisf', 'nwisettlefactor'), ('gdsf', 'geodatasettlefactor'), (
-                        'sdsf', 'otherdatasettlefactor'), ('nwiif', 'nwiinffactor'), ('gdif', 'geodatainffactor'),
-                    ('luf', 'landusefactor'), ('lbf', 'leveebankfactor'), ('nwiimf', 'nwiimpfactor'), ('gdimf',
-                                                                                                       'geodataimpfactor'), ('nwifdf', 'nwidiverfactor'), ('gdfdf', 'geodatadiverfactor'),
-                    ('cdi', 'catdisturbindex'), ('frdi', 'flowregimedisturbindex'), ('rdi', 'riverdisturbindex'), (
-                        'sdif', 'sdif'), ('nwief', 'nwief'), ('gdef', 'gdef'), ('sdef', 'sdef'),
-                    ('sdimf', 'sdimf'), ('sdfdf', 'sdfdf')]
-        },
-        'stream': {
-            'climate': [('strannrad', 'B20'), ('stranntemp', 'B01'), ('strcoldmthmin', 'B06'), ('strhotmthmax', 'B05'), ('strannrain', 'B12'),  ('strdryqrain', 'B17'),
-                        ('strwetqrain', 'B16'), ('strwarmqrain', 'B18'), ('strcoldqrain', 'B19'), (
-                            'strcoldqtemp', 'B11'), ('strdryqtemp', 'B09'), ('strwetqtemp', 'B08'),
-                        ('stranngromega', 'megathermgrowindex'), ('stranngromeso',
-                                                                  'mesothermgrowindex'), ('stranngromicro', 'microthermgrowindex'),
-                        ('strgromegaseas', 'megaseasongrowindex'), ('strgromesoseas',
-                                                                    'mesoseasongrowindex'), ('strgromicroseas', 'microseasongrowindex'),
-                        ('suberosivity', 'rainerosivityfactor')],
-            'vegetation': [('strbare_ext', 'bareextant'), ('strforests_ext', 'forestcover'), ('strgrasses_ext', 'grasscover'), ('strnodata_ext', 'nodataextant'), ('strwoodlands_ext', 'woodlandcover'),
-                           ('strshrubs_ext', 'shrubcover'), ('strbare_nat', 'naturallybare'), ('strforests_nat',
-                                                                                               'natforestcover'), ('strgrasses_nat', 'natgrasscover'), ('strnodata_nat', 'natnodata'),
-                           ('strwoodlands_nat', 'natwoodlandcover'), ('strshrubs_nat', 'natshrubcover')],
-            'substrate': [('str_carbnatesed', 'carbonatesedimentrock'), ('str_igneous', 'igneousrock'), ('str_metamorph', 'metamorphicrock'), ('str_oldrock', 'oldbedrock'), ('str_othersed', 'othersedimentrock'),
-                          ('str_sedvolc', 'mixedsedimentigneousrock'), ('str_silicsed', 'siliciclasticrock'), (
-                              'str_unconsoldted', 'unconsolidatedrock'),  ('str_a_ksat', 'sathydraulicconductivity'),
-                          ('str_sanda', 'clayAhorizon'), ('str_claya', 'clayBhorizon'), ('str_clayb', 'sandAhorizon')],
-            'terrain': [('strahler', 'strahlerorder'), ('strelemax', 'segelevationmax'), ('strelemean', 'segelevationmean'), ('strelemin', 'segelevationmin'), ('valleyslope', 'segslope'),
-                        ('downavgslp', 'downstreamslope'), ('downmaxslp', 'downstreamslopemax'), ('upsdist',
-                                                                                                  'sourcedistance'), ('d2outlet', 'outletdistance'), ('aspect', 'localaspect'),
-                        ('confinement', 'confinement')],
-            'landuse': [('str_aqu', 'aquaculture'), ('str_artimp', 'artficialimpoundment'), ('str_drainage', 'irridrainageland'), ('str_fert', 'fertilzerused'), ('str_forstry', 'forestryland'),
-                        ('str_intan', 'animalproduction'), ('str_intpl', 'plantproduction'), ('str_irr',
-                                                                                              'irrigatedland'), ('str_mining', 'miningland'), ('str_mod', 'modifiedland'),
-                        ('str_pest', 'pestherbicidesused'), ('str_road', 'roadland'), ('str_urban', 'urbanland')],
-            'population': [('strpop_gt_1', 'popdensitygter1'), ('strpop_gt_10', 'popdensitygter10'), ('strpopmax', 'popdensitymax'), ('strpopmean', 'popdensitymean')],
-            'network': [('strdensity', 'strdensity'), ('no_waterholes', 'waterholecount'), ('km_waterholes', 'waterholedensity'), ('no_springs', 'springcount'), ('km_springs', 'springdensity'),
-                        ('a_lakes', 'lakearea'), ('km_lakes', 'lakedensity'), ('a_wcourse',
-                                                                               'watercoursearea'), ('km_wcourse', 'watercoursedensity'), ('lakes', 'lakeportion'),
-                        ('springs', 'springportion'), ('watcrsarea', 'watercourseportion'), ('waterholes', 'waterholeportion'), ('wateryness', 'waterynessind'), ('rchlen', 'strsegmentleng')],
-            'connectivity': [('conlen', 'barfreelengmin'), ('dupreservr', 'maxupstbffplengres'), ('d2reservor', 'unrestdowndistres'), ('barrierdown', 'barrierdownstr'), ('barrierup', 'barrierupstr'),
-                             ('distupdamw', 'maxupstbffplengdam'), ('d2damwall', 'unrestdowndistdam'), ('conlenres',
-                                                                                                        'barfreelengresv'), ('conlendam', 'barfreelengdam'), ('artfbarier', 'barrierupdownstr'),
-                             ('totlen', 'totalcatlength'), ('cliffdown', 'cliffupstr'), ('cliffup',
-                                                                                         'cliffupstr'), ('waterfall', 'waterfallflow'), ('wfalldown', 'waterfallupstr'),
-                             ('waterfallup', 'waterfalldownstr')]
-        }
-    }
-
-    cats = [('SH_Network.gdb.zip', 'catchment', 'ahgfcatchment')]
-
-    layers = {
-        'catchment': [('stream_attributesv1.1.5.gdb.zip', 'population', 'landuse_lut', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts')]
+    dataset_info = {
+        'catchment': {'climate': ('current', u'Climate Data from 9" DEM of Australia version 3 (2008), ANUCLIM (Fenner School)'), 
+                      'vegetation': ('vegatation', u'NVIS Major Vegetation sub-groups version 3.1'),
+                      'substrate': ('substrate', u'Surface geology of Australia 1:1M'), 
+                      'terrain': ('topology', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
+                      'landuse': ('landuse', u'Catchment Scale Land Use Mapping for Australia Update (CLUM Update 04/09)'),
+                      'population': ('landuse', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts'),
+                      'npp': ('productivity', u'Net Primary Production (pre-1788)'),
+                      'rdi': ('landuse', u'River Disturbance Indeces and Factors')},
+        'stream':    {'climate': ('current', u'Climate Data from 9" DEM of Australia version 3 (2008), ANUCLIM (Fenner School)'), 
+                      'vegetation': ('vegetation', u'NVIS Major Vegetation sub-groups version 3.1'),
+                      'substrate': ('substrate', u'Surface geology of Australia 1:1M'), 
+                      'terrain': ('topology', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
+                      'landuse': ('landuse', u'Catchment Scale Land Use Mapping for Australia Update (CLUM Update 04/09)'),
+                      'population': ('landuse', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts'),
+                      'network': ('hydrology', u'Stream Network from AusHydro version 1.1.6'),
+                      'connectivity': ('hydrology', u'Stream Connectivity from AusHydro version 1.1.6')}
     }
 
     # Geofabric datasets
@@ -1765,6 +1674,11 @@ class GeofabricLayers(WorldClimLayer):
         self.previous = previous
 
         # get filters from configuration
+        self.btype = set(x.strip()
+                        for x in options.get('btype', "").split(',') if x)
+        self.dstype = set(x.strip()
+                       for x in options.get('dstype', "").split(',') if x)
+
         self.enabled = options.get('enabled', "").lower() in (
             "true", "1", "on", "yes")
 
@@ -1777,87 +1691,39 @@ class GeofabricLayers(WorldClimLayer):
         if not self.enabled:
             return
 
+        boundary_types = ['catchment', 'stream']
         # attribute datasets
-        for baselayer in self.cats:
-            for attrlayer in self.layers[baselayer[1]]:
-                yield self._createAttributeItem(baselayer, attrlayer)
+        for boundtype in boundary_types:
+            if self.btype and boundtype not in self.btype:
+                continue
 
-        # create geospatial dataset
-        # TODO: Move to new cpllection geospatial?
-        self._createGeospatialItem()
+            for datasettype in self.dataset_info[boundtype]:
+                if self.dstype and datasettype not in self.dstype:
+                    continue
+                yield self._createAttributeItem(boundtype, datasettype)
 
-    def _createAttributeItem(self, baselayer, attrlayer):
-        base_filename, baselyrname, basetable = baselayer
-        attr_filename, layername, attrtable, attrdesc = attrlayer
 
-        basename = "{baselayer}_{attrlayer}".format(
-            baselayer=baselyrname, attrlayer=layername)
-        filename = basename + '.zip'
-        dbfilename = basename + '.dbf'
-
-        layers = {}
-        for attr, vocab in self.truncate_name(self.attributes[baselyrname][layername]):
-            lyrname = "{bfname}-{cat}.{afname}-{layername}.{attr}".format(
-                bfname=base_filename, cat=basetable, afname=dbfilename, layername=basename, attr=attr)
-            layers[attr] = {'layer': vocab,
-                            'name': lyrname
-                            }
-
+    def _createAttributeItem(self, boundtype, dstype):
+        # dataset filename
+        filename = 'geofabric_{}_{}.zip'.format(boundtype, dstype)
+        attrname = 'Current Climate' if dstype == 'climate' else dstype.title()
         item = {
             '_path': 'datasets/environmental/geofabric/{0}'.format(filename),
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
-            "title": u'Geofabric {layername} dataset ({cat})'.format(layername=layername, cat=baselyrname),
-            "description": attrdesc,
+            "title": u'Freshwater {btype} Data (Australia), {attrname}, 9 arcsec(~250m)'.format(btype=boundtype.title(), attrname=attrname),
+            "description": self.dataset_info[boundtype][dstype][1],
             "remoteUrl": '{0}/geofabric/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [FRESHWATER_DATASET_TAG],
             "bccvlmetadata": {
-                "genre": "DataGenreE",
-                "categories": [layername],
-                "dblayers": layers,
-                "foreignKey": "segmentno"
+                "genre": "DataGenreCC" if dstype == "climate" else "DataGenreE",
+                "resolution": 'Resolution9s',
+                "categories": [ self.dataset_info[boundtype][dstype][0] ],
             },
         }
 
         LOG.info('Import %s', item['title'])
         return item
-
-    def _createGeospatialItem(self):
-        filename = 'geofabric_geospatial.gdb.zip'
-        item = {
-            '_path': 'datasets/environmental/geofabric/{0}'.format(filename),
-            '_owner': (1, 'admin'),
-            "_type": "org.bccvl.content.remotedataset",
-            "title": u'Geofabric Geospatial dataset',
-            "description": "Geofabric geospatial data",
-            "remoteUrl": '{0}/geofabric/{1}'.format(SWIFTROOT, filename),
-            "format": "application/zip",
-            "creators": 'BCCVL',
-            "_transitions": "publish",
-            "bccvlmetadata": {
-                "genre": "DataGenreE",
-                "categories": "geospatial",
-                "foreignKey": "segmentno"
-            },
-        }
-
-        LOG.info('Import %s', item['title'])
-        return item
-
-    def truncate_name(self, namelist, maxchar=10):
-        truncatedList = [(name[:maxchar], vocab) for name, vocab in namelist]
-        for i in range(len(truncatedList)):
-            index = [i]
-            for j in range(len(truncatedList)):
-                if i != j and truncatedList[j][0] == truncatedList[i][0]:
-                    index.append(j)
-            # Change name again; the last 2 character is _{digit}
-            if len(index) > 1:
-                for k in range(1, len(index)):
-                    tname = truncatedList[index[k]][0][
-                        :(maxchar - 2)] + "_{}".format(k)
-                    truncatedList[index[k]] = (
-                        tname, truncatedList[index[k]][1])
-        return truncatedList

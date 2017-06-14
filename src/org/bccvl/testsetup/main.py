@@ -99,10 +99,16 @@ def import_data(site, params):
                        'fparsource', 'cruclimsource',
                        'accuclimsource', 'tasclimsource',
                        'climondsource', 'narclimsource',
-                       'geofabricsource', 'nvissource',
-                       'anuclimsource', 'austsubsfertsource']:
+                       'nvissource', 'anuclimsource',
+                       'austsubsfertsource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
+        for source in ['geofabricsource']:
+            if params.get(source, False):
+                source_options[source] = {'enabled': 'True'}
+                for p in ['btype', 'dstype']:
+                    if params.get(p, None):
+                        source_options[source][p] = params.get(p, '')
 
     source_options['updatemetadata'] = {
         'siteurl': params.get('siteurl', ''),
@@ -190,6 +196,9 @@ def parse_args(args):
     parser.add_argument('--geofabricsource', action='store_true')
     parser.add_argument('--nvissource', action='store_true')
     parser.add_argument('--anuclimsource', action='store_true')
+    # Additional parameters for Geofabric datasets
+    parser.add_argument('--btype', type=str, choices=['catchment', 'stream'], help='Geofabric boundary type')
+    parser.add_argument('--dstype', type=str, help='Geofabric dataset type i.e. climate, vegetation')
     pargs = parser.parse_args(args)
     return vars(pargs)
 

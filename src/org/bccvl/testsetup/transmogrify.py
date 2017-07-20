@@ -1652,18 +1652,18 @@ class ANUClimLayers(WorldClimLayer):
 class GeofabricLayers(WorldClimLayer):
 
     dataset_info = {
-        'catchment': {'climate': ('current', u'Climate Data from 9" DEM of Australia version 3 (2008), ANUCLIM (Fenner School)'), 
-                      'vegetation': ('vegatation', u'NVIS Major Vegetation sub-groups version 3.1'),
+        'catchment': {'climate': ('current', u'Aggregated climate data for the Australian continent between 1976-2005, generated using ANUCLIM version 6.1, for catchments derived from the national 9 arcsec DEM and flow direction grid version 3.'), 
+                      'vegetation': ('vegetation', u'NVIS Major Vegetation sub-groups version 3.1'),
                       'substrate': ('substrate', u'Surface geology of Australia 1:1M'), 
-                      'terrain': ('topology', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
+                      'terrain': ('topography', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
                       'landuse': ('landuse', u'Catchment Scale Land Use Mapping for Australia Update (CLUM Update 04/09)'),
                       'population': ('landuse', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts'),
                       'npp': ('productivity', u'Net Primary Production (pre-1788)'),
                       'rdi': ('landuse', u'River Disturbance Indeces and Factors')},
-        'stream':    {'climate': ('current', u'Climate Data from 9" DEM of Australia version 3 (2008), ANUCLIM (Fenner School)'), 
+        'stream':    {'climate': ('current', u'Aggregated climate data for the Australian continent between 1976-2005, generated using ANUCLIM version 6.1, for stream segments derived from the national 9 arcsec DEM and flow direction grid version 3. Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'), 
                       'vegetation': ('vegetation', u'NVIS Major Vegetation sub-groups version 3.1'),
                       'substrate': ('substrate', u'Surface geology of Australia 1:1M'), 
-                      'terrain': ('topology', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
+                      'terrain': ('topography', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
                       'landuse': ('landuse', u'Catchment Scale Land Use Mapping for Australia Update (CLUM Update 04/09)'),
                       'population': ('landuse', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts'),
                       'network': ('hydrology', u'Stream Network from AusHydro version 1.1.6'),
@@ -1711,9 +1711,11 @@ class GeofabricLayers(WorldClimLayer):
     def _createAttributeItem(self, boundtype, dstype):
         # dataset filename
         filename = 'geofabric_{}_{}.zip'.format(boundtype, dstype)
-        attrname = 'Current Climate' if dstype == 'climate' else dstype.title()
+        attrname = 'Current Climate (1976-2005)' if dstype == 'climate' else dstype.title()
         item = {
-            '_path': 'datasets/environmental/geofabric/{0}'.format(filename),
+            '_path': 'datasets/{0}/{1}'.format(
+                'climate/geofabric/9s' if dstype == 'climate' else 'environmental/geofabric',
+                filename),
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
             "title": u'Freshwater {btype} Data (Australia), {attrname}, 9 arcsec(~250m)'.format(btype=boundtype.title(), attrname=attrname),

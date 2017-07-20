@@ -22,25 +22,9 @@ SWIFTROOT = 'https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f
 
 # Tag used for summary datasets
 MONTHLY_DATASET_TAG = 'Monthly datasets'
-FRESHWATER_DATASET_TAG='Freshwater datasets'
+FRESHWATER_DATASET_TAG ='Freshwater datasets'
+TERRESTRIAL_DATASET_TAG ='Terrestrial datasets'
 SUMMARY_DATASET_TAG = 'Summary datasets'
-SUMMARY_DATASET_TITLES = ['WorldClim, current climate (1950-2000), 10 arcmin (~20 km)',
-                          'WorldClim, current climate (1950-2000), 5 arcmin (~10 km)',
-                          'WorldClim, current climate (1950-2000), 2.5 arcmin (~5 km)',
-                          'Australia, current climate (1976-2005), 30 arcsec (~1 km)',
-                          'Australia, current climate (1976-2005), 2.5 arcmin (~5 km)',
-                          'CRUclim (global), current climate (1976-2005), 30 arcmin (~50 km)',
-                          'CliMond (global), current climate (1975), 10 arcmin (~20 km)',
-                          'Australia, Dynamic Land Cover (2000-2008), 9 arcsec (~250 m)',
-                          'Australia, National Soil Grids (2012), 9 arcsec (~250 m)',
-                          'Global, Potential Evapotranspiration and Aridity (1950-2000), 30 arsec (~1 km)',
-                          'Australia, Vegetation Assets, States and Transitions (VAST Version 2), (2008), 30 arcmin (~50 km)',
-                          'Australia, Multi-resolution Ridge Top Flatness (MrRTF), (2000), 3 arcsec (~90 m)',
-                          'Australia, Multi-resolution Valley Bottom Flatness (MrVBF), (2000), 3 arcsec (~90 m)',
-                          'Australia, MODIS-fPAR time series (2000-2014), 9 arcsec (~250 m)',
-                          'Australia, Gross Primary Productivity (2000-2007) (min, max & mean), 30 arcsec (~1 km)',
-                          'Australia, Gross Primary Productivity (2000-2007) (coefficient of variation), 30 arcsec (~1 km)'
-                         ]
 
 
 def emsc_title(context, emsc):
@@ -78,11 +62,6 @@ class UpdateMetadata(object):
                 # shortcut types we are not interested in
                 yield item
                 continue
-
-            # Add tag for summary datasets
-            if item['title'] in SUMMARY_DATASET_TITLES:
-                LOG.info('{} is summary dataset'.format(item['title']))
-                item['subject'] = [SUMMARY_DATASET_TAG]
 
             if not self.siteurl:
                 LOG.warn("Can't run metadata update without configured site url")
@@ -183,6 +162,7 @@ class FutureClimateLayer5k(object):
     titletempl = "Australia, Climate Projection {0} based on {1}, 2.5 arcmin (~5 km) - {2}"
     current_title = "Australia, Current Climate (1976-2005), 2.5 arcmin (~5 km)"
     current_file = "current.zip"
+    current_additional_tags = [SUMMARY_DATASET_TAG]
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -252,6 +232,7 @@ class FutureClimateLayer5k(object):
             "format": "application/zip",
             "creators": "BCCVL",
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG] + self.current_additional_tags,
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": self.resolution,
@@ -275,6 +256,7 @@ class FutureClimateLayer5k(object):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": self.resolution,
@@ -298,6 +280,7 @@ class FutureClimateLayer1k(FutureClimateLayer5k):
     titletempl = "Australia, climate projection {0} based on {1}, 30 arcsec (~1 km) - {2}"
     current_title = "Australia, current climate (1976-2005), 30 arcsec (~1 km)"
     current_file = "current.76to05.zip"
+    current_additional_tags = [SUMMARY_DATASET_TAG]
 
 
 @provider(ISectionBlueprint)
@@ -310,6 +293,7 @@ class FutureClimateLayer250m(FutureClimateLayer5k):
     titletempl = "Australia, Climate Projection {0} based on {1}, 9 arcsec (~250 m) - {2}"
     current_title = "Australia, current climate (1976-2005), 9 arcsec (~250 m)"
     current_file = None
+    ccurrent_additional_tags = [SUMMARY_DATASET_TAG]
 
 
 @provider(ISectionBlueprint)
@@ -349,6 +333,7 @@ class AustSubstrateFertilityLayers(object):
             "creators": 'BCCVL',
             "format": "application/zip",
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution36s',
@@ -396,6 +381,7 @@ class NationalSoilgridLayers(object):
             "creators": 'BCCVL',
             "format": "application/zip",
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution9s',
@@ -444,6 +430,7 @@ class NationalVegetationLayers(object):
             "creators": 'BCCVL',
             "format": "application/zip",
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution3s',
@@ -492,6 +479,7 @@ class VegetationAssetsStatesTransitionsLayers(object):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution30s',
@@ -540,6 +528,7 @@ class MultiResolutionRidgeTopFlatnessLayers(object):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution3s',
@@ -588,6 +577,7 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution3s',
@@ -647,6 +637,7 @@ class AWAPLayers(object):
                 "format": "application/zip",
                 "creators": 'BCCVL',
                 "_transitions": "publish",
+                "subject": [TERRESTRIAL_DATASET_TAG],
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution3m',
@@ -700,6 +691,7 @@ class GlobPETAridLayers(object):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution30s',
@@ -736,14 +728,14 @@ class NDLCLayers(object):
         if not self.enabled:
             return
 
-        for filename, title in (
-                ('ndlc_DLCDv1_Class.zip',
+        for filename, addTags, title in (
+                ('ndlc_DLCDv1_Class.zip', [SUMMARY_DATASET_TAG],
                  'Australia, Dynamic Land Cover (2000-2008), 9 arcsec (~250 m)'),
-                ('ndlc_trend_evi_min.zip',
+                ('ndlc_trend_evi_min.zip', [],
                  'Trend in the annual minimum of the Enhanced Vegetation Index'),
-                ('ndlc_trend_evi_mean.zip',
+                ('ndlc_trend_evi_mean.zip', [],
                  'Trend in the annual mean of the Enhanced Vegetation Index'),
-                ('ndlc_trend_evi_max.zip',
+                ('ndlc_trend_evi_max.zip', [],
                  'Trend in the annual maximum of the Enhanced Vegetation Index')):
 
             # TODO: maybe put some info in here? to access in a later stage...
@@ -762,6 +754,7 @@ class NDLCLayers(object):
                 "format": "application/zip",
                 "creators": 'BCCVL',
                 "_transitions": "publish",
+                "subject": [TERRESTRIAL_DATASET_TAG] + addTags,
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution9s',
@@ -877,6 +870,7 @@ class WorldClimFutureLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),
@@ -920,15 +914,15 @@ class WorldClimCurrentLayers(WorldClimLayer):
             yield item
             # yield bioclim layer
             title = u'WorldClim, current climate (1950-2000), {}'.format(RESOLUTION_MAP[scale])
-            item = self._createItem(title, scale, 'bioclim')
+            item = self._createItem(title, scale, 'bioclim', [SUMMARY_DATASET_TAG])
             yield item
             # yield monthly layers
             for layer in MONTHLY:
                 title = u'WorldClim, current climate monthly {} (1950-2000), {}'.format(layer, RESOLUTION_MAP[scale])
-                item = self._createItem(title, scale, layer, MONTHLY_DATASET_TAG)
+                item = self._createItem(title, scale, layer, [MONTHLY_DATASET_TAG])
                 yield item
 
-    def _createItem(self, title, scale, layer, tag=None):
+    def _createItem(self, title, scale, layer, addTags=[]):
         res = scale.replace('-', '_')
         filename = 'worldclim_{}_{}.zip'.format(scale, layer)
         item = {
@@ -941,6 +935,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG] + addTags,
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
@@ -950,8 +945,6 @@ class WorldClimCurrentLayers(WorldClimLayer):
         }
         if layer == 'alt':
             item['bccvlmetadata']['categories'] = ['topography']
-        if tag:
-            item['subject'] = [tag]
         LOG.info('Import %s', item['title'])
         return item
 
@@ -965,23 +958,23 @@ class GPPLayers(object):
     """
 
     datasets = [
-        ('gpp_maxmin_2000_2007.zip',
+        ('gpp_maxmin_2000_2007.zip', [SUMMARY_DATASET_TAG],
          "Australia, Gross Primary Productivity (2000-2007) (min, max & mean), 30 arcsec (~1 km)"),
-        ('gpp_summary_00_07.zip',
+        ('gpp_summary_00_07.zip', [SUMMARY_DATASET_TAG],
          "Australia, Gross Primary Productivity (2000-2007) (coefficient of variation), 30 arcsec (~1 km)"),
-        ('gppyr_2000_01_molco2m2yr_m.zip',
+        ('gppyr_2000_01_molco2m2yr_m.zip', [],
          "Australia, Gross Primary Productivity for 2000 (annual mean), 30 arcsec (~1 km)"),
-        ('gppyr_2001_02_molco2m2yr_m.zip',
+        ('gppyr_2001_02_molco2m2yr_m.zip', [],
          "Australia, Gross Primary Productivity for 2001 (annual mean), 30 arcsec (~1 km)"),
-        ('gppyr_2002_03_molco2m2yr_m.zip',
+        ('gppyr_2002_03_molco2m2yr_m.zip', [],
          "Australia, Gross Primary Productivity for 2002 (annual mean), 30 arcsec (~1 km)"),
-        ('gppyr_2003_04_molco2m2yr_m.zip',
+        ('gppyr_2003_04_molco2m2yr_m.zip', [],
          "Australia, Gross Primary Productivity for 2003 (annual mean), 30 arcsec (~1 km)"),
-        ('gppyr_2004_05_molco2m2yr_m.zip',
+        ('gppyr_2004_05_molco2m2yr_m.zip', [],
          "Australia, Gross Primary Productivity for 2004 (annual mean), 30 arcsec (~1 km)"),
-        ('gppyr_2005_06_molco2m2yr_m.zip',
+        ('gppyr_2005_06_molco2m2yr_m.zip', [],
          "Australia, Gross Primary Productivity for 2005 (annual mean), 30 arcsec (~1 km)"),
-        ('gppyr_2006_07_molco2m2yr_m.zip',
+        ('gppyr_2006_07_molco2m2yr_m.zip', [],
          "Australia, Gross Primary Productivity for 2006 (annual mean), 30 arcsec (~1 km)"),
     ]
 
@@ -1004,7 +997,7 @@ class GPPLayers(object):
         if not self.enabled:
             return
 
-        for dfile, dtitle in self.datasets:
+        for dfile, addTags, dtitle in self.datasets:
             _url = '{0}/gpp/{1}'.format(SWIFTROOT, dfile)
             item = {
                 "_path": 'datasets/environmental/gpp/{0}'.format(dfile),
@@ -1015,12 +1008,14 @@ class GPPLayers(object):
                 "format": "application/zip",
                 "creators": 'BCCVL',
                 "_transitions": "publish",
+                "subject": [TERRESTRIAL_DATASET_TAG] + addTags,
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution9s',
                     "categories": ["vegetation"],
                 },
             }
+
             if dfile == 'gpp_maxmin_2000_2007.zip' or 'gpp_summary_00_07.zip':
                 item['description'] = "Data aggregated over period 2000 - 2007"
             elif dfile == 'gpp_summary_00_07.zip':
@@ -1142,6 +1137,7 @@ class FPARLayers(object):
                     "format": "application/zip",
                     "creators": 'BCCVL',
                     "_transitions": "publish",
+                    "subject": [TERRESTRIAL_DATASET_TAG],
                     "bccvlmetadata": {
                         "genre": "DataGenreE",
                         "resolution": 'Resolution9s',
@@ -1162,6 +1158,7 @@ class FPARLayers(object):
                 "format": "application/zip",
                 "creators": 'BCCVL',
                 "_transitions": "publish",
+                "subject": [TERRESTRIAL_DATASET_TAG],
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution9s',
@@ -1169,10 +1166,10 @@ class FPARLayers(object):
                 },
             }
             if dfile == 'fpar.2000-2014.stats.aust.zip':
-                item[
-                    'title'] = 'Australia, MODIS-fPAR time series (2000-2014), 9 arcsec (~250 m)'
+                item['title'] = 'Australia, MODIS-fPAR time series (2000-2014), 9 arcsec (~250 m)'
                 item['description'] = "Data aggregated over years 2000 to 2014 (Average, Minimum, Maximum, Coefficient of Variation)".format(
                     year=dfile.split(".")[1])
+                item['subject'].append(SUMMARY_DATASET_TAG)
             # Growing year (Jul - Jun)
             elif len(dfile) == 29:
                 year1 = dfile.split(".")[1].split("-")[0]
@@ -1234,6 +1231,7 @@ class CRUClimLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
@@ -1281,6 +1279,7 @@ class ACCUClimLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
@@ -1349,6 +1348,7 @@ class TASClimLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),
@@ -1433,6 +1433,7 @@ class ClimondLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),
@@ -1459,6 +1460,7 @@ class ClimondLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
@@ -1541,6 +1543,7 @@ class NarclimLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 # This shall match to the resolution vacab in registry
@@ -1571,6 +1574,7 @@ class NarclimLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
@@ -1630,6 +1634,7 @@ class ANUClimLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
+            "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
@@ -1717,7 +1722,7 @@ class GeofabricLayers(WorldClimLayer):
             "format": "application/zip",
             "creators": 'BCCVL',
             "_transitions": "publish",
-            "subject": [FRESHWATER_DATASET_TAG],
+            "subject": [FRESHWATER_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC" if dstype == "climate" else "DataGenreE",
                 "resolution": 'Resolution9s',

@@ -1718,7 +1718,7 @@ class GeofabricLayers(WorldClimLayer):
                 filename),
             '_owner': (1, 'admin'),
             "_type": "org.bccvl.content.remotedataset",
-            "title": u'Freshwater {btype} Data (Australia), {attrname}, 9 arcsec(~250m)'.format(btype=boundtype.title(), attrname=attrname),
+            "title": u'Freshwater {btype} Data (Australia), {attrname}, 9 arcsec (~250m)'.format(btype=boundtype.title(), attrname=attrname),
             "description": self.dataset_info[boundtype][dstype][1],
             "remoteUrl": '{0}/geofabric/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",

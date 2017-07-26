@@ -7,6 +7,7 @@ from collective.transmogrifier.interfaces import ISectionBlueprint
 from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.utils import defaultMatcher
 from plone import api
+from plone.app.textfield.value import RichTextValue
 from zope.interface import implementer, provider
 from zope.component import getUtility
 from zope.schema.interfaces import IVocabularyFactory
@@ -125,6 +126,9 @@ class UpdateMetadata(object):
                 obj.format = item['format']
             if 'subject' in item:
                 obj.subject = item['subject']
+            if 'external_description' in item:
+                obj.external_description = RichTextValue(item['external_description'])
+
             # schedule metadata update task in process
             # FIXME: do we have obj.format already set?
             update_task = app.signature(
@@ -1652,23 +1656,29 @@ class ANUClimLayers(WorldClimLayer):
 class GeofabricLayers(WorldClimLayer):
 
     dataset_info = {
-        'catchment': {'climate': ('current', u'Aggregated climate data for the Australian continent between 1976-2005, generated using ANUCLIM version 6.1, for catchments derived from the national 9 arcsec DEM and flow direction grid version 3.'), 
-                      'vegetation': ('vegetation', u'NVIS Major Vegetation sub-groups version 3.1'),
-                      'substrate': ('substrate', u'Surface geology of Australia 1:1M'), 
-                      'terrain': ('topography', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
-                      'landuse': ('landuse', u'Catchment Scale Land Use Mapping for Australia Update (CLUM Update 04/09)'),
-                      'population': ('landuse', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts'),
-                      'npp': ('productivity', u'Net Primary Production (pre-1788)'),
-                      'rdi': ('landuse', u'River Disturbance Indeces and Factors')},
+        'catchment': {'climate': ('current', u'Aggregated climate data for the Australian continent between 1976-2005, generated using ANUCLIM version 6.1, for catchments derived from the national 9 arcsec DEM and flow direction grid version 3. Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'), 
+                      'vegetation': ('vegetation', u'Natural (pre-1750) and extant (present day) vegetation cover for catchments across the Australian continent based on the NVIS Major Vegetation sub-groups version 3.1. Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'),
+                      'substrate': ('substrate', u'Substrate data with soil hydrological characteristics and lithological composition for catchments across the Australian continent based on the surface geology of Australia 1:1M. Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'), 
+                      'terrain': ('topography', u'Terrain data for catchments across the Australian continent based on the 9" DEM of Australia version 3 (2008). Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'),
+                      'landuse': ('landuse', u'Land use data reflecting the proportion of 13 different land use activities (based on the tertiary land use classification by M. Stewardson, University of Melbourne, 2010) for catchments across the Australian continent based on the Catchment-scale land use mapping for Australia (Bureau of Rural Sciences, 2009). Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'),
+                      'population': ('landuse', u'Population data for catchments across the Australian continent based on the population density in 2006 (Australian Bureau of Statistics). Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'),
+                      'npp': ('productivity', u'Average of annual and monthly mean net primary productivity (NPP) for catchments across the Australian continent based on Raupach et al. (2001). NPP is equal to plant photosynthesis less plant respiration, and reflects the carbon or biomass yield of the landscape, available for use by animals and humans. Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'),
+                      'rdi': ('landuse', u'Indicators of pressure on stream ecosystems due to human activities derived using the method of Stein et al. (2002). The method couples geographical data, recording the extent and intensity of human activities known to impact on river condition, with a Digital Elevation Model (DEM) used for drainage analysis. The indices rank streams along a continuum from near-pristine to severely disturbed.')},
         'stream':    {'climate': ('current', u'Aggregated climate data for the Australian continent between 1976-2005, generated using ANUCLIM version 6.1, for stream segments derived from the national 9 arcsec DEM and flow direction grid version 3. Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'), 
-                      'vegetation': ('vegetation', u'NVIS Major Vegetation sub-groups version 3.1'),
-                      'substrate': ('substrate', u'Surface geology of Australia 1:1M'), 
-                      'terrain': ('topography', u'Terrain Data from 9" DEM of Australia version 3 (2008)'),
-                      'landuse': ('landuse', u'Catchment Scale Land Use Mapping for Australia Update (CLUM Update 04/09)'),
-                      'population': ('landuse', u'ABS Population density within 2006 Australian Standard Geographic Classification census collector districts'),
-                      'network': ('hydrology', u'Stream Network from AusHydro version 1.1.6'),
-                      'connectivity': ('hydrology', u'Stream Connectivity from AusHydro version 1.1.6')}
+                      'vegetation': ('vegetation', u'Natural (pre-1750) and extant (present day) vegetation cover for stream segments across the Australian continent based on the NVIS Major Vegetation sub-groups version 3.1. Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'),
+                      'substrate': ('substrate', u'Substrate data with soil hydrological characteristics and lithological composition for stream segments across the Australian continent based on the surface geology of Australia 1:1M. Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'), 
+                      'terrain': ('topography', u'Terrain data for stream segments across the Australian continent based on the 9" DEM of Australia version 3 (2008). Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'),
+                      'landuse': ('landuse', u'Land use data reflecting the proportion of 13 different land use activities (based on the tertiary land use classification by M. Stewardson, University of Melbourne, 2010) for stream segments across the Australian continent based on the Catchment-scale land use mapping for Australia (Bureau of Rural Sciences, 2009). Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'),
+                      'population': ('landuse', u'Population data for stream segments across the Australian continent based on the population density in 2006 (Australian Bureau of Statistics). Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'),
+                      'network': ('hydrology', u'Network parameters of habitat availability for stream segments and associated vallye bottoms and sub-catchments across the Australian continent based on AusHydro version 1.1.6 (Bureau of Meteorology, 2010).'),
+                      'connectivity': ('hydrology', u'Connectivity parameters that indicate presence of major in-stream barriers including dams and waterfalls for stream segments and associated vallye bottoms and sub-catchments across the Australian continent based on AusHydro version 1.1.6 (Bureau of Meteorology, 2010).')}
     }
+
+    external_description = [
+            u'The layers in this dataset were developed by the Australian National University (ANU) in 2011 and updated in 2012. BCCVL has integrated version 1.1.5 (2012) of the database.', 
+            u'Publication: http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf',
+            u'Data source: https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5'
+    ]
 
     # Geofabric datasets
     def __init__(self, transmogrifier, name, options, previous):
@@ -1720,6 +1730,7 @@ class GeofabricLayers(WorldClimLayer):
             "_type": "org.bccvl.content.remotedataset",
             "title": u'Freshwater {btype} Data (Australia), {attrname}, 9 arcsec (~250m)'.format(btype=boundtype.title(), attrname=attrname),
             "description": self.dataset_info[boundtype][dstype][1],
+            "external_description": u'<br>'.join(self.external_description),
             "remoteUrl": '{0}/geofabric/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',

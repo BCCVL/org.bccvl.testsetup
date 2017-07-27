@@ -1676,8 +1676,8 @@ class GeofabricLayers(WorldClimLayer):
 
     external_description = [
             u'The layers in this dataset were developed by the Australian National University (ANU) in 2011 and updated in 2012. BCCVL has integrated version 1.1.5 (2012) of the database.', 
-            u'Publication: http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf',
-            u'Data source: https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5'
+            u'Publication: <a href=\"http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf\" target=\"_blank\">http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf</a>',
+            u'Data source: <a href=\"https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5\" target=\"_blank\">https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5</a>'
     ]
 
     # Geofabric datasets

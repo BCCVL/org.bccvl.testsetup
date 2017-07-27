@@ -1721,7 +1721,16 @@ class GeofabricLayers(WorldClimLayer):
     def _createAttributeItem(self, boundtype, dstype):
         # dataset filename
         filename = 'geofabric_{}_{}.zip'.format(boundtype, dstype)
-        attrname = 'Current Climate (1976-2005)' if dstype == 'climate' else dstype.title()
+        if dstype == 'climate':
+            attrname = 'Current Climate (1976-2005)'
+        elif dstype == 'npp':
+            attrname = 'Net Primary Productivity'
+        elif dstype == 'landuse':
+            attrname = 'Land Use'
+        elif dstype == 'rdi':
+            attrname = 'River Disturbance'
+        else:
+            attrname = dstype.title()
         item = {
             '_path': 'datasets/{0}/{1}'.format(
                 'climate/geofabric/9s' if dstype == 'climate' else 'environmental/geofabric',

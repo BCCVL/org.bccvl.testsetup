@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='org.bccvl.testsetup',
-    setup_requires=['guscmversion'],
-    guscmversion=True,
+    setup_requires=['setuptools_scm'],
+    use_scm_version=True,
     description="BCCVL Test Content Setup",
     # long_description=open("README.txt").read() + "\n" +
     #                  open(os.path.join("docs", "HISTORY.txt")).read(),

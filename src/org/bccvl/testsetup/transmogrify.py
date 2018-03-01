@@ -732,15 +732,23 @@ class NDLCLayers(object):
         if not self.enabled:
             return
 
-        for filename, addTags, title in (
-                ('ndlc_DLCDv1_Class.zip', [SUMMARY_DATASET_TAG],
-                 'Australia, Dynamic Land Cover (2000-2008), 9 arcsec (~250 m)'),
-                ('ndlc_trend_evi_min.zip', [],
-                 'Trend in the annual minimum of the Enhanced Vegetation Index'),
-                ('ndlc_trend_evi_mean.zip', [],
-                 'Trend in the annual mean of the Enhanced Vegetation Index'),
-                ('ndlc_trend_evi_max.zip', [],
-                 'Trend in the annual maximum of the Enhanced Vegetation Index')):
+        for filename, addTags, title, description in (
+                ('ndlc_DLCDv1_Class.zip', 
+                 [SUMMARY_DATASET_TAG],
+                 'Australia, Dynamic Land Cover (2000-2008), 9 arcsec (~250 m)',
+                 "Observed biophysical cover on the Earth's surface."),
+                ('ndlc_trend_evi_min.zip', 
+                 [],
+                 'Trend in the annual minimum of the Enhanced Vegetation Index',
+                 "Shows trend of EVI from 2000 to 2008"),
+                ('ndlc_trend_evi_mean.zip', 
+                 [],
+                 'Trend in the annual mean of the Enhanced Vegetation Index',
+                 "Shows trend of EVI from 2000 to 2008"),
+                ('ndlc_trend_evi_max.zip',
+                  [],
+                 'Trend in the annual maximum of the Enhanced Vegetation Index',
+                 "Shows trend of EVI from 2000 to 2008")):
 
             # TODO: maybe put some info in here? to access in a later stage...
             #       bccvlmetadata.json may be an option here
@@ -753,7 +761,7 @@ class NDLCLayers(object):
                 "_owner":  (1,  'admin'),
                 "_type": "org.bccvl.content.remotedataset",
                 "title": title,
-                "description": "Shows trend of EVI from 2000 to 2008",
+                "description": description,
                 "remoteUrl": opt['url'],
                 "format": "application/zip",
                 "creators": 'BCCVL',

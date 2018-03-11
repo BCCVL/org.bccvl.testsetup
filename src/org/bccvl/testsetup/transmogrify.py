@@ -712,7 +712,16 @@ class NDLCLayers(object):
     """National Dynamic Land Cover datasets
 
     """
-
+    EVI_FULL_DESC = \
+        "The Enhanced Vegetation Index data is part of the Australian Dynamic Land Cover dataset. The dataset presents land cover information for every 250m by 250m area of the country from April 2000 to April 2008. " + \
+        "A key aspect of land cover is vegetation greenness. The greenness of vegetation is directly related to the amount of photosynthesis occurring, and can be measured as an index such as the Enhanced Vegetation Index (EVI). " + \
+        "Complete information on the creation of this product can be found in the documents available from the Geoscience Australia website: <a href=\"https://data.gov.au/dataset/f6951ba7-8968-4f64-9d38-1ed1a25785a0\" target=\"_blank\">https://data.gov.au/dataset/f6951ba7-8968-4f64-9d38-1ed1a25785a0</a> " + \
+        "More information on how to interpret this data can be found here: <a href=\"http://www.ga.gov.au/scientific-topics/earth-obs/accessing-satellite-imagery/landcover/executive-summary\" target=\"_blank\">http://www.ga.gov.au/scientific-topics/earth-obs/accessing-satellite-imagery/landcover/executive-summary</a>"
+    DLCD_FULL_DESC = \
+        "The Dynamic Land Cover Dataset of Australia is the first nationally consistent and thematically comprehensive land cover reference for Australia. It is the result of a collaboration between Geoscience Australia and the Australian Bureau of Agriculture and Resource Economics and Sciences, and provides a base-line for identifying and reporting on change and trends in vegetation cover and extent. " + \
+        "Land cover is the observed biophysical cover on the Earth's surface, including native vegetation, soils, exposed rocks and water bodies as well as anthropogenic elements such as plantations, crops and built environments. " + \
+        "The dataset presents land cover information for every 250m by 250m area of the country from April 2000 to April 2008. The classification scheme used to describe land cover categories in the Dynamic Land Cover Dataset conforms to the 2007 International Standards Organisation (ISO) land cover standard (19144-2). The Dynamic Land Cover Dataset shows Australian land covers clustered into 34 ISO classes. These reflect the structural character of vegetation, ranging from cultivated and managed land covers (crops and pastures) to natural land covers such as closed forest and sparse, open grasslands. " + \
+        "Complete information on the creation of this product can be found in the documents available from the Geoscience Australia website: <a href=\"https://data.gov.au/dataset/1556b944-731c-4b7f-a03e-14577c7e68db\" target=\"_blank\">https://data.gov.au/dataset/1556b944-731c-4b7f-a03e-14577c7e68db</a>"
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
         self.context = transmogrifier.context
@@ -732,23 +741,19 @@ class NDLCLayers(object):
         if not self.enabled:
             return
 
-        for filename, addTags, title, description in (
+        for filename, addTags, title, description, full_description in (
                 ('ndlc_DLCDv1_Class.zip', 
                  [SUMMARY_DATASET_TAG],
                  'Australia, Dynamic Land Cover (2000-2008), 9 arcsec (~250 m)',
-                 "Observed biophysical cover on the Earth's surface."),
-                ('ndlc_trend_evi_min.zip', 
-                 [],
-                 'Trend in the annual minimum of the Enhanced Vegetation Index',
-                 "Shows trend of EVI from 2000 to 2008"),
-                ('ndlc_trend_evi_mean.zip', 
-                 [],
-                 'Trend in the annual mean of the Enhanced Vegetation Index',
-                 "Shows trend of EVI from 2000 to 2008"),
-                ('ndlc_trend_evi_max.zip',
-                  [],
-                 'Trend in the annual maximum of the Enhanced Vegetation Index',
-                 "Shows trend of EVI from 2000 to 2008")):
+                 "Observed biophysical cover on the Earth's surface.",
+                 self.DLCD_FULL_DESC
+                ),
+                ('ndlc_trend_evi.zip', 
+                 [SUMMARY_DATASET_TAG],
+                 'Australia, Enhanced Vegetation Index (2000-2008), 9 arcsec (~250 m)',
+                 "Index for the greenness of the vegetation, which is directly related to the amount of photosynthesis occurring.",
+                 self.EVI_FULL_DESC
+                )):
 
             # TODO: maybe put some info in here? to access in a later stage...
             #       bccvlmetadata.json may be an option here
@@ -762,6 +767,7 @@ class NDLCLayers(object):
                 "_type": "org.bccvl.content.remotedataset",
                 "title": title,
                 "description": description,
+                "external_description": full_description,
                 "remoteUrl": opt['url'],
                 "format": "application/zip",
                 "creators": 'BCCVL',

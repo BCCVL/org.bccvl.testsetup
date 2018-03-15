@@ -26,6 +26,7 @@ MONTHLY_DATASET_TAG = 'Monthly datasets'
 FRESHWATER_DATASET_TAG ='Freshwater datasets'
 TERRESTRIAL_DATASET_TAG ='Terrestrial datasets'
 SUMMARY_DATASET_TAG = 'Summary datasets'
+MARINE_DATASET_TAG = "Marine datasets"
 
 
 def emsc_title(context, emsc):
@@ -782,7 +783,172 @@ class NDLCLayers(object):
             LOG.info('Import %s', item['title'])
             yield item
 
-#
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class GlobalMarineLayers(object):
+    """Global Marine datasets
+
+    """
+    COMMON_FULL_DESC = \
+        "Bio-ORACLE data layers are created from monthly pre-processed satellite and in situ observations. Bio-ORACLE is developed by a team of marine researchers from the Flanders Marine Institute (VLIZ), the University of Algarve, the University of Melbourne and Ghent University. " + \
+        "Website: <a href=\"http://www.bio-oracle.org/\" target=\"_blank\">http://www.bio-oracle.org/</a>"
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in (
+            "true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        for filename, category, title, description, full_description in (
+                ('Present.Surface.Temperature.zip', 
+                 'physical',
+                 'Global Marine Surface Data, Water Temperature (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface temperature for present time period (2000-2014).",
+                 "Sea surface temperature is the temperature of the topmost meter of the ocean water column. "
+                ),
+                ('Present.Surface.Salinity.zip', 
+                 'physical',
+                 'Global Marine Surface Data, Water Salinity (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface salinity for present time period (2000-2014).",
+                 "Salinity indicates the dissolved salt content in the ocean surface. "
+                ),
+                ('Present.Surface.Current.Velocity.zip', 
+                 'physical',
+                 'Global Marine Surface Data, Currents Velocity (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface currents velocity for present time period (2000-2014).",
+                 "Measurements of current speeds at the ocean surface. "
+                ),
+                ('Present.Surface.Ice.thickness.zip', 
+                 'physical',
+                 'Global Marine Surface Data, Ice Thickness (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface ice thickness for present time period (2000-2014).",
+                 "Ice thickness in metres at the ocean surface.  "
+                ),
+                ('Present.Surface.Ice.cover.zip', 
+                 'physical',
+                 'Global Marine Surface Data, Sea Ice Concentration (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface Sea Ice Concentration for present time period (2000-2014).",
+                 "Sea ice concentration refers to the area of sea ice relative to the total area of the ocean surface. "
+                ),
+                ('Present.Surface.Diffuse.attenuation.zip', 
+                 'physical',
+                 'Global Marine Surface Data, Diffuse Attenuation (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface diffuse attenuation for present time period (2000-2014).",
+                 "The diffuse attenuation coefficient is an indicator of water clarity. It expresses how deeply visible light in the blue to the green region of the spectrum penetrates into the water column. "
+                ),
+                ('Present.Surface.Cloud.cover.zip', 
+                 'physical',
+                 'Global Marine Surface Data, Cloud Cover (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for cloud cover for present time period (2000-2014).",
+                 "Cloud cover indicates how much of the earth is covered by clouds. A bilinear interpolation was used to convert the data from 6 arcminutes to 5 arcminutes. "
+                ),
+                ('Present.Surface.Nitrate.zip', 
+                 'nutrients',
+                 'Global Marine Surface Data, Nitrate (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface nitrate concentration for present time period (2000-2014).",
+                 "Mole concentration of nitrate at the sea surface. "
+                ),
+                ('Present.Surface.Phosphate.zip', 
+                 'nutrients',
+                 'Global Marine Surface Data, Phosphate (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface phosphate concentration for present time period (2000-2014).",
+                 "Mole concentration of phosphate at the sea surface. "
+                ),
+                ('Present.Surface.Silicate.zip', 
+                 'nutrients',
+                 'Global Marine Surface Data, Silicate (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface silicate concentration for present time period (2000-2014).",
+                 "Mole concentration of silicate at the sea surface. "
+                ),
+                ('Present.Surface.Dissolved.oxygen.zip', 
+                 'nutrients',
+                 'Global Marine Surface Data, Dissolved Molecular Oxygen (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface oxygen concentration for present time period (2000-2014).",
+                 "Mole concentration of dissolved oxygen at the sea surface. "
+                ),
+                ('Present.Surface.Iron.zip', 
+                 'nutrients',
+                 'Global Marine Surface Data, Iron (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface iron concentration for present time period (2000-2014).",
+                 "Micromole concentration of dissolved iron at the sea surface. "
+                ),
+                ('Present.Surface.Calcite.zip', 
+                 'nutrients',
+                 'Global Marine Surface Data, Calcite (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface calcite for present time period (2000-2014).",
+                 "Calcite concentration indicates the mean concentration of calcite (CaCO3) in oceans. "
+                ),
+                ('Present.Surface.Chlorophyll.zip', 
+                 'biochemical',
+                 'Global Marine Surface Data, Chlorophyll (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface chlorophyll A concentration for present time period (2000-2014).",
+                 'Chlorophyll A concentration indicates the concentration of photosynthetic pigment chlorophyll A (the most common "green" chlorophyll) in oceans. Please note that in shallow water these values may reflect any kind of autotrophic biomass. '
+                ),
+                ('Present.Surface.Phytoplankton.zip', 
+                 'biochemical',
+                 'Global Marine Surface Data, Phytoplankton (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface phytoplankton concentration for present time period (2000-2014).",
+                 "Mole concentration of phytoplankton expressed as carbon at the sea surface. "
+                ),
+                ('Present.Surface.Primary.productivity.zip', 
+                 'biochemical',
+                 'Global Marine Surface Data, Primary Productivity (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface primary productivity for present time period (2000-2014).",
+                 "Sea surface net primary productivity of carbon. "
+                ),
+                ('Present.Surface.pH.zip', 
+                 'biochemical',
+                 'Global Marine Surface Data, pH (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface pH for present time period (2000-2014).",
+                 "pH is an indicator of the acidity in the ocean, with lower values indicating more acid conditions and higher values more alkaline conditions. "
+                ),
+                ('Present.Surface.Par.zip', 
+                 'biochemical',
+                 'Global Marine Surface Data, Photosynthetically Available Radiation (2000-2014), 5 arcmin (~10 km)',
+                 "Global data for sea surface photosynthetically available radiation for present time period (2000-2014).",
+                 "Photosynthetically Available Radiation (PAR) indicates the quantum energy flux from the sun (in the spectral range 400-700 nm) reaching the ocean surface. "
+                )
+                ):
+
+            # TODO: maybe put some info in here? to access in a later stage...
+            #       bccvlmetadata.json may be an option here
+            opt = {
+                'id': filename,
+                'url': '{0}/global_marine/{1}'.format(SWIFTROOT, filename),
+            }
+            item = {
+                "_path": 'datasets/environmental/global_marine/{0}'.format(opt['id']),
+                "_owner":  (1,  'admin'),
+                "_type": "org.bccvl.content.remotedataset",
+                "title": title,
+                "description": description,
+                "external_description": full_description + self.COMMON_FULL_DESC,
+                "remoteUrl": opt['url'],
+                "format": "application/zip",
+                "creators": 'BCCVL',
+                "_transitions": "publish",
+                "subject": [SUMMARY_DATASET_TAG, MARINE_DATASET_TAG],
+                "bccvlmetadata": {
+                    "genre": "DataGenreE",
+                    "resolution": 'Resolution5m',
+                    "categories": [category],
+                },
+            }
+            LOG.info('Import %s', item['title'])
+            yield item
 
 
 class WorldClimLayer(object):

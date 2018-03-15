@@ -82,7 +82,8 @@ def import_data(site, params):
             'anuclimsource': {'enabled': "False"},
             'geofabricsource': {'enabled': "False"},
             'nvissource': {'enabled': "False"},
-            'austsubsfertsource': {'enabled': "False"}
+            'austsubsfertsource': {'enabled': "False"},
+            'globalmarinesource': {'enabled': "False"}
         }
     else:
         for fcsource in ('a5ksource', 'a1ksource', 'a250source', 'awapsource', 'wcfsource'):
@@ -100,7 +101,7 @@ def import_data(site, params):
                        'accuclimsource', 'tasclimsource',
                        'climondsource', 'narclimsource',
                        'nvissource', 'anuclimsource',
-                       'austsubsfertsource']:
+                       'austsubsfertsource', 'globalmarinesource']:
             if params.get(source, False):
                 source_options[source] = {'enabled': 'True'}
         for source in ['geofabricsource']:
@@ -196,6 +197,7 @@ def parse_args(args):
     parser.add_argument('--geofabricsource', action='store_true')
     parser.add_argument('--nvissource', action='store_true')
     parser.add_argument('--anuclimsource', action='store_true')
+    parser.add_argument('--globalmarinesource', action='store_true')
     # Additional parameters for Geofabric datasets
     parser.add_argument('--btype', type=str, choices=['catchment', 'stream'], help='Geofabric boundary type')
     parser.add_argument('--dstype', type=str, help='Geofabric dataset type i.e. climate, vegetation')

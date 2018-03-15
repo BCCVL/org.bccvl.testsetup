@@ -54,6 +54,11 @@
         />
     
     <utility
+        component=".transmogrify.GlobalMarineLayers"
+        name="org.bccvl.testsetup.transmogrify.globalmarinesource"
+        />
+    
+    <utility
         component=".transmogrify.NationalSoilgridLayers"
         name="org.bccvl.testsetup.transmogrify.nsgsource"
         />

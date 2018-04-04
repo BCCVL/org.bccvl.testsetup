@@ -783,6 +783,9 @@ class NDLCLayers(object):
         if not self.enabled:
             return
 
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
         for filename, addTags, title, description, full_description in (
                 ('ndlc_DLCDv1_Class.zip',
                  [SUMMARY_DATASET_TAG],
@@ -853,6 +856,9 @@ class GlobalMarineLayers(object):
 
         if not self.enabled:
             return
+
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
 
         for filename, category, title, description, full_description in (
                 ('Present.Surface.Temperature.zip',
@@ -981,6 +987,7 @@ class GlobalMarineLayers(object):
                 "remoteUrl": opt['url'],
                 "format": "application/zip",
                 "creators": 'BCCVL',
+                "dataSource": "ingest",
                 "_transitions": "publish",
                 "subject": [SUMMARY_DATASET_TAG, MARINE_DATASET_TAG],
                 "bccvlmetadata": {

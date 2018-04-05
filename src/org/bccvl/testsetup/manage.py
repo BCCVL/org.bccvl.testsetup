@@ -128,7 +128,7 @@ def main(app, params):
             if isinstance(steps, list):
                 # we have multiple steps here
                 app.REQUEST.form.update({
-                    'upgrades': [x['id'] for x in steps],
+                    'upgrades': {x['id'] for x in steps},
                     'profile_id': profile
                 })
             else:

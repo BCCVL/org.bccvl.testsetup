@@ -118,15 +118,24 @@ def main(app, params):
     # find bccvl upgrade steps
     profile = 'org.bccvl.site:default'
     if params['lastupgrade']:
-        upgrades = ps.listUpgrades(profile, show_old=True)[-1]
+        # filter out last upgrade step and wrap it back into a list of lists
+        upgrades = [ps.listUpgrades(profile, show_old=True)[-1]]
     else:
         upgrades = ps.listUpgrades(profile)
     if upgrades:
         LOG.info('Running upgrade profile for %s', profile)
-        app.REQUEST.form.update({
-            'upgrades': [x['id'] for x in upgrades],
-            'profile_id': profile
-        })
+        for steps in upgrades:
+            if isinstance(steps, list):
+                # we have multiple steps here
+                app.REQUEST.form.update({
+                    'upgrades': {x['id'] for x in steps},
+                    'profile_id': profile
+                })
+            else:
+                app.REQUEST.form.update({
+                    'upgrades': steps['id'],
+                    'profile_id': profile
+                })
         ps.manage_doUpgrades()
         transaction.commit()
 

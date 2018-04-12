@@ -8,6 +8,7 @@ from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.utils import defaultMatcher
 from plone import api
 from plone.app.textfield.value import RichTextValue
+from zope.annotation import IAnnotations
 from zope.interface import implementer, provider
 from zope.component import getUtility
 from zope.schema.interfaces import IVocabularyFactory
@@ -149,8 +150,9 @@ class UpdateMetadata(object):
             # track background job state
             jt = IJobTracker(obj)
             job = jt.new_job('TODO: generate id',
-                             'generate taskname: update_metadata')
-            job.type = obj.portal_type
+                             'generate taskname: update_metadata',
+                             function=obj.dataSource,
+                             type=obj.portal_type)
             jt.set_progress('PENDING', 'Metadata update pending')
 
             yield item
@@ -195,6 +197,9 @@ class FutureClimateLayer5k(object):
             return
 
         # Generate new items based on source
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+        # One way of doing it is having a hardcoded list here
+        # Generate new items based on source
         # One way of doing it is having a hardcoded list here
         emscs = ['RCP3PD', 'RCP45', 'RCP6', 'RCP85',
                  'SRESA1B', 'SRESA1FI', 'SRESA2', 'SRESB1', 'SRESB2']
@@ -236,6 +241,7 @@ class FutureClimateLayer5k(object):
             "remoteUrl": "{0}/{1}/{2}".format(SWIFTROOT, self.swiftcontainer, self.current_file),
             "format": "application/zip",
             "creators": "BCCVL",
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG] + self.current_additional_tags,
             "bccvlmetadata": {
@@ -260,6 +266,7 @@ class FutureClimateLayer5k(object):
             "remoteUrl": url,
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
@@ -325,6 +332,10 @@ class AustSubstrateFertilityLayers(object):
             return
         # TODO: maybe put some info in here? to access in a later stage...
         #       bccvlmetadata.json may be an option here
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
+        # TODO: maybe put some info in here? to access in a later stage...
+        #       bccvlmetadata.json may be an option here
         opt = {
             'id': 'australian_substrate_fertility.zip',
             'url': '{0}/aust-substrate-fertility/australian_substrate_fertility.zip'.format(SWIFTROOT)
@@ -336,6 +347,7 @@ class AustSubstrateFertilityLayers(object):
             "title": "Australian Substrate Fertility, 36 arcsec (~1 km)",
             "remoteUrl": opt['url'],
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "format": "application/zip",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG],
@@ -373,6 +385,10 @@ class NationalSoilgridLayers(object):
             return
         # TODO: maybe put some info in here? to access in a later stage...
         #       bccvlmetadata.json may be an option here
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
+        # TODO: maybe put some info in here? to access in a later stage...
+        #       bccvlmetadata.json may be an option here
         opt = {
             'id': 'nsg-2011-250m.zip',
             'url': '{0}/national_soil_grids/nsg-2011-250m.zip'.format(SWIFTROOT)
@@ -384,6 +400,7 @@ class NationalSoilgridLayers(object):
             "title": "Australia, National Soil Grids (2012), 9 arcsec (~250 m)",
             "remoteUrl": opt['url'],
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "format": "application/zip",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
@@ -421,6 +438,9 @@ class NationalVegetationLayers(object):
             return
 
         # TODO: maybe put some info in here? to access in a later stage...
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+        #       bccvlmetadata.json may be an option here
+        # TODO: maybe put some info in here? to access in a later stage...
         #       bccvlmetadata.json may be an option here
         opt = {
             'id': 'nvis_major_vegetation_groups.zip',
@@ -433,6 +453,7 @@ class NationalVegetationLayers(object):
             "title": "Australia, Major Vegetation Groups (2016), 3 arcsec (~90 m)",
             "remoteUrl": opt['url'],
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "format": "application/zip",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG],
@@ -470,6 +491,9 @@ class VegetationAssetsStatesTransitionsLayers(object):
             return
 
         # TODO: maybe put some info in here? to access in a later stage...
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+        #       bccvlmetadata.json may be an option here
+        # TODO: maybe put some info in here? to access in a later stage...
         #       bccvlmetadata.json may be an option here
         opt = {
             'id': 'vast.zip',
@@ -483,6 +507,7 @@ class VegetationAssetsStatesTransitionsLayers(object):
             "remoteUrl": opt['url'],
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
@@ -519,6 +544,9 @@ class MultiResolutionRidgeTopFlatnessLayers(object):
             return
 
         # TODO: maybe put some info in here? to access in a later stage...
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+        #       bccvlmetadata.json may be an option here
+        # TODO: maybe put some info in here? to access in a later stage...
         #       bccvlmetadata.json may be an option here
         opt = {
             'id': 'multi_res_ridge_top_flat.zip',
@@ -532,6 +560,7 @@ class MultiResolutionRidgeTopFlatnessLayers(object):
             "remoteUrl": opt['url'],
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
@@ -568,6 +597,9 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
             return
 
         # TODO: maybe put some info in here? to access in a later stage...
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+        #       bccvlmetadata.json may be an option here
+        # TODO: maybe put some info in here? to access in a later stage...
         #       bccvlmetadata.json may be an option here
         opt = {
             'id': 'multi_res_valley_bottom_flat.zip',
@@ -581,6 +613,7 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
             "remoteUrl": opt['url'],
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
@@ -622,6 +655,9 @@ class AWAPLayers(object):
             return
 
         # datasets for years 1900 to 2011
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
+        # datasets for years 1900 to 2011
         for year in range(1900, 2011):
             if self.year and str(year) not in self.year:
                 # skip item if not selected
@@ -641,6 +677,7 @@ class AWAPLayers(object):
                 "remoteUrl": opt['url'],
                 "format": "application/zip",
                 "creators": 'BCCVL',
+                "dataSource": "ingest",
                 "_transitions": "publish",
                 "subject": [TERRESTRIAL_DATASET_TAG],
                 "bccvlmetadata": {
@@ -681,6 +718,9 @@ class GlobPETAridLayers(object):
             return
 
         # TODO: maybe put some info in here? to access in a later stage...
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+        #       bccvlmetadata.json may be an option here
+        # TODO: maybe put some info in here? to access in a later stage...
         #       bccvlmetadata.json may be an option here
         opt = {
             'id': 'global-pet-and-aridity.zip',
@@ -695,6 +735,7 @@ class GlobPETAridLayers(object):
             "remoteUrl": opt['url'],
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
@@ -742,6 +783,9 @@ class NDLCLayers(object):
         if not self.enabled:
             return
 
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
         for filename, addTags, title, description, full_description in (
                 ('ndlc_DLCDv1_Class.zip', 
                  [SUMMARY_DATASET_TAG],
@@ -772,6 +816,7 @@ class NDLCLayers(object):
                 "remoteUrl": opt['url'],
                 "format": "application/zip",
                 "creators": 'BCCVL',
+                "dataSource": "ingest",
                 "_transitions": "publish",
                 "subject": [TERRESTRIAL_DATASET_TAG] + addTags,
                 "bccvlmetadata": {
@@ -811,6 +856,9 @@ class GlobalMarineLayers(object):
 
         if not self.enabled:
             return
+
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
 
         for filename, category, title, description, full_description in (
                 ('Present.Surface.Temperature.zip', 
@@ -939,6 +987,7 @@ class GlobalMarineLayers(object):
                 "remoteUrl": opt['url'],
                 "format": "application/zip",
                 "creators": 'BCCVL',
+                "dataSource": "ingest",
                 "_transitions": "publish",
                 "subject": [SUMMARY_DATASET_TAG, MARINE_DATASET_TAG],
                 "bccvlmetadata": {
@@ -1039,6 +1088,9 @@ class WorldClimFutureLayers(WorldClimLayer):
         if not self.enabled:
             return
 
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
         for filename, title, res, year, gcm, emsc, monthtag in self.datasets():
             item = self._createItem(title, filename, res, gcm, emsc, year, monthtag)
             LOG.info('Import %s', item['title'])
@@ -1053,6 +1105,7 @@ class WorldClimFutureLayers(WorldClimLayer):
             "remoteUrl": '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
@@ -1081,6 +1134,9 @@ class WorldClimCurrentLayers(WorldClimLayer):
 
         if not self.enabled:
             return
+
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
 
         RESOLUTION_MAP = {
             #'30s': '30 arcsec (~1 km)',
@@ -1118,6 +1174,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
             "remoteUrl": '{0}/worldclim/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG] + addTags,
             "bccvlmetadata": {
@@ -1133,8 +1190,6 @@ class WorldClimCurrentLayers(WorldClimLayer):
         return item
 
 #
-
-
 @provider(ISectionBlueprint)
 @implementer(ISection)
 class GPPLayers(object):
@@ -1181,6 +1236,9 @@ class GPPLayers(object):
         if not self.enabled:
             return
 
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
         for dfile, addTags, dtitle in self.datasets:
             _url = '{0}/gpp/{1}'.format(SWIFTROOT, dfile)
             item = {
@@ -1191,6 +1249,7 @@ class GPPLayers(object):
                 "remoteUrl": _url,
                 "format": "application/zip",
                 "creators": 'BCCVL',
+                "dataSource": "ingest",
                 "_transitions": "publish",
                 "subject": [TERRESTRIAL_DATASET_TAG] + addTags,
                 "bccvlmetadata": {
@@ -1304,6 +1363,9 @@ class FPARLayers(object):
             return
 
         # Monthly data loop
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
+        # Monthly data loop
         for year, start_month, end_month in self.ranges:
             for month in xrange(start_month, end_month + 1):
                 dfile = 'fpar.{year}.{month:02d}.aust.zip'.format(
@@ -1320,6 +1382,7 @@ class FPARLayers(object):
                     "remoteUrl": _url,
                     "format": "application/zip",
                     "creators": 'BCCVL',
+                    "dataSource": "ingest",
                     "_transitions": "publish",
                     "subject": [TERRESTRIAL_DATASET_TAG],
                     "bccvlmetadata": {
@@ -1341,6 +1404,7 @@ class FPARLayers(object):
                 "remoteUrl": _url,
                 "format": "application/zip",
                 "creators": 'BCCVL',
+                "dataSource": "ingest",
                 "_transitions": "publish",
                 "subject": [TERRESTRIAL_DATASET_TAG],
                 "bccvlmetadata": {
@@ -1400,6 +1464,9 @@ class CRUClimLayers(WorldClimLayer):
         if not self.enabled:
             return
 
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
         yield self._createItem()
 
     def _createItem(self):
@@ -1414,6 +1481,7 @@ class CRUClimLayers(WorldClimLayer):
             "remoteUrl": '{0}/cruclim/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
@@ -1447,6 +1515,9 @@ class ACCUClimLayers(WorldClimLayer):
         if not self.enabled:
             return
 
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
         for year in range(1965, 2001, 5):
             yield self._createItem(year)
 
@@ -1462,6 +1533,7 @@ class ACCUClimLayers(WorldClimLayer):
             "remoteUrl": '{0}/accuclim/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
@@ -1512,6 +1584,9 @@ class TASClimLayers(WorldClimLayer):
         if not self.enabled:
             return
 
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
         for emsc in self.emscs.keys():
             for gcm in self.gcms.keys():
                 for year in range(1980, 2086, 5):
@@ -1531,6 +1606,7 @@ class TASClimLayers(WorldClimLayer):
             "remoteUrl": '{0}/tasclim/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
@@ -1594,6 +1670,9 @@ class ClimondLayers(WorldClimLayer):
             return
 
         # Current climate datasets
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
+        # Current climate datasets
         yield self._createCurrentItem()
 
         # Future climate datasets
@@ -1616,6 +1695,7 @@ class ClimondLayers(WorldClimLayer):
             "remoteUrl": '{0}/climond/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
@@ -1643,6 +1723,7 @@ class ClimondLayers(WorldClimLayer):
             "remoteUrl": '{0}/climond/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {
@@ -1700,6 +1781,9 @@ class NarclimLayers(WorldClimLayer):
             return
 
         # Future climate datasets
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
+        # Future climate datasets
         for gcm in self.gcms.keys():
             for rcm in self.rcms:
                 for year in [2030, 2070]:
@@ -1726,6 +1810,7 @@ class NarclimLayers(WorldClimLayer):
             "remoteUrl": '{0}/narclim/{1}/{2}'.format(SWIFTROOT, res, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
@@ -1757,6 +1842,7 @@ class NarclimLayers(WorldClimLayer):
             "remoteUrl": '{0}/narclim/{1}/{2}'.format(SWIFTROOT, res, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
@@ -1796,13 +1882,15 @@ class ANUClimLayers(WorldClimLayer):
             return
 
         # Current climate datasets
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
+        # Current climate datasets
         res = "30s"
         resolution = "1km"
         year = "1976-2005"
         for month in range(12):
             filename = 'anuclim_{}_{}.zip'.format(resolution, self.MONTH_LIST[month][:3])
             yield self._createCurrentItem(filename, res, self.MONTH_LIST[month], year)
-
 
     def _createCurrentItem(self, filename, res, month, year):
         resolution = ''
@@ -1817,6 +1905,7 @@ class ANUClimLayers(WorldClimLayer):
             "remoteUrl": '{0}/anuclim/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [TERRESTRIAL_DATASET_TAG],
             "bccvlmetadata": {
@@ -1898,6 +1987,9 @@ class GeofabricLayers(WorldClimLayer):
         if not self.enabled:
             return
 
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
         boundary_types = ['catchment', 'stream']
         # attribute datasets
         for boundtype in boundary_types:
@@ -1908,7 +2000,6 @@ class GeofabricLayers(WorldClimLayer):
                 if self.dstype and datasettype not in self.dstype:
                     continue
                 yield self._createAttributeItem(boundtype, datasettype)
-
 
     def _createAttributeItem(self, boundtype, dstype):
         # dataset filename
@@ -1947,6 +2038,7 @@ class GeofabricLayers(WorldClimLayer):
             "remoteUrl": '{0}/geofabric/{1}'.format(SWIFTROOT, filename),
             "format": "application/zip",
             "creators": 'BCCVL',
+            "dataSource": "ingest",
             "_transitions": "publish",
             "subject": [FRESHWATER_DATASET_TAG, SUMMARY_DATASET_TAG],
             "bccvlmetadata": {

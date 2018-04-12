@@ -305,7 +305,7 @@ class FutureClimateLayer250m(FutureClimateLayer5k):
     titletempl = "Australia, Climate Projection {0} based on {1}, 9 arcsec (~250 m) - {2}"
     current_title = "Australia, current climate (1976-2005), 9 arcsec (~250 m)"
     current_file = None
-    ccurrent_additional_tags = [SUMMARY_DATASET_TAG]
+    current_additional_tags = [SUMMARY_DATASET_TAG]
 
 
 @provider(ISectionBlueprint)
@@ -1150,7 +1150,7 @@ class WorldClimCurrentLayers(WorldClimLayer):
         for scale in RESOLUTION_MAP.keys():
             # yield altitude layer
             title = u'WorldClim Altitude at {}'.format(RESOLUTION_MAP[scale])
-            item = self._createItem(title, scale, 'alt')
+            item = self._createItem(title, scale, 'alt', [SUMMARY_DATASET_TAG])
             yield item
             # yield bioclim layer
             title = u'WorldClim, current climate (1950-2000), {}'.format(RESOLUTION_MAP[scale])

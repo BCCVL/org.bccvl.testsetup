@@ -2019,7 +2019,7 @@ class GeofabricLayers(WorldClimLayer):
             title = u'Freshwater Data (Australia), {attrname}, 9 arcsec (~250m)'.format(attrname=attrname)
             full_description = u'<br>'.join(self.rdi_external_description)
         elif dstype == 'climate':
-            title = u'Freshwater Data (Australia), {attrname}, 9 arcsec (~250m)'.format(attrname=attrname)
+            title = u'Freshwater {btype} Data (Australia), {attrname}, 9 arcsec (~250m)'.format(btype=boundtype.title(), attrname=attrname)
             full_description = u'<br>'.join(self.climate_external_description)
         else:
             title = u'Freshwater {btype} Data (Australia), {attrname}, 9 arcsec (~250m)'.format(btype=boundtype.title(), attrname=attrname)

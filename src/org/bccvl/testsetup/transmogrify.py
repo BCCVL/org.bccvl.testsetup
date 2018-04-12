@@ -1836,7 +1836,7 @@ class ANUClimLayers(WorldClimLayer):
 class GeofabricLayers(WorldClimLayer):
 
     dataset_info = {
-        'catchment': {'climate': ('current', u'Aggregated climate data for the Australian continent between 1921-1995, generated using ANUCLIM version 6.1, for catchments derived from the national 9 arcsec DEM and flow direction grid version 3. Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell. The bioclim layers are the average values of the corresponding bioclim parameters calculated for all.'), 
+        'catchment': {'climate': ('current', u'Aggregated climate data for the Australian continent between 1921-1995, generated using ANUCLIM version 6.1, for catchments derived from the national 9 arcsec DEM and flow direction grid version 3. Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'), 
                       'vegetation': ('vegetation', u'Natural (pre-1750) and extant (present day) vegetation cover for catchments across the Australian continent based on the NVIS Major Vegetation sub-groups version 3.1. Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'),
                       'substrate': ('substrate', u'Substrate data with soil hydrological characteristics and lithological composition for catchments across the Australian continent based on the surface geology of Australia 1:1M. Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'), 
                       'terrain': ('topography', u'Terrain data for catchments across the Australian continent based on the 9" DEM of Australia version 3 (2008). Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'),
@@ -1844,7 +1844,7 @@ class GeofabricLayers(WorldClimLayer):
                       'population': ('landuse', u'Population data for catchments across the Australian continent based on the population density in 2006 (Australian Bureau of Statistics). Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'),
                       'npp': ('productivity', u'Average of annual and monthly mean net primary productivity (NPP) for catchments across the Australian continent based on Raupach et al. (2001). NPP is equal to plant photosynthesis less plant respiration, and reflects the carbon or biomass yield of the landscape, available for use by animals and humans. Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell.'),
                       'rdi': ('landuse', u'Indicators of pressure on stream ecosystems due to human activities derived using the method of <a href=\"http://www.sciencedirect.com/science/article/pii/S0169204602000488\" target=\"_blank\">Stein et al. (2002)</a>. The method couples geographical data, recording the extent and intensity of human activities known to impact on river condition, with a Digital Elevation Model (DEM) used for drainage analysis. The indices rank streams along a continuum from near-pristine to severely disturbed.')},
-        'stream':    {'climate': ('current', u'Aggregated climate data for the Australian continent between 1921-1995, generated using ANUCLIM version 6.1, for stream segments derived from the national 9 arcsec DEM and flow direction grid version 3. Stream segments refer to all grid cells comprising the stream segment and associated valley bottom. The bioclim layers are the average values of the corresponding bioclim parameters calculated for all.'), 
+        'stream':    {'climate': ('current', u'Aggregated climate data for the Australian continent between 1921-1995, generated using ANUCLIM version 6.1, for stream segments derived from the national 9 arcsec DEM and flow direction grid version 3. Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'), 
                       'vegetation': ('vegetation', u'Natural (pre-1750) and extant (present day) vegetation cover for stream segments across the Australian continent based on the NVIS Major Vegetation sub-groups version 3.1. Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'),
                       'substrate': ('substrate', u'Substrate data with soil hydrological characteristics and lithological composition for stream segments across the Australian continent based on the surface geology of Australia 1:1M. Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'), 
                       'terrain': ('topography', u'Terrain data for stream segments across the Australian continent based on the 9" DEM of Australia version 3 (2008). Stream segments refer to all grid cells comprising the stream segment and associated valley bottom.'),
@@ -1862,6 +1862,12 @@ class GeofabricLayers(WorldClimLayer):
 
     rdi_external_description = [
             u'The layers in this dataset were developed by the Australian National University (ANU) in 2011 and updated in 2012. BCCVL has integrated version 1.1.5 (2012) of the database. The source data for these layers are described in Stein et al. (1998; The identification of wild rivers) updated with catchment-scale land use mapping for Australia (Bureau of Rural Sciences, 2009), Geodata Topo 250K series 2 (Geoscience Australia, 2003), Integrated Vegetation Cover (Bureau of Rural Sciences, 2003).', 
+            u'Publication: <a href=\"http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf\" target=\"_blank\">http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf</a>',
+            u'Data source: <a href=\"https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5\" target=\"_blank\">https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5</a>'
+    ]
+
+    climate_external_description = [
+            u'The layers in this dataset were developed by the Australian National University (ANU) in 2011 and updated in 2012. BCCVL has integrated version 1.1.5 (2012) of the database. The bioclim layers are the average values of the corresponding bioclim parameters calculated for all grid cells comprising the stream segment and associated valley bottoms.', 
             u'Publication: <a href=\"http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf\" target=\"_blank\">http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf</a>',
             u'Data source: <a href=\"https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5\" target=\"_blank\">https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5</a>'
     ]
@@ -1921,6 +1927,9 @@ class GeofabricLayers(WorldClimLayer):
         if dstype == 'rdi':
             title = u'Freshwater Data (Australia), {attrname}, 9 arcsec (~250m)'.format(attrname=attrname)
             full_description = u'<br>'.join(self.rdi_external_description)
+        elif dstype == 'climate':
+            title = u'Freshwater Data (Australia), {attrname}, 9 arcsec (~250m)'.format(attrname=attrname)
+            full_description = u'<br>'.join(self.climate_external_description)
         else:
             title = u'Freshwater {btype} Data (Australia), {attrname}, 9 arcsec (~250m)'.format(btype=boundtype.title(), attrname=attrname)
             full_description = u'<br>'.join(self.external_description)

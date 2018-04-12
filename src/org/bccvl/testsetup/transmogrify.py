@@ -1955,8 +1955,14 @@ class GeofabricLayers(WorldClimLayer):
             u'Data source: <a href=\"https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5\" target=\"_blank\">https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5</a>'
     ]
 
-    climate_external_description = [
+    climate_stream_external_description = [
             u'The layers in this dataset were developed by the Australian National University (ANU) in 2011 and updated in 2012. BCCVL has integrated version 1.1.5 (2012) of the database. The bioclim layers are the average values of the corresponding bioclim parameters calculated for all grid cells comprising the stream segment and associated valley bottoms.', 
+            u'Publication: <a href=\"http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf\" target=\"_blank\">http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf</a>',
+            u'Data source: <a href=\"https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5\" target=\"_blank\">https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5</a>'
+    ]
+
+    climate_catchment_external_description = [
+            u'The layers in this dataset were developed by the Australian National University (ANU) in 2011 and updated in 2012. BCCVL has integrated version 1.1.5 (2012) of the database.  The bioclim layers are the average values of the corresponding bioclim parameters calculated for all grid cells upstream of the center of the stream segment pour-point cells.', 
             u'Publication: <a href=\"http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf\" target=\"_blank\">http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf</a>',
             u'Data source: <a href=\"https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5\" target=\"_blank\">https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5</a>'
     ]
@@ -2020,7 +2026,7 @@ class GeofabricLayers(WorldClimLayer):
             full_description = u'<br>'.join(self.rdi_external_description)
         elif dstype == 'climate':
             title = u'Freshwater {btype} Data (Australia), {attrname}, 9 arcsec (~250m)'.format(btype=boundtype.title(), attrname=attrname)
-            full_description = u'<br>'.join(self.climate_external_description)
+            full_description = u'<br>'.join(self.climate_stream_external_description if boundtype == 'stream' else self.climate_catchment_external_description)
         else:
             title = u'Freshwater {btype} Data (Australia), {attrname}, 9 arcsec (~250m)'.format(btype=boundtype.title(), attrname=attrname)
             full_description = u'<br>'.join(self.external_description)

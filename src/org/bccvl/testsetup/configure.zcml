@@ -54,8 +54,13 @@
         />
     
     <utility
-        component=".transmogrify.GlobalMarineLayers"
-        name="org.bccvl.testsetup.transmogrify.globalmarinesource"
+        component=".transmogrify.GlobalCurrentMarineLayers"
+        name="org.bccvl.testsetup.transmogrify.currentglobalmarinesource"
+        />
+
+    <utility
+        component=".transmogrify.GlobalMarineFutureLayers"
+        name="org.bccvl.testsetup.transmogrify.futureglobalmarinesource"
         />
     
     <utility

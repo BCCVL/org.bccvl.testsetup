@@ -828,9 +828,8 @@ class NDLCLayers(object):
             LOG.info('Import %s', item['title'])
             yield item
 
-@provider(ISectionBlueprint)
-@implementer(ISection)
-class GlobalMarineLayers(object):
+
+class GlobalMarineLayer(object):
     """Global Marine datasets
 
     """
@@ -848,7 +847,18 @@ class GlobalMarineLayers(object):
         # get filters from configuration
         self.enabled = options.get('enabled', "").lower() in (
             "true", "1", "on", "yes")
+        self.emsc = set(x.strip()
+                        for x in options.get('emsc', "").split(',') if x)
+        self.year = set(x.strip()
+                        for x in options.get('year', "").split(',') if x)
 
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class GlobalCurrentMarineLayers(GlobalMarineLayer):
+    """Global Marine datasets
+
+    """
     def __iter__(self):
         # exhaust previous
         for item in self.previous:
@@ -999,6 +1009,89 @@ class GlobalMarineLayers(object):
             LOG.info('Import %s', item['title'])
             yield item
 
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class GlobalMarineFutureLayers(GlobalMarineLayer):
+    """Global Marine datasets
+
+    """
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
+        for year, period in [('2050', '2040-2050'), ('2100', '2090-2100')]:
+            for emsc, scenario in [('RCP26', 'RCP 2.6'), ('RCP45', 'RCP 4.5'), ('RCP60', 'RCP 6.0'), ('RCP85', 'RCP 8.5')]:
+                if self.year and year not in self.year:
+                    # skip this year
+                    continue
+                if self.emsc and emsc not in self.emsc:
+                    # skip this emission scenario
+                    continue
+
+                for filename, category, title, description, full_description in (
+                        ('{0}.Surface.Temperature.zip'.format(year),
+                         'physical',
+                         'Global Marine Surface Data, Water Temperature {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
+                         "Global data for sea surface temperature for future time period {0} for emission scenario {1}.".format(period, scenario),
+                         "Sea surface temperature is the temperature of the topmost meter of the ocean water column. "
+                        ),
+                        ('{0}.Surface.Salinity.zip'.format(year), 
+                         'physical',
+                         'Global Marine Surface Data, Water Salinity {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
+                         "Global data for sea surface salinity for future time period {0} for emission scenario {1}.".format(period, scenario),
+                         "Salinity indicates the dissolved salt content in the ocean surface. "
+                        ),
+                        ('{0}.Surface.Current.Velocity.zip'.format(year), 
+                         'physical',
+                         'Global Marine Surface Data, Currents Velocity {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
+                         "Global data for sea surface currents velocity for future time period {0} for emission scenario {1}.".format(period, scenario),
+                         "Measurements of current speeds at the ocean surface. "
+                        ),
+                        ('{0}.Surface.Ice.thickness.zip'.format(year), 
+                         'physical',
+                         'Global Marine Surface Data, Ice Thickness {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
+                         "Global data for sea surface ice thickness for future time period {0} for emission scenario {1}.".format(period, scenario),
+                         "Ice thickness in metres at the ocean surface. "
+                        )
+                        ):
+                    # TODO: maybe put some info in here? to access in a later stage...
+                    #       bccvlmetadata.json may be an option here
+                    opt = {
+                        'id': filename,
+                        'url': '{0}/global_marine/{1}'.format(SWIFTROOT, filename),
+                    }
+                    item = {
+                        "_path": 'datasets/environmental/global_marine/{0}'.format(opt['id']),
+                        "_owner":  (1,  'admin'),
+                        "_type": "org.bccvl.content.remotedataset",
+                        "title": title,
+                        "description": description,
+                        "external_description": full_description + self.COMMON_FULL_DESC,
+                        "remoteUrl": opt['url'],
+                        "format": "application/zip",
+                        "creators": 'BCCVL',
+                        "dataSource": "ingest",
+                        "_transitions": "publish",
+                        "subject": [MARINE_DATASET_TAG],
+                        "bccvlmetadata": {
+                            "genre": "DataGenreE",
+                            "resolution": 'Resolution5m',
+                            "categories": [category],
+                            "emsc": emsc,
+                            "year": year,
+                        },
+                    }
+            LOG.info('Import %s', item['title'])
+            yield item
+            
 
 class WorldClimLayer(object):
 

@@ -1119,7 +1119,7 @@ class WorldClimFutureLayers(WorldClimLayer):
             "downloadable": False,
         }
         if tag:
-            item['subject'] = [tag]
+            item['subject'] += [tag]
         return item
 
 

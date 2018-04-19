@@ -28,6 +28,8 @@ FRESHWATER_DATASET_TAG ='Freshwater datasets'
 TERRESTRIAL_DATASET_TAG ='Terrestrial datasets'
 SUMMARY_DATASET_TAG = 'Summary datasets'
 MARINE_DATASET_TAG = "Marine datasets"
+CURRENT_DATASET_TAG = "Current datasets"
+FUTURE_DATASET_TAG = "Future datasets"
 
 
 def emsc_title(context, emsc):
@@ -243,11 +245,11 @@ class FutureClimateLayer5k(object):
             "creators": "BCCVL",
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG] + self.current_additional_tags,
+            "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG] + self.current_additional_tags,
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": self.resolution,
-                "categories": ["current"],
+                "categories": ["climate"],
             },
         }
         LOG.info('Import %s', item['title'])
@@ -268,14 +270,14 @@ class FutureClimateLayer5k(object):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, FUTURE_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": self.resolution,
                 "emsc": emsc,
                 "gcm": gcm,
                 "year": year,
-                "categories": ["future"],
+                "categories": ["climate"],
             }
         }
         LOG.info('Import %s', item['title'])
@@ -350,7 +352,7 @@ class AustSubstrateFertilityLayers(object):
             "dataSource": "ingest",
             "format": "application/zip",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution36s',
@@ -403,7 +405,7 @@ class NationalSoilgridLayers(object):
             "dataSource": "ingest",
             "format": "application/zip",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution9s',
@@ -456,7 +458,7 @@ class NationalVegetationLayers(object):
             "dataSource": "ingest",
             "format": "application/zip",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution3s',
@@ -509,7 +511,7 @@ class VegetationAssetsStatesTransitionsLayers(object):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution30s',
@@ -562,7 +564,7 @@ class MultiResolutionRidgeTopFlatnessLayers(object):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution3s',
@@ -615,7 +617,7 @@ class MultiResolutionValleyBottomFlatnessLayers(object):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution3s',
@@ -679,7 +681,7 @@ class AWAPLayers(object):
                 "creators": 'BCCVL',
                 "dataSource": "ingest",
                 "_transitions": "publish",
-                "subject": [TERRESTRIAL_DATASET_TAG],
+                "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG],
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution3m',
@@ -737,7 +739,7 @@ class GlobPETAridLayers(object):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreE",
                 "resolution": 'Resolution30s',
@@ -818,7 +820,7 @@ class NDLCLayers(object):
                 "creators": 'BCCVL',
                 "dataSource": "ingest",
                 "_transitions": "publish",
-                "subject": [TERRESTRIAL_DATASET_TAG] + addTags,
+                "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG] + addTags,
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution9s',
@@ -989,7 +991,7 @@ class GlobalMarineLayers(object):
                 "creators": 'BCCVL',
                 "dataSource": "ingest",
                 "_transitions": "publish",
-                "subject": [SUMMARY_DATASET_TAG, MARINE_DATASET_TAG],
+                "subject": [SUMMARY_DATASET_TAG, MARINE_DATASET_TAG, CURRENT_DATASET_TAG],
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution5m',
@@ -1107,14 +1109,14 @@ class WorldClimFutureLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, FUTURE_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),
                 "emsc": emsc.replace('.', ''),
                 "gcm": gcm,
                 "year": year,
-                "categories": ["future"],
+                "categories": ["climate"],
             },
             "downloadable": False,
         }
@@ -1176,11 +1178,11 @@ class WorldClimCurrentLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG] + addTags,
+            "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG] + addTags,
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
-                "categories": ["current"],
+                "categories": ["climate"],
             },
             "downloadable": False,
         }
@@ -1251,7 +1253,7 @@ class GPPLayers(object):
                 "creators": 'BCCVL',
                 "dataSource": "ingest",
                 "_transitions": "publish",
-                "subject": [TERRESTRIAL_DATASET_TAG] + addTags,
+                "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG] + addTags,
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution9s',
@@ -1384,7 +1386,7 @@ class FPARLayers(object):
                     "creators": 'BCCVL',
                     "dataSource": "ingest",
                     "_transitions": "publish",
-                    "subject": [TERRESTRIAL_DATASET_TAG],
+                    "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG],
                     "bccvlmetadata": {
                         "genre": "DataGenreE",
                         "resolution": 'Resolution9s',
@@ -1406,7 +1408,7 @@ class FPARLayers(object):
                 "creators": 'BCCVL',
                 "dataSource": "ingest",
                 "_transitions": "publish",
-                "subject": [TERRESTRIAL_DATASET_TAG],
+                "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG],
                 "bccvlmetadata": {
                     "genre": "DataGenreE",
                     "resolution": 'Resolution9s',
@@ -1483,11 +1485,11 @@ class CRUClimLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
-                "categories": ["current"],
+                "categories": ["climate"],
             },
         }
         return item
@@ -1535,11 +1537,11 @@ class ACCUClimLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
-                "categories": ["current"],
+                "categories": ["climate"],
             },
         }
         LOG.info('Import %s', item['title'])
@@ -1608,14 +1610,14 @@ class TASClimLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, FUTURE_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),
                 "emsc": self.emscs[emsc],
                 "gcm": self.gcms[gcm],
                 "year": year,
-                "categories": ["future"],
+                "categories": ["climate"],
             },
         }
 
@@ -1623,13 +1625,14 @@ class TASClimLayers(WorldClimLayer):
         if year <= 2015:
             item["title"] = u'Tasmania, Current Climate ({year}), ({emsc}) based on {gcm}, 6 arcmin (~12 km)'.format(
                 emsc=emsc_title(self.context, self.emscs[emsc]), gcm=gcm.upper(), year=year)
+            item["subject"] = [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG],
             item["bccvlmetadata"] = {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
                 "emsc": self.emscs[emsc],
                 "gcm": self.gcms[gcm],
                 "year": year,
-                "categories": ["current"],
+                "categories": ["climate"],
             }
         LOG.info('Import %s', item['title'])
         return item
@@ -1697,14 +1700,14 @@ class ClimondLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, FUTURE_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 "resolution": 'Resolution{}'.format(res),
                 "emsc": self.emscs[emsc],
                 "gcm": self.gcms[gcm],
                 "year": year,
-                "categories": ["future"],
+                "categories": ["climate"],
             },
         }
 
@@ -1725,11 +1728,11 @@ class ClimondLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, SUMMARY_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
-                "categories": ["current"],
+                "categories": ["climate"],
             },
         }
         LOG.info('Import %s', item['title'])
@@ -1812,7 +1815,7 @@ class NarclimLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, FUTURE_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreFC",
                 # This shall match to the resolution vacab in registry
@@ -1821,7 +1824,7 @@ class NarclimLayers(WorldClimLayer):
                 "gcm": self.gcms[gcm],
                 "rcm": rcm,
                 "year": year,
-                "categories": ["future"],
+                "categories": ["climate"],
             },
         }
 
@@ -1844,11 +1847,11 @@ class NarclimLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
-                "categories": ["current"],
+                "categories": ["climate"],
             },
         }
 
@@ -1907,13 +1910,12 @@ class ANUClimLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [TERRESTRIAL_DATASET_TAG],
+            "subject": [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG, MONTHLY_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),
-                "categories": ["current"],
+                "categories": ["climate"],
             },
-            "subject": [MONTHLY_DATASET_TAG],
         }
 
         LOG.info('Import %s', item['title'])
@@ -2046,7 +2048,7 @@ class GeofabricLayers(WorldClimLayer):
             "creators": 'BCCVL',
             "dataSource": "ingest",
             "_transitions": "publish",
-            "subject": [FRESHWATER_DATASET_TAG, SUMMARY_DATASET_TAG],
+            "subject": [FRESHWATER_DATASET_TAG, SUMMARY_DATASET_TAG, CURRENT_DATASET_TAG],
             "bccvlmetadata": {
                 "genre": "DataGenreCC" if dstype == "climate" else "DataGenreE",
                 "resolution": 'Resolution9s',

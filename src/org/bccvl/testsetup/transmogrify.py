@@ -1625,7 +1625,7 @@ class TASClimLayers(WorldClimLayer):
         if year <= 2015:
             item["title"] = u'Tasmania, Current Climate ({year}), ({emsc}) based on {gcm}, 6 arcmin (~12 km)'.format(
                 emsc=emsc_title(self.context, self.emscs[emsc]), gcm=gcm.upper(), year=year)
-            item["subject"] = [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG],
+            item["subject"] = [TERRESTRIAL_DATASET_TAG, CURRENT_DATASET_TAG]
             item["bccvlmetadata"] = {
                 "genre": "DataGenreCC",
                 "resolution": 'Resolution{}'.format(res),

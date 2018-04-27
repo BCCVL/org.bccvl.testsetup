@@ -1039,25 +1039,25 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
                     continue
 
                 for filename, category, title, description, full_description in (
-                        ('{0}.Surface.Temperature.zip'.format(year),
+                        ('{0}.{1}.Surface.Temperature.zip'.format(year, emsc),
                          'physical',
                          'Global Marine Surface Data, Water Temperature {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
                          "Global data for sea surface temperature for future time period {0} for emission scenario {1}.".format(period, scenario),
                          "Sea surface temperature is the temperature of the topmost meter of the ocean water column. "
                         ),
-                        ('{0}.Surface.Salinity.zip'.format(year), 
+                        ('{0}.{1}.Surface.Salinity.zip'.format(year, emsc), 
                          'physical',
                          'Global Marine Surface Data, Water Salinity {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
                          "Global data for sea surface salinity for future time period {0} for emission scenario {1}.".format(period, scenario),
                          "Salinity indicates the dissolved salt content in the ocean surface. "
                         ),
-                        ('{0}.Surface.Current.Velocity.zip'.format(year), 
+                        ('{0}.{1}.Surface.Current.Velocity.zip'.format(year, emsc), 
                          'physical',
                          'Global Marine Surface Data, Currents Velocity {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
                          "Global data for sea surface currents velocity for future time period {0} for emission scenario {1}.".format(period, scenario),
                          "Measurements of current speeds at the ocean surface. "
                         ),
-                        ('{0}.Surface.Ice.thickness.zip'.format(year), 
+                        ('{0}.{1}.Surface.Ice.thickness.zip'.format(year, emsc), 
                          'physical',
                          'Global Marine Surface Data, Ice Thickness {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
                          "Global data for sea surface ice thickness for future time period {0} for emission scenario {1}.".format(period, scenario),
@@ -1082,7 +1082,7 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
                         "creators": 'BCCVL',
                         "dataSource": "ingest",
                         "_transitions": "publish",
-                        "subject": [MARINE_DATASET_TAG],
+                        "subject": [MARINE_DATASET_TAG, FUTURE_DATASET_TAG],
                         "bccvlmetadata": {
                             "genre": "DataGenreE",
                             "resolution": 'Resolution5m',
@@ -1091,8 +1091,8 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
                             "year": year,
                         },
                     }
-            LOG.info('Import %s', item['title'])
-            yield item
+                    LOG.info('Import %s', item['title'])
+                    yield item
             
 
 class WorldClimLayer(object):

@@ -1018,6 +1018,8 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
     """Global Marine datasets
 
     """
+    COMMON_DESC_TEXT = " based on an average of three coupled atmosphere–ocean general circulation models (CCSM4, HadGEM2-ES, MIROC5)."
+
     def __iter__(self):
         # exhaust previous
         for item in self.previous:
@@ -1030,7 +1032,7 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
         IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
 
         for year, period in [('2050', '2040-2050'), ('2100', '2090-2100')]:
-            for emsc, scenario in [('RCP26', 'RCP 2.6'), ('RCP45', 'RCP 4.5'), ('RCP60', 'RCP 6.0'), ('RCP85', 'RCP 8.5')]:
+            for emsc, scenario, emsc_vocab in [('RCP26', 'RCP 2.6', 'RCP3PD'), ('RCP45', 'RCP 4.5', 'RCP45'), ('RCP60', 'RCP 6.0', 'RCP6'), ('RCP85', 'RCP 8.5', 'RCP85')]:
                 if self.year and year not in self.year:
                     # skip this year
                     continue
@@ -1042,25 +1044,25 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
                         ('{0}.{1}.Surface.Temperature.zip'.format(year, emsc),
                          'physical',
                          'Global Marine Surface Data, Water Temperature {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
-                         "Global data for sea surface temperature for future time period {0} for emission scenario {1}.".format(period, scenario),
+                         "Global data for sea surface temperature for future time period {0} for emission scenario {1}".format(period, scenario),
                          "Sea surface temperature is the temperature of the topmost meter of the ocean water column. "
                         ),
                         ('{0}.{1}.Surface.Salinity.zip'.format(year, emsc), 
                          'physical',
                          'Global Marine Surface Data, Water Salinity {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
-                         "Global data for sea surface salinity for future time period {0} for emission scenario {1}.".format(period, scenario),
+                         "Global data for sea surface salinity for future time period {0} for emission scenario {1}".format(period, scenario),
                          "Salinity indicates the dissolved salt content in the ocean surface. "
                         ),
                         ('{0}.{1}.Surface.Current.Velocity.zip'.format(year, emsc), 
                          'physical',
                          'Global Marine Surface Data, Currents Velocity {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
-                         "Global data for sea surface currents velocity for future time period {0} for emission scenario {1}.".format(period, scenario),
+                         "Global data for sea surface currents velocity for future time period {0} for emission scenario {1}".format(period, scenario),
                          "Measurements of current speeds at the ocean surface. "
                         ),
                         ('{0}.{1}.Surface.Ice.thickness.zip'.format(year, emsc), 
                          'physical',
                          'Global Marine Surface Data, Ice Thickness {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
-                         "Global data for sea surface ice thickness for future time period {0} for emission scenario {1}.".format(period, scenario),
+                         "Global data for sea surface ice thickness for future time period {0} for emission scenario {1}".format(period, scenario),
                          "Ice thickness in metres at the ocean surface. "
                         )
                         ):
@@ -1075,7 +1077,7 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
                         "_owner":  (1,  'admin'),
                         "_type": "org.bccvl.content.remotedataset",
                         "title": title,
-                        "description": description,
+                        "description": description + self.COMMON_DESC_TEXT,
                         "external_description": full_description + self.COMMON_FULL_DESC,
                         "remoteUrl": opt['url'],
                         "format": "application/zip",
@@ -1087,7 +1089,7 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
                             "genre": "DataGenreE",
                             "resolution": 'Resolution5m',
                             "categories": [category],
-                            "emsc": emsc,
+                            "emsc": emsc_vocab,
                             "year": year,
                         },
                     }

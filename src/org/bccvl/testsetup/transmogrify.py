@@ -1018,7 +1018,7 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
     """Global Marine datasets
 
     """
-    COMMON_DESC_TEXT = " based on an average of three coupled atmosphere–ocean general circulation models (CCSM4, HadGEM2-ES, MIROC5)."
+    COMMON_DESC_TEXT = " based on an average of three coupled atmosphere-ocean general circulation models (CCSM4, HadGEM2-ES, MIROC5)."
 
     def __iter__(self):
         # exhaust previous

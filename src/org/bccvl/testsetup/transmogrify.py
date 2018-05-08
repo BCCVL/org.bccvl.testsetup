@@ -1086,7 +1086,7 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
                         "_transitions": "publish",
                         "subject": [MARINE_DATASET_TAG, FUTURE_DATASET_TAG],
                         "bccvlmetadata": {
-                            "genre": "DataGenreFE",
+                            "genre": "DataGenreE",
                             "resolution": 'Resolution5m',
                             "categories": [category],
                             "emsc": emsc_vocab,

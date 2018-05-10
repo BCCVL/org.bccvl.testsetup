@@ -1041,30 +1041,12 @@ class GlobalMarineFutureLayers(GlobalMarineLayer):
                     continue
 
                 for filename, category, title, description, full_description in (
-                        ('{0}.{1}.Surface.Temperature.zip'.format(year, emsc),
+                        ('GlobalMarineSurfaceData.{0}.{1}.zip'.format(year, emsc),
                          'physical',
-                         'Global Marine Surface Data, Water Temperature {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
-                         "Global data for sea surface temperature for future time period {0} for emission scenario {1}".format(period, scenario),
-                         "Sea surface temperature is the temperature of the topmost meter of the ocean water column. "
+                         'Global Marine Surface Data, {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
+                         'Global data for sea surface temperature, salinity, current velocity, and ice thickness for future time period {0} for emission scenario {1}'.format(period, scenario),
+                         'This future dataset includes 6 layers (minimum, maximum, mean, range, long term minimum and long term maximum) for each of 4 different variables: 1) sea surface temperature: the temperature of the topmost meter of the ocean water column, 2) salinity: the dissolved salt content in the ocean surface, 3) current velocity: measurements of current speeds at the ocean surface, 4) ice thickness: in metres at the ocean surface. '
                         ),
-                        ('{0}.{1}.Surface.Salinity.zip'.format(year, emsc), 
-                         'physical',
-                         'Global Marine Surface Data, Water Salinity {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
-                         "Global data for sea surface salinity for future time period {0} for emission scenario {1}".format(period, scenario),
-                         "Salinity indicates the dissolved salt content in the ocean surface. "
-                        ),
-                        ('{0}.{1}.Surface.Current.Velocity.zip'.format(year, emsc), 
-                         'physical',
-                         'Global Marine Surface Data, Currents Velocity {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
-                         "Global data for sea surface currents velocity for future time period {0} for emission scenario {1}".format(period, scenario),
-                         "Measurements of current speeds at the ocean surface. "
-                        ),
-                        ('{0}.{1}.Surface.Ice.thickness.zip'.format(year, emsc), 
-                         'physical',
-                         'Global Marine Surface Data, Ice Thickness {0}, {1}, 5 arcmin (~10 km)'.format(period, scenario),
-                         "Global data for sea surface ice thickness for future time period {0} for emission scenario {1}".format(period, scenario),
-                         "Ice thickness in metres at the ocean surface. "
-                        )
                         ):
                     # TODO: maybe put some info in here? to access in a later stage...
                     #       bccvlmetadata.json may be an option here

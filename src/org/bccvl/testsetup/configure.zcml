@@ -64,6 +64,11 @@
         />
     
     <utility
+        component=".transmogrify.MarspecMarineLayers"
+        name="org.bccvl.testsetup.transmogrify.marspecmarinesource"
+        />
+    
+    <utility
         component=".transmogrify.NationalSoilgridLayers"
         name="org.bccvl.testsetup.transmogrify.nsgsource"
         />

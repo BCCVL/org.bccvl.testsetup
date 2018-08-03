@@ -831,6 +831,66 @@ class NDLCLayers(object):
             yield item
 
 
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class MarspecMarineLayers(object):
+    """MARSPEC Global Marine datasets
+
+    """
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        # get filters from configuration
+        self.enabled = options.get('enabled', "").lower() in (
+            "true", "1", "on", "yes")
+
+    def __iter__(self):
+        # exhaust previous
+        for item in self.previous:
+            yield item
+
+        if not self.enabled:
+            return
+
+        # tell our event stats event handler that we collect stats later
+        IAnnotations(self.context.REQUEST)['org.bccvl.site.stats.delay'] = True
+
+        title = 'Global Marine Data, Bathymetry (1955-2010), 5 arcmin (~10 km)'
+        description = 'Global ocean bathymetry data from the MARSPEC data collection.'
+        full_description = "Bathymetry for the world's ocean at at 5 arcmin resolution. The MARSPEC bathymetry dataset is extracted from the SRTM30_PLUS V6.0 data set, a 30 arc-second digital elevation model of global elevation and seafloor topography (http://topex.ucsd.edu/WWW_html/srtm30_plus.html; Becker et al. 2009)." + \
+                           "Website: <a href=\"http://marspec.weebly.com/modern-data.html\" target=\"_blank\">http://marspec.weebly.com/modern-data.html</a>"
+        filename = 'bathymetry_5m.zip'
+        opt = {
+            'id': filename,
+            'url': '{0}/marspec/{1}'.format(SWIFTROOT, filename),
+        }            
+        item = {
+            "_path": 'datasets/environmental/marspec/{0}'.format(opt['id']),
+            "_owner":  (1,  'admin'),
+            "_type": "org.bccvl.content.remotedataset",
+            "title": title,
+            "description": description,
+            "external_description": full_description,
+            "remoteUrl": opt['url'],
+            "format": "application/zip",
+            "creators": 'BCCVL',
+            "dataSource": "ingest",
+            "_transitions": "publish",
+            "subject": [SUMMARY_DATASET_TAG, MARINE_DATASET_TAG, CURRENT_DATASET_TAG],
+            "bccvlmetadata": {
+                "genre": "DataGenreE",
+                "resolution": 'Resolution5m',
+                "categories": ['physical'],
+            },
+        }
+        LOG.info('Import %s', item['title'])
+        yield item
+
+
 class GlobalMarineLayer(object):
     """Global Marine datasets
 
@@ -853,7 +913,7 @@ class GlobalMarineLayer(object):
                         for x in options.get('emsc', "").split(',') if x)
         self.year = set(x.strip()
                         for x in options.get('year', "").split(',') if x)
-
+        
 
 @provider(ISectionBlueprint)
 @implementer(ISection)

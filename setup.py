@@ -33,7 +33,8 @@ setup(
         ],
         'zopectl.command': [
             'testsetup = org.bccvl.testsetup.main:zopectl',
-            'manage = org.bccvl.testsetup.manage:zopectl'
+            'manage = org.bccvl.testsetup.manage:zopectl',
+            'datasetcleanup = org.bccvl.testsetup.datasetcleanup:zopectl'
         ]
     }
 )

@@ -50,7 +50,7 @@ def cleanup_dataset(site, params):
         # Fix me: Do a commit on every single delete as some dataset has invalid url.
         # Shall fix the dataset URL, then can commit a series of deletes.
         ds = brain.getObject()
-        logger.info("Deleting datasets %d", brain.Title)
+        LOG.info("Deleting datasets %s", brain.Title)
         ds.aq_parent.manage_delObjects([ds.getId()])
         transaction.commit()
     return

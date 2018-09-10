@@ -505,7 +505,7 @@ class VegetationAssetsStatesTransitionsLayers(object):
             "_path": 'datasets/environmental/vast/{}'.format(opt['id']),
             "_owner":  (1,  'admin'),
             "_type": "org.bccvl.content.remotedataset",
-            "title": "Australia, Vegetation Assets, States and Transitions (VAST Version 2), (2008), 30 arcmin (~50 km)",
+            "title": "Australia, Vegetation Assets, States and Transitions (VAST Version 2), (2008), 30 arcsec (~1 km)",
             "remoteUrl": opt['url'],
             "format": "application/zip",
             "creators": 'BCCVL',
